@@ -1,19 +1,20 @@
 #ifndef __HROCKER_H__
 #define __HROCKER_H__
 
-#include "cocos2d.h"  
+#include "cocos2d.h" 
+#include "Const/Constant.h"
+#include <functional>
 
-using namespace cocos2d;
+USING_NS_CC;
 //枚举型：用于标识摇杆与摇杆的背景  
-typedef enum{
-	tag_rocker,
-	tag_rockerBG,
-}tagForHRocker;
-typedef enum {
-	up, down, left, right, up_right, down_right, up_left, down_left,noDir
-}Direction;
+#define TAG_ROCKER     0
+#define TAG_ROCKERBG   1
+
 class HRocker : public Layer
 {
+	CC_SYNTHESIZE(bool, isCanMove, IsCanMove);
+	CC_SYNTHESIZE(float, _angle, Angle);
+
 public:
 	//创建摇杆，摇杆图片，摇杆背景图片，起始坐标  
 	static HRocker* createHRocker(const char* rockerImageName, const char* rockerBGImageName, Point position);
@@ -27,8 +28,6 @@ private:
 	void rockerInit(const char* rockerImageName, const char* rockerBGImageName, Point position);
 	//得到半径为r的圆周运动上一个角度应对应的x,y坐标  
 	Point getAnglePosition(float r, float angle);
-	//是否可操作摇杆  
-	bool isCanMove;
 	//得到摇杆与用户触屏点的角度  
 	float getRad(Point pos1, Point pos2);
 	//摇杆背景的坐标  
@@ -37,16 +36,16 @@ private:
 	float rockerBGR;
 	//触屏事件  
 	virtual bool onTouchBegan(Touch* touch, Event* event);
-	virtual void onTouchMoved(Touch* touch, Event* event); 
+	virtual void onTouchMoved(Touch* touch, Event* event);
 	virtual void onTouchEnded(Touch* touch, Event* event);
 	//按键状态
 	bool _wState, _aState, _sState, _dState;
-	Direction _direction;
+	EDirection _direction;
 	//按键事件
-	virtual bool onPressKey(EventKeyboard::KeyCode keyCode, Event*envet);
-	virtual bool onReleaseKey(EventKeyboard::KeyCode keyCode, Event*envet);
-//	virtual bool updateState(EventKeyboard::KeyCode keyCode,int type);
-//	virtual bool updateDirection();
+	virtual bool onPressKey(EventKeyboard::KeyCode keyCode, Event* envet);
+	virtual bool onReleaseKey(EventKeyboard::KeyCode keyCode, Event* envet);
+	virtual bool updateState(EventKeyboard::KeyCode keyCode, int type);
+	virtual bool updateDirection();
 	CREATE_FUNC(HRocker);
 };
 

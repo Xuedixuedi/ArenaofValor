@@ -7,9 +7,9 @@ USING_NS_CC;
 
 class Record :public cocos2d::Layer
 {
-	CC_SYNTHESIZE(int, _kill, Kill);
-	CC_SYNTHESIZE(int, _death, Death);
-	CC_SYNTHESIZE(int, _assist, Assist);
+	CC_SYNTHESIZE(INT32, _kill, Kill);
+	CC_SYNTHESIZE(INT32, _death, Death);
+	CC_SYNTHESIZE(INT32, _assist, Assist);
 
 private:
 

@@ -39,17 +39,17 @@ void Record::initLabel()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	_labelKill = Label::create(StringUtils::format(" 0"), "Arial", 14);
+	_labelKill = Label::create(StringUtils::format(" 0"), "fonts\\HELVETICAEXT-NORMAL.TTF", 14);
 	_labelKill->setColor(Color3B::WHITE);
 	_labelKill->setPosition(Vec2(visibleSize.width * 3 / 5 + 40, visibleSize.height - 50));
 	addChild(_labelKill);
 
-	_labelDeath = Label::create(StringUtils::format(" 0"), "Arial", 14);
+	_labelDeath = Label::create(StringUtils::format(" 0"), "fonts\\HELVETICAEXT-NORMAL.TTF", 14);
 	_labelDeath->setColor(Color3B::WHITE);
 	_labelDeath->setPosition(Vec2(visibleSize.width * 3 / 5 + 120, visibleSize.height - 50));
 	addChild(_labelDeath);
 
-	_labelAssist = Label::create(StringUtils::format(" 0"), "Arial", 14);
+	_labelAssist = Label::create(StringUtils::format(" 0"), "fonts\\HELVETICAEXT-NORMAL.TTF", 14);
 	_labelAssist->setColor(Color3B::WHITE);
 	_labelAssist->setPosition(Vec2(visibleSize.width * 3 / 5 + 200, visibleSize.height - 50));
 	addChild(_labelAssist);

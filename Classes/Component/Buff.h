@@ -14,14 +14,18 @@ enum EBuffType
 	BLUEBUFF	//À¶BUFF
 };
 
-class Buff
+class Buff: public cocos2d::Node
 {
 public:
 
-	Buff(EBuffType buffType, float duration);
-
 	CC_SYNTHESIZE(EBuffType, _buffType, BuffType);
 	CC_SYNTHESIZE(float, _duration, Duration);
+	CC_SYNTHESIZE(float, _beginTime, BeginTime);
+	CC_SYNTHESIZE(float, _endTime, EndTime);
+
+	virtual bool init(EBuffType buffType, float duration);
+
+	static Buff* create(EBuffType buffType, float duration);
 };
 
 #endif // !__BUFF_H__
