@@ -7,7 +7,8 @@ MULTIPLE = 8
 COLOR_POINT = [0, 255, 255]
 COLOR_AVAI = [30, 130, 0]
 COLOR_UNAVAI = [0, 30, 130]
-Graph = [ [0] * 5 for i in range(5)]
+MAX_POINTS_NUM = 1000
+Graph = [[0] * MAX_POINTS_NUM for i in range(MAX_POINTS_NUM)]
 HAVE_START = False
 pnts = []
 
