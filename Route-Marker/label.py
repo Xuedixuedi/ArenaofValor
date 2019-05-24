@@ -25,7 +25,7 @@ def OnMouseAction(event,x,y,flags,param):
     if mode == 1 and HAVE_START:
         img3 = np.zeros((70, 500, 3), np.uint8)
         cv2.putText(img3, "From X=" + str(x1 // MULTIPLE) + ", Y=" + str(y1 // MULTIPLE) + " No." + str(pnts.index([x1 // MULTIPLE,y1 // MULTIPLE])), (30, 30), font, 0.8, (255, 255, 255))
-        if (img[y][x].tolist() == COLOR_POINT and pnts.count([x // MULTIPLE,y // MULTIPLE])>0):
+        if (pnts.count([x // MULTIPLE,y // MULTIPLE])>0):
             cv2.putText(img3, "To    X=" + str(x // MULTIPLE) + ", Y=" + str(y // MULTIPLE) + " No." + str(pnts.index([x // MULTIPLE,y // MULTIPLE])), (30, 60), font, 0.8, (255, 255, 255))
         else:
             cv2.putText(img3, "To", (30, 60), font, 0.8, (255, 255, 255))
@@ -37,13 +37,13 @@ def OnMouseAction(event,x,y,flags,param):
         cv2.putText(img3, "No Start Point", (30, 30), font, 0.8, (255, 255, 255))
 
     if mode == 1 and event == cv2.EVENT_RBUTTONDOWN:
-        if (img[y][x].tolist() == COLOR_POINT):
+        if pnts.count([x // MULTIPLE,y // MULTIPLE])>0:
             print("Line右键点击",img[y][x].tolist())
             x1, y1 = x//MULTIPLE*MULTIPLE, y//MULTIPLE*MULTIPLE
             HAVE_START = True
 
     if mode == 1 and event == cv2.EVENT_LBUTTONDOWN and HAVE_START:
-        if (img[y][x].tolist() == COLOR_POINT and pnts.count([x // MULTIPLE,y // MULTIPLE])>0):
+        if (pnts.count([x // MULTIPLE,y // MULTIPLE])>0):
             print("Line左键点击",img[y][x].tolist())
             pts = np.array([[x1,y1],[x1+MULTIPLE,y1+MULTIPLE],[x//MULTIPLE*MULTIPLE+MULTIPLE//2,y//MULTIPLE*MULTIPLE+MULTIPLE//2]], np.int32)
             cv2.fillPoly(img, [pts], (255, 255, 0), 0, 0)
