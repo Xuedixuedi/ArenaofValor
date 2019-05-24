@@ -7,7 +7,8 @@ MULTIPLE = 8
 COLOR_POINT = [0, 255, 255]
 COLOR_AVAI = [30, 130, 0]
 COLOR_UNAVAI = [0, 30, 130]
-Graph = [ [0] * 5 for i in range(5)]
+MAX_POINTS_NUM = 1000
+Graph = [[0] * MAX_POINTS_NUM for i in range(MAX_POINTS_NUM)]
 HAVE_START = False
 pnts = []
 
@@ -101,4 +102,14 @@ while(1):
         mode = 1
     elif k==ord('q'):
         break
+    elif k==ord('s'):
+        with open("graph.dat", "w") as f:
+            f.write(str(len(pnts))+"\n")
+            for i in range(len(pnts)):
+                f.write(str(pnts[i][0])+" "+str(pnts[i][1])+"\n")
+            for i in range(len(pnts)):
+                for j in range(len(pnts)):
+                    f.write(str(Graph[i][j])+" ")
+                f.write("\n")
+        print('Graph Saved')
 cv2.destroyAllWindows()
