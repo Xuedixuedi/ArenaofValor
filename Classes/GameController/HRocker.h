@@ -28,8 +28,6 @@ private:
 	void rockerInit(const char* rockerImageName, const char* rockerBGImageName, Point position);
 	//得到半径为r的圆周运动上一个角度应对应的x,y坐标  
 	Point getAnglePosition(float r, float angle);
-	//得到摇杆与用户触屏点的角度  
-	float getRad(Point pos1, Point pos2);
 	//摇杆背景的坐标  
 	Point rockerBGPosition;
 	//摇杆背景的半径  

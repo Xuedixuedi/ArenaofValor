@@ -19,10 +19,11 @@ class Hero :public MovingActor
 	CC_SYNTHESIZE(String, _heroName, HeroName);
 	CC_SYNTHESIZE(ExpComponent*, _expComp, ExpComp);
 	CC_SYNTHESIZE(StateComponent*, _magicComp, MagicComp);
-	CC_SYNTHESIZE(Vector<Actor*>, _causeDamage, CauseDamage);
+	CC_SYNTHESIZE(Vector<Actor*>, _causeDamageActors, CauseDamageActors);
 	CC_SYNTHESIZE(Record*, _recordComp, RecordComp);
 
 public:
+
 
 	virtual bool die();
 
@@ -30,9 +31,17 @@ public:
 
 	virtual void takeBuff(Buff* buff);
 
+	virtual void skillLevelUp(INT32 skillNumber);
+
+	virtual void castSkill_1();
+
+	virtual void castSkill_2(Point mousePosition);
+
+	virtual void castSkill_3();
+
 	virtual void reborn();
 
-	virtual void takeDamage(float damge, Actor* instigator);
+	virtual void takeDamage(EDamageType damageType, float damge, Actor* instigator);
 
 	virtual bool levelUp();
 
@@ -40,9 +49,9 @@ public:
 
 	virtual void stopMove();
 
-	virtual bool init(ECamp camp, std::string heroName, EAttackMode attackMode);
+	virtual bool init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode);
 
-	static Hero* create(ECamp camp, std::string heroName, EAttackMode attackMode);
+	static Hero* create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode);
 
 protected:
 
@@ -50,7 +59,7 @@ protected:
 
 	virtual void startAnimation();
 
-	virtual bool initHeroData(std::string heroName, ECamp camp, EAttackMode attackMode);
+	virtual bool initHeroData(HelloWorld* combatScene, std::string heroName, ECamp camp, EAttackMode attackMode);
 
 	virtual bool initHealthComp(std::string heroName);
 

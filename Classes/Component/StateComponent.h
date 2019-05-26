@@ -24,6 +24,8 @@ class StateComponent :public ui::LoadingBar
 
 public:
 
+	void changeMaxBy(INT32 delta);
+
 	void changeMaxTo(INT32 newMaxState);
 
 	void changeStateBy(INT32 delta);

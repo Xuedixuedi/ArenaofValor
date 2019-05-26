@@ -24,7 +24,7 @@ bool Projectile::init(float damage, float speed, Actor* fromActor, Actor* target
 		return false;
 	}
 
-	setTexture("arrow.png");
+	setTexture("pictures/others/bullet.png");
 	setPosition(fromActor->getPosition());
 	setScale(0.5);
 
@@ -78,7 +78,7 @@ void Projectile::calculatePosition()
 	auto dx = delta.x;
 	auto dy = delta.y;
 	setRotation(getAngle());
-	setPosition(getPosition() + Vec2(dx / distance * _speed, dy / distance * _speed));
+	setPosition(getPosition() + Vec2(dx / distance * _speed / 60, dy / distance * _speed / 60));
 }
 
 float Projectile::calculateDistance() const

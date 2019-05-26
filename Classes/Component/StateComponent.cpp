@@ -61,10 +61,18 @@ void StateComponent::recover(float delta)
 }
 
 
+void StateComponent::changeMaxBy(INT32 delta)
+{
+	setMaxState(_maxState + delta);
+	setCurrentState(_currentState + delta);
+
+	updatePercent();
+}
+
 void StateComponent::changeMaxTo(INT32 newMaxState)
 {
-	setCurrentState(_currentState + newMaxState - _maxState);
 	setMaxState(newMaxState);
+	setCurrentState(_currentState + newMaxState - _maxState);
 
 	updatePercent();
 }

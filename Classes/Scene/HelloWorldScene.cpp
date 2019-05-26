@@ -5,44 +5,65 @@
 #include "Actor/Actor.h"
 #include "../Component/Record.h"
 #include "Component/ExpComponent.h"
-#include "Actor/Projectile.h"
-#include "Actor/Hero.h"
 #include "GameController/HRocker.h"
-
-USING_NS_CC;
-
+#include "Hero/HouYi.h"
+#include "PathFind/SoldierPath.h"
 
 Scene* HelloWorld::createScene()
 {
-    return HelloWorld::create();
+	return HelloWorld::create();
 }
 
 static void problemLoading(const char* filename)
 {
-    printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+	printf("Error while loading: %s\n", filename);
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
 bool HelloWorld::init()
 {
-    if ( !Scene::init() )
-    {
-        return false;
-    }
-	
+	if (!Scene::init())
+	{
+		return false;
+	}
+
 	_visibleSize = Director::getInstance()->getVisibleSize();
 	_origin = Director::getInstance()->getVisibleOrigin();
 
-	initLabelRecord();
-	initHero();
-	initHRocker();
+	initMapLayer();
+
 	loadingAnimation();
+	initTower();
+	initHero();
+	initLabelRecord();
+	initHRocker();
+
+	schedule(schedule_selector(HelloWorld::generateSoldiers), 10.f, -1, 0.f);
 
 	scheduleUpdate();
-//	test();
-	
 
-    return true;
+	return true;
+}
+
+void HelloWorld::initMapLayer()
+{
+	_map = TMXTiledMap::create("map/map2.tmx");
+	auto size = _map->getBoundingBox().size;
+	_map->setAnchorPoint(Vec2::ZERO);
+	log("%f", size.height);
+	_map->setPosition(Vec2::ZERO);
+
+	auto wallLayer = _map->getLayer("Wall");
+	wallLayer->setZOrder(0);
+
+	_mapInformation = MapInfo(_map);
+	_soldierPathPoints = SoldierPath::create("D:/LatestFiles/hello/Data/PathPoints.txt", _mapInformation);
+	_actors.pushBack(_soldierPathPoints);
+
+	auto collisionLayer = _map->getLayer("collision");
+	collisionLayer->setVisible(false);
+
+	addChild(_map, 0, TAG_MAP);
 }
 
 void HelloWorld::initLabelRecord()
@@ -53,12 +74,19 @@ void HelloWorld::initLabelRecord()
 
 void HelloWorld::initHero()
 {
-	_myHero = Hero::create(ECamp::BLUE, "YS", EAttackMode::MELEE);
-	_myHero->setPosition(Vec2(200, 300));
-	_myHero->setTag(0);
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+
+	_myHero = HouYi::create(this, ECamp::BLUE, "HouYi", EAttackMode::REMOTE);
+	log("HP: %d", _myHero->getHealthComp()->getMaxState());
+	_myHero->setPosition(visibleSize / 2);
+	_myHero->setTag(TAG_MYHERO);
 	_myHero->setScale(0.5);
-	addChild(_myHero);
+	_myHero->setRecordComp(_labelRecord);
+	_map->addChild(_myHero);
+	_heroes.pushBack(_myHero);
 	_actors.pushBack(_myHero);
+
+	_myHero->castSkill_2(Vec2(400, 400));
 }
 
 void HelloWorld::initHRocker()
@@ -70,12 +98,12 @@ void HelloWorld::initHRocker()
 
 void HelloWorld::loadingAnimation()
 {
-	String heroName = "YS";
+	String heroName = "HouYi";
 
 	auto animation_00 = Animation::create();
 	animation_00->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup1.png", heroName.getCString(), heroName.getCString()));
 	animation_00->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup2.png", heroName.getCString(), heroName.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_00,StringUtils::format("%sMoveUp",heroName.getCString()));
+	AnimationCache::getInstance()->addAnimation(animation_00, StringUtils::format("%sMoveUp", heroName.getCString()));
 
 	auto animation_01 = Animation::create();
 	animation_01->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supLeft1.png", heroName.getCString(), heroName.getCString()));
@@ -111,20 +139,163 @@ void HelloWorld::loadingAnimation()
 	animation_07->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight1.png", heroName.getCString(), heroName.getCString()));
 	animation_07->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight2.png", heroName.getCString(), heroName.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_07, StringUtils::format("%sMoveDownRight", heroName.getCString()));
+
+
+	String soldierType = "RedMelee";
+	
+	auto animation_51 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_51->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sUp%d.png", soldierType.getCString(), soldierType.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_51, StringUtils::format("%sMoveUp", soldierType.getCString()));
+
+	auto animation_52 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_52->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sDown%d.png", soldierType.getCString(), soldierType.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_52, StringUtils::format("%sMoveDown", soldierType.getCString()));
+
+	auto animation_53 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_53->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sLeft%d.png", soldierType.getCString(), soldierType.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_53, StringUtils::format("%sMoveLeft", soldierType.getCString()));
+
+	auto animation_54 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_54->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sRight%d.png", soldierType.getCString(), soldierType.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_54, StringUtils::format("%sMoveRight", soldierType.getCString()));
+
+	auto animation_55 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_55->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackUp%d.png", soldierType.getCString(), soldierType.getCString(), i));
+	}
+	animation_55->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sUp1.png", soldierType.getCString(), soldierType.getCString()));
+	AnimationCache::getInstance()->addAnimation(animation_55, StringUtils::format("%sAttackUp", soldierType.getCString()));
+
+	auto animation_56 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_56->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackDown%d.png", soldierType.getCString(), soldierType.getCString(), i));
+	}
+	animation_56->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sDown1.png", soldierType.getCString(), soldierType.getCString()));
+	AnimationCache::getInstance()->addAnimation(animation_56, StringUtils::format("%sAttackDown", soldierType.getCString()));
+
+	auto animation_57 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_57->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackLeft%d.png", soldierType.getCString(), soldierType.getCString(), i));
+	}
+	animation_57->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sLeft1.png", soldierType.getCString(), soldierType.getCString()));
+	AnimationCache::getInstance()->addAnimation(animation_57, StringUtils::format("%sAttackLeft", soldierType.getCString()));
+
+	auto animation_58 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_58->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackRight%d.png", soldierType.getCString(), soldierType.getCString(), i));
+	}
+	animation_58->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sRight1.png", soldierType.getCString(), soldierType.getCString()));
+	AnimationCache::getInstance()->addAnimation(animation_58, StringUtils::format("%sAttackRight", soldierType.getCString()));
+
+
+	String skillAnimationName = "HouYiSkill2";
+	auto skillAnimation = Animation::create();
+	for (int i = 1; i < 5; ++i)
+	{
+		skillAnimation->addSpriteFrameWithFile(StringUtils::format("pictures/hero/HouYi/%s%d.png", skillAnimationName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(skillAnimation, skillAnimationName.getCString());
+}
+
+void HelloWorld::initTower()
+{
+	auto tower = Actor::create(this, ECamp::RED);
+	tower->setPosition(RED_TOWER_POSITION);
+	tower->setScale(0.7);
+	_map->addChild(tower);
+	_towers.pushBack(tower);
+	_actors.pushBack(tower);
 }
 
 void HelloWorld::update(float delta)
 {
+	TowerAttack();
+
 	updateHeroPosition();
-	for (auto it=_bullets.begin();it!=_bullets.end();)
+
+	updateBullets();
+
+	updateDamages();
+
+	updateSoldiersState();
+
+	clearObjects();
+}
+
+void HelloWorld::clearObjects()
+{
+	for (auto it = _heroes.begin(); it != _heroes.end(); ++it)
+	{
+		if ((*it)->getAlreadyDead())
+		{
+			(*it)->setVisible(false);
+			//TODO: Hero die
+		}
+	}
+
+	for (auto it = _soldiers.begin(); it != _soldiers.end();)
+	{
+		if ((*it)->getAlreadyDead())
+		{
+			_map->removeChild(*it);
+			it = _soldiers.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	for (auto it = _towers.begin(); it != _towers.end();)
+	{
+		if ((*it)->getAlreadyDead())
+		{
+			_map->removeChild(*it);
+			it = _towers.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+void HelloWorld::TowerAttack()
+{
+	for (auto it = _towers.begin(); it != _towers.end(); ++it)
+	{
+		(*it)->attack();
+	}
+}
+
+void HelloWorld::updateBullets()
+{
+	//	log("bulletsSize: %d", _bullets.size());
+	for (auto it = _bullets.begin(); it != _bullets.end();)
 	{
 		if (!(*it)->getTarget()->getAlreadyDead())
 		{
 			if ((*it)->calculateDistance() < (*it)->getTarget()->getBoundingBox().size.height / 2)
 			{
 				auto target = (*it)->getTarget();
-				target->takeDamage((*it)->getDamage(), (*it)->getFromActor());
-				removeChild(*it);
+				target->takeDamage(EDamageType::PHYSICS_DAMAGE, (*it)->getDamage(), (*it)->getFromActor());
+				_map->removeChild(*it);
 				it = _bullets.erase(it);
 			}
 			else
@@ -135,16 +306,42 @@ void HelloWorld::update(float delta)
 		}
 		else
 		{
-			removeChild(*it);
+			_map->removeChild(*it);
 			it = _bullets.erase(it);
 		}
 	}
 
-	for (auto it = _actors.begin(); it !=_actors.end(); ++it)
+}
+
+void HelloWorld::updateDamages()
+{
+	for (auto it = _damages.begin(); it != _damages.end();)
 	{
-		if ((*it)->getAlreadyDead())
+		auto nowTime = GetCurrentTime() / 1000;
+
+		if (it->_actionTime <= nowTime)
 		{
-			(*it)->setVisible(false);
+			if (!it->_target->getAlreadyDead())
+			{
+				it->_target->takeDamage(it->_damageType, it->_damage, it->_instiogator);
+			}
+
+			it = _damages.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+void HelloWorld::updateSoldiersState()
+{
+	for (auto& i : _soldiers)
+	{
+		if (!i->getAlreadyDead())
+		{
+			i->updateState();
 		}
 	}
 }
@@ -154,7 +351,13 @@ void HelloWorld::updateHeroPosition()
 	if (_rocker->getIsCanMove())
 	{
 		_myHero->setStandingAngle(_rocker->getAngle());
-		_myHero->heroMove();
+		auto positionDelta = MyMath::calculatePositionDelta(_myHero->getStandingAngle(),_myHero->getMoveSpeed());
+		auto newPosition = _myHero->getPosition() + positionDelta;
+		if (_mapInformation.checkCollision(newPosition))
+		{
+			_myHero->heroMove();
+			_map->setPosition(_map->getPosition() - positionDelta);
+		}
 	}
 	else
 	{
@@ -162,25 +365,40 @@ void HelloWorld::updateHeroPosition()
 	}
 }
 
-void HelloWorld::launch(float delta)
+void HelloWorld::generateSoldiers(float delta)
 {
-	auto from = dynamic_cast<Actor*>(getChildByTag(0));
-	auto to = dynamic_cast<Actor*>(getChildByTag(1));
-	
-	if (from && !from->getAlreadyDead() && to && !to->getAlreadyDead())
-	{
-		auto bullet = Projectile::create(600, 10, from, to);
-		addChild(bullet);
-		_bullets.pushBack(bullet);
-	}
-}
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	auto origin = Director::getInstance()->getVisibleOrigin();
 
-void HelloWorld::test()
-{
-	auto animation = AnimationCache::getInstance()->getAnimation("YSMoveDownRight");
-	animation->setLoops(-1);
-	animation->setDelayPerUnit(0.1f);
-	auto animate = Animate::create(animation);
+	auto soldier_1 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
+	soldier_1->setPosition(visibleSize / 4);
+	soldier_1->setNextDest(_soldierPathPoints->getNextPoint(soldier_1->getPosition()));
+	soldier_1->setScale(1.5);
+	_map->addChild(soldier_1);
+	_soldiers.pushBack(soldier_1);
+	_actors.pushBack(soldier_1);
 
-	_myHero->runAction(RepeatForever::create(animate));
+	auto soldier_2 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
+	soldier_2->setPosition(visibleSize / 4 + Size(0, 30));
+	soldier_2->setNextDest(_soldierPathPoints->getNextPoint(soldier_2->getPosition()));
+	soldier_2->setScale(1.5);
+	_map->addChild(soldier_2);
+	_soldiers.pushBack(soldier_2);
+	_actors.pushBack(soldier_2);
+
+	auto soldier_3 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
+	soldier_3->setPosition(visibleSize / 4 + Size(0, 60));
+	soldier_3->setNextDest(_soldierPathPoints->getNextPoint(soldier_3->getPosition()));
+	soldier_3->setScale(1.5);
+	_map->addChild(soldier_3);
+	_soldiers.pushBack(soldier_3);
+	_actors.pushBack(soldier_3);
+
+	auto soldier_4 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
+	soldier_4->setPosition(visibleSize / 4 + Size(0, 90));
+	soldier_4->setNextDest(_soldierPathPoints->getNextPoint(soldier_4->getPosition()));
+	soldier_4->setScale(1.5);
+	_map->addChild(soldier_4);
+	_soldiers.pushBack(soldier_4);
+	_actors.pushBack(soldier_4);
 }

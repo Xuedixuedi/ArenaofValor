@@ -14,17 +14,12 @@ USING_NS_CC;
 class StateComponent;
 class Bonus;
 class ExpComponent;
+class HelloWorld;
 
-
-//enum EDamageType
-//{
-//	PHYSICS,
-//	MAGIC
-//};
-//
 
 class Actor : public cocos2d::Sprite
 {
+	CC_SYNTHESIZE(HelloWorld*, _combatScene, CombatScene);
 	CC_SYNTHESIZE(ECamp, _camp, Camp);
 	CC_SYNTHESIZE(INT32, _defense, Defense);
 	CC_SYNTHESIZE(INT32, _attack, Attack);
@@ -32,11 +27,22 @@ class Actor : public cocos2d::Sprite
 	CC_SYNTHESIZE(bool, _alreadyDead, AlreadyDead);
 	CC_SYNTHESIZE(INT32, _magicDefense, MagicDefense);
 	CC_SYNTHESIZE(float, _lastAttackTime, LastAttackTime);
+	CC_SYNTHESIZE(float, _minAttackInterval, MinAttackInterval);
 	CC_SYNTHESIZE(StateComponent*, _healthComp, HealthComp);
+	CC_SYNTHESIZE(Actor*, _lastAttackFrom, LastAttackFrom);
 	CC_SYNTHESIZE(Bonus*, _bonus, Bonus);
 	CC_SYNTHESIZE(Vector<Buff*>, _allBuff, AllBuff);
+	CC_SYNTHESIZE(Actor*, _attackTarget, AttackTarget);
+
+protected:
+
+	virtual void initData(HelloWorld* combatScene, ECamp camp);
+
+	virtual void initHealthComp();
 
 public:
+
+	virtual void updateAttackTarget();
 
 	virtual bool die();
 
@@ -44,11 +50,11 @@ public:
 
 	virtual void takeBuff(Buff* buff);
 
-	virtual void takeDamage(INT32 damge, Actor* instigator);
+	virtual void takeDamage(EDamageType damageType, INT32 damge, Actor* instigator);
 
-	virtual bool init(const std::string& filename, ECamp camp);
+	virtual bool init(HelloWorld* combatScene, ECamp camp);
 	//
-	static Actor* create(const std::string& filename, ECamp camp);
+	static Actor* create(HelloWorld* combatScene, ECamp camp);
 
 };
 

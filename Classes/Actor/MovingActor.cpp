@@ -1,6 +1,5 @@
 #include "Actor.h"
 #include "Component/StateComponent.h"
-#include "Const/Constant.h"
 #include "MovingActor.h"
 
 
@@ -54,9 +53,17 @@ bool MovingActor::attack()
 
 void MovingActor::takeBuff(Buff* buff)
 {
+	_allBuff.pushBack(buff);
+	_attack += buff->getAttack();
+	_defense += buff->getDefense();
+	_magicDefense += buff->getMagicDefense();
+	_healthComp->changeMaxBy(buff->getHP());
+	_healthComp->changeRecoverRate(buff->getHPRecover());
+	_moveSpeed += buff->getMoveSpeed();
+	_minAttackInterval -= buff->getAttackInterval();
 }
 
-void MovingActor::takeDamage(float damge, Actor* instigator)
+void MovingActor::takeDamage(EDamageType damageType, float damge, Actor* instigator)
 {
 }
 

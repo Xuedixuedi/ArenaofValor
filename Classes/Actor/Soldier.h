@@ -3,24 +3,50 @@
 
 #include "cocos2d.h"
 #include "MovingActor.h"
+#include "Component/StateComponent.h"
+#include <vector>
+
 
 USING_NS_CC;
+using std::vector;
+
+class SoldierPath;
+class HelloWorld;
 
 class Soldier :public MovingActor
 {
-	CC_SYNTHESIZE(Vec2, _firstDest, FirstDest);
-	CC_SYNTHESIZE(Vec2, _secondDest, SecondDest);
-	CC_SYNTHESIZE(bool, _arrivedFirstDest, ArrivedFirstDest);
-	CC_SYNTHESIZE(bool, _isDisturbed, IsDisturbed);
+	CC_SYNTHESIZE(bool, _isAttacking, IsAttacking);
+	CC_SYNTHESIZE(bool, _isMovingToDest, IsMovingToDest);
+	CC_SYNTHESIZE(EAttackMode, _attackMode, AttackMode);
+	CC_SYNTHESIZE(String, _soldierType, SoldierType);
 	CC_SYNTHESIZE(Actor*, _instigator, Instigator);
+	CC_SYNTHESIZE(Vec2, _nextDest, NextDest);	
+
+private:
+
+	SoldierPath* _soldierPathPoints;
+
+	void initData(HelloWorld* combatScene, EAttackMode attackMode, ECamp camp, ERoad road, SoldierPath* soldierPathPoints);
+
+	void initHealthComp();
+
+	void updateDirection();
+
+	void startAnimation();
 
 public:
 
-	void moveToNextDest();
+	void attack(Actor* attackTarget);
 
-	virtual bool init(ECamp camp, ERoad road);
+	void moveTo(const Vec2& targetPosition);
 
-	Static Soldier* create(ECamp camp, ERoad road);
+	bool updateInstigator();
+
+	void updateState();
+
+	virtual bool init(HelloWorld* combatScene, EAttackMode attackMode, ECamp camp, ERoad road, SoldierPath* soldierPathPoints);
+
+	static Soldier* create(HelloWorld* combatScene, EAttackMode attackMode, ECamp camp, ERoad road, SoldierPath* soldierPathPoints);
 };
 
 
