@@ -17,11 +17,6 @@ class SoldierPath;
 
 class HelloWorld : public cocos2d::Scene
 {
-	//CC_SYNTHESIZE(Vector<Actor*>, _allTowers, AllTowers);
-	//CC_SYNTHESIZE(Vector<Projectile*>, _bullets, Bullets);
-	//CC_SYNTHESIZE(Vector<Hero*>, _allHeroes, AllHeroes);
-	//CC_SYNTHESIZE(std::vector<Damage>, _allDamages, AllDamages);
-	//CC_SYNTHESIZE(Vector<Soldier*>, _allSoldiers, AllSoldiers);
 	CC_SYNTHESIZE(Record*, _labelRecord, LabelRecord);
 	CC_SYNTHESIZE(Hero*, _myHero, MyHero);
 	CC_SYNTHESIZE(Size, _visibleSize, VisibleSize);
@@ -42,6 +37,8 @@ public:
 
 	Vector<Soldier*> _soldiers;
 
+	Map<float, Projectile*> _readyToLaunch;
+
 	std::vector<Damage> _damages;
 
 private:
@@ -58,6 +55,8 @@ private:
 
 	void initHRocker();
 
+	void initSkillPanel();
+
 	void updateHeroPosition();
 
 	void initTower();
@@ -69,6 +68,8 @@ private:
 	void updateBullets();
 
 	void updateDamages();
+	
+	void test();
 
 	void updateSoldiersState();
 

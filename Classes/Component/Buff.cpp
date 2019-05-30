@@ -38,7 +38,7 @@ bool Buff::init(EBuffType buffType, float duration, INT32 attack,
 	//
 	_buffType = buffType;
 	_duration = duration;
-	_beginTime = GetCurrentTime() / 1000;
+	_beginTime = GetCurrentTime() / 1000.f;
 	_endTime = _beginTime + duration;
 
 	return true;

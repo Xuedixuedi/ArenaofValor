@@ -17,7 +17,7 @@ private:
 
 public:
 
-	void addExp(INT32 Exp);
+	bool addExp(INT32 Exp);
 
 	bool init(INT32 levelUpNeededExp);
 

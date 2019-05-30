@@ -1,7 +1,7 @@
 #include "SoldierPath.h"
 #include <fstream>
 #include <random>
-
+#include <cmath>
 
 SoldierPath* SoldierPath::create(const std::string& filename, MapInfo map)
 {
@@ -22,15 +22,22 @@ bool SoldierPath::init(const std::string& filename, MapInfo map)
 		return false;
 	}
 	//init
-	std::ifstream OpenFile(filename);
 
+	srand((unsigned)time(NULL));
+
+	_mapInfo = map;
+
+	std::ifstream OpenFile(filename);
 	OpenFile >> _pointsCount;
 	PointINT temp;
 	for (int i=0; i < _pointsCount; ++i) 
 	{
 		OpenFile >> temp.x >> temp.y;
+		temp.y = _mapInfo.getMapSize().y - 1 - temp.y;
+	//	log("%d %d", temp.x, temp.y);
 		_pathPoints.push_back(temp);
 	}
+
 
 	INT32 state;
 	_pathGraph.resize(_pointsCount);
@@ -45,8 +52,6 @@ bool SoldierPath::init(const std::string& filename, MapInfo map)
 			}
 		}
 	}
-
-	_mapInfo = map;
 
 	return true;
 }
@@ -90,13 +95,11 @@ Vec2 SoldierPath::getNextPoint(const Vec2& vecPoint)
 	{
 		if (_pathGraph[minIndex].size())
 		{
-			std::default_random_engine e;
-			std::uniform_int_distribution<int> u(0, _pathGraph[minIndex].size());
-			auto tempIndex = u(e);
+
+			auto tempIndex = rand()%_pathGraph[minIndex].size();
+			log("%d", tempIndex);
 			desVecPoint = _pathPoints[_pathGraph[minIndex][tempIndex]];
-			log("newgirdPoint: %d, %d", desVecPoint.x, desVecPoint.y);
 			auto res = _mapInfo.getPrecisePosition(desVecPoint);;
-			log("newDest: %f, %f", res.x, res.y);
 			return res;
 		}
 		else
@@ -105,6 +108,5 @@ Vec2 SoldierPath::getNextPoint(const Vec2& vecPoint)
 		}
 	}
 	
-	log("newgirdPoint: %d, %d", _pathPoints[minIndex].x, _pathPoints[minIndex].y);
 	return _mapInfo.getPrecisePosition(_pathPoints[minIndex]);
 }

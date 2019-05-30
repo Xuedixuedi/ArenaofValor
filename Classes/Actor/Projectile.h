@@ -2,6 +2,7 @@
 #define __PROJECTILE_H__
 
 #include "cocos2d.h"
+#include <string>
 
 USING_NS_CC;
 
@@ -16,9 +17,9 @@ class Projectile :public Sprite
 	
 public:
 
-	virtual bool init(float damage, float speed, Actor* fromActor, Actor* target);
+	virtual bool init(const std::string& filename, float damage, float speed, Actor* fromActor, Actor* target);
 
-	static Projectile* create(float damage, float speed, Actor* fromActor, Actor* target);
+	static Projectile* create(const std::string& filename, float damage, float speed, Actor* fromActor, Actor* target);
 
 	float getAngle() const;
 

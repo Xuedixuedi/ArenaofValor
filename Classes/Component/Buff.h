@@ -9,9 +9,6 @@ enum EBuffType
 {
 	VERTIGO,	//яётн
 	SILENCE,	//Ёад╛
-	SLOWDOWN,	//╪Укы
-	REDBUFF,	//╨ЛBUFF
-	BLUEBUFF,	//ю╤BUFF
 	MULTIPLE,	//╥жая╧╔╩В
 	NORMAL
 };

@@ -8,26 +8,34 @@
 #define ORIGIN_INTERVAL				  0.2
 #define PRESS						  1
 #define RELEASE						  2
-#define MIN_ATTACK_INTERVAL			  1.5
+#define MIN_ATTACK_INTERVAL			  3.0
 
-#define VISION_RADIUS				  300
+#define VISION_RADIUS				  400
 
 #define TOWER_MIN_ATTACK_INTERVAL	  2
-#define TOWER_HP					  5000
+#define TOWER_HP					  4000
 #define TOWER_ATTACK_RADIUS           500
-#define TOWER_ARMOR				      100
+#define TOWER_ARMOR				      50
 #define TOWER_MAGIC_DEFNESE           100
-#define TOWER_ATTACK				  500
+#define TOWER_ATTACK				  470
 
 #define DEFAULT_ATTACK_RADIUS_MELEE   100
-#define DEFAULT_ATTACK_RADIUS_REMOTE  400
+#define DEFAULT_ATTACK_RADIUS_REMOTE  250
 #define DEFAULT_HOSTILITY_RADIUS	  500	
 
-#define SOLDIER_MOVE_SPEED			  300
-#define SOLDIER_ARMOR				  50
+#define SOLDIER_MOVE_SPEED			  240
+#define SOLDIER_ARMOR				  30
 #define SOLDIER_MAGIC_DEFENSE         50
 #define SOLDIER_ATTACK                100
 #define SOLDIER_HP                    1000
+
+#define MELEE_GOLD					  30
+#define MELEE_EXP					  70
+#define REMOTE_GOLD					  20
+#define REMOTE_EXP					  50
+
+#define BLUE_HERO_BIRTHPLACE          Point(540, 360)
+#define RED_HERO_BIRTHPLACE           Point(540, 360)
 
 #define MIN_DEGREE_IN_RAD             0.3926991
 
@@ -40,6 +48,8 @@
 //TAG部分
 
 #define TAG_MAX						  18000
+
+#define TAG_DIE                       1752459
 
 //技能精灵TAG>=10000&&<18000
 #define TAG_JINENG		10000

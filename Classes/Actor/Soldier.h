@@ -15,9 +15,8 @@ class HelloWorld;
 
 class Soldier :public MovingActor
 {
-	CC_SYNTHESIZE(bool, _isAttacking, IsAttacking);
+
 	CC_SYNTHESIZE(bool, _isMovingToDest, IsMovingToDest);
-	CC_SYNTHESIZE(EAttackMode, _attackMode, AttackMode);
 	CC_SYNTHESIZE(String, _soldierType, SoldierType);
 	CC_SYNTHESIZE(Actor*, _instigator, Instigator);
 	CC_SYNTHESIZE(Vec2, _nextDest, NextDest);	
@@ -33,6 +32,8 @@ private:
 	void updateDirection();
 
 	void startAnimation();
+
+	virtual void die();
 
 public:
 

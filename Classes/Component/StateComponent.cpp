@@ -51,7 +51,6 @@ bool StateComponent::init(EStateType stateType, INT32 defaultState, INT32 defaul
 	return true;
 }
 
-
 void StateComponent::recover(float delta)
 {
 	if (_currentState < _maxState && _currentState>0)
@@ -60,12 +59,21 @@ void StateComponent::recover(float delta)
 	}
 }
 
-
 void StateComponent::changeMaxBy(INT32 delta)
 {
 	setMaxState(_maxState + delta);
-	setCurrentState(_currentState + delta);
-
+	if (delta > 0)
+	{
+		setCurrentState(_currentState + delta);
+	}
+	if (_maxState < 0)
+	{
+		_maxState = 0;
+	}
+	if (_currentState > _maxState)
+	{
+		_currentState = _maxState;
+	}
 	updatePercent();
 }
 
@@ -76,7 +84,6 @@ void StateComponent::changeMaxTo(INT32 newMaxState)
 
 	updatePercent();
 }
-
 
 void StateComponent::changeStateBy(INT32 delta)
 {
@@ -99,12 +106,10 @@ void StateComponent::changeStateBy(INT32 delta)
 	updatePercent();
 }
 
-
 void StateComponent::updatePercent()
 {
 	setPercent(_currentState * 100.0 / _maxState);
 }
-
 
 void StateComponent::changeRecoverRate(INT32 delta)
 {

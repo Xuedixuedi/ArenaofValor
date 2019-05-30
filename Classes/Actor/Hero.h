@@ -16,18 +16,37 @@ class Hero :public MovingActor
 	CC_SYNTHESIZE(EAttackMode, _attackMode, AttackMode);
 	CC_SYNTHESIZE(float, _lastTimeDead, LastTimeDead);
 	CC_SYNTHESIZE(float, _lastTimeReborn, LastTimeReborn);
+	CC_SYNTHESIZE(float, _resurgenceTime, ResurgenceTime);
 	CC_SYNTHESIZE(String, _heroName, HeroName);
 	CC_SYNTHESIZE(ExpComponent*, _expComp, ExpComp);
 	CC_SYNTHESIZE(StateComponent*, _magicComp, MagicComp);
-	CC_SYNTHESIZE(Vector<Actor*>, _causeDamageActors, CauseDamageActors);
 	CC_SYNTHESIZE(Record*, _recordComp, RecordComp);
+	CC_SYNTHESIZE(float, _silenceLastTo, SilenceLastTo);
+	CC_SYNTHESIZE(float, _multipleLastTo, MultipleLastTo);
+
+	CC_SYNTHESIZE(float, _calmTime_1, CalmTime_1);
+	CC_SYNTHESIZE(float, _calmTime_2, CalmTime_2);
+	CC_SYNTHESIZE(float, _calmTime_3, CalmTime_3);
+
+	CC_SYNTHESIZE(float, _lastSkillTime_1, LastSkillTime_1);
+	CC_SYNTHESIZE(float, _lastSkillTime_2, LastSkillTime_2);
+	CC_SYNTHESIZE(float, _lastSkillTime_3, LastSkillTime_3);
+
+	CC_SYNTHESIZE(float, _magicConsume_1, MagicConsume_1);
+	CC_SYNTHESIZE(float, _magicConsume_2, MagicConsume_2);
+	CC_SYNTHESIZE(float, _magicConsume_3, MagicConsume_3);
+
+	CC_SYNTHESIZE(INT32, _skillLevel_1, SkillLevel_1);
+	CC_SYNTHESIZE(INT32, _skillLevel_2, SkillLevel_2);
+	CC_SYNTHESIZE(INT32, _skillLevel_3, SkillLevel_3);
+
+	CC_SYNTHESIZE(INT32, _skillPoint, SkillPoint);
 
 public:
 
-
-	virtual bool die();
-
 	virtual bool attack();
+
+	virtual void takeDamage(EDamageType damageType, INT32 damage, Actor* instigator);
 
 	virtual void takeBuff(Buff* buff);
 
@@ -41,19 +60,35 @@ public:
 
 	virtual void reborn();
 
-	virtual void takeDamage(EDamageType damageType, float damge, Actor* instigator);
-
-	virtual bool levelUp();
-
 	virtual void heroMove();
 
 	virtual void stopMove();
+
+	virtual void addExp(INT32 delta);
 
 	virtual bool init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode);
 
 	static Hero* create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode);
 
 protected:
+
+	ValueMap _heroDataAtEachLevel;
+
+	ValueMap _heroData;
+
+	ValueMap _commonData;
+
+	Map<float, Hero*> _causeDamageActors;
+
+	ValueMap _skillData;
+
+	virtual void levelUp();
+
+	virtual void die();
+
+	virtual void removeAllBuff();
+
+	virtual void removeBuff(Buff* buff);
 
 	virtual void updateDirection();
 

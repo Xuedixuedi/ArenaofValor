@@ -5,6 +5,7 @@
 #include "Component/Record.h"
 #include "Component/Bonus.h"
 #include "Scene/HelloWorldScene.h"
+#include <set>
 
 
 Hero* Hero::create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode)
@@ -18,7 +19,6 @@ Hero* Hero::create(HelloWorld* combatScene, ECamp camp, std::string heroName, EA
 	CC_SAFE_DELETE(hero);
 	return nullptr;
 }
-
 
 bool Hero::init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode)
 {
@@ -38,9 +38,11 @@ bool Hero::init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAtta
 
 bool Hero::initHeroData(HelloWorld* combatScene, std::string heroName, ECamp camp, EAttackMode attackMode)
 {
-	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroDataAtEachLevel.plist");
-	ValueMap heroDataAtEachLevel = value.at(heroName).asValueMap();
-	ValueMap heroData= (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroData.plist"))[heroName].asValueMap();
+	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroDataAtEachLevel.plist");
+	_heroDataAtEachLevel = value.at(heroName).asValueMap();
+	_heroData= (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroData.plist"))[heroName].asValueMap();
+	_commonData = FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\CommonData.plist");
+	_skillData = (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\SkillData.plist"))[heroName].asValueMap();
 
 	_combatScene = combatScene;
 	setTexture(StringUtils::format("pictures\\hero\\%s\\%sright1.png", heroName.c_str(),heroName.c_str()));
@@ -54,55 +56,66 @@ bool Hero::initHeroData(HelloWorld* combatScene, std::string heroName, ECamp cam
 	_lastAttackTime = 0.f;
 	_direction = EDirection::LEFT;
 	_standingAngle = 0.f;
-	_moveSpeed = heroData["MovingSpeed"].asInt();
+	_moveSpeed = _heroData["MovingSpeed"].asInt();
 	_lastTimeDead = 0.f;
 	_lastTimeReborn = 0.f;
 	_minAttackInterval = MIN_ATTACK_INTERVAL;
+	_multipleLastTo = 0.f;
+	_silenceLastTo = 0.f;
+	_vertigoLastTo = 0.f;
+	_resurgenceTime = 0.f;
 
-	_defense = heroDataAtEachLevel["Armor"].asValueVector().at(1).asInt();
-	_attack = heroDataAtEachLevel["BaseDamage"].asValueVector().at(1).asInt();
-	_magicDefense = heroDataAtEachLevel["MagicDefense"].asValueVector().at(1).asInt();
+	_defense = _heroDataAtEachLevel["Armor"].asValueVector().at(1).asInt();
+	_attack = _heroDataAtEachLevel["BaseDamage"].asValueVector().at(1).asInt();
+	_magicDefense = _heroDataAtEachLevel["MagicDefense"].asValueVector().at(1).asInt();
+
+	_calmTime_1 = _skillData["CD"].asValueVector().at(1).asValueVector().at(0).asFloat();
+	_calmTime_2 = _skillData["CD"].asValueVector()[2].asValueVector()[0].asFloat();
+	_calmTime_3 = _skillData["CD"].asValueVector()[3].asValueVector()[0].asFloat();
+
+	_magicConsume_1 = _skillData["MPConsume"].asValueVector()[1].asValueVector()[0].asFloat();
+	_magicConsume_2 = _skillData["MPConsume"].asValueVector()[2].asValueVector()[0].asFloat();
+	_magicConsume_3 = _skillData["MPConsume"].asValueVector()[3].asValueVector()[0].asFloat();
+
+	_skillLevel_1 = _skillLevel_2 = _skillLevel_3 = 0;
+	_lastSkillTime_1 = _lastSkillTime_2 = _lastSkillTime_3 = 0.f;
+
+	_skillPoint = 0;
 
 	return true;
 }
 
 bool Hero::initHealthComp(std::string heroName)
 {
-	ValueMap heroDataAtEachLevel = (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroDataAtEachLevel.plist"))[heroName].asValueMap();
-	ValueMap heroData = (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroData.plist"))[heroName].asValueMap();
-
-	auto defaultRecoverRate = heroData["HPRecoverRate"].asInt();
-	auto defaultMaxHealth = heroDataAtEachLevel["HP"].asValueVector().at(1).asInt();
+	auto defaultRecoverRate = _heroData["HPRecoverRate"].asInt();
+	auto defaultMaxHealth = _heroDataAtEachLevel["HP"].asValueVector().at(1).asInt();
 	_healthComp = StateComponent::create(EStateType::HEALTH, defaultMaxHealth, defaultRecoverRate);
 
 	auto position = getPosition();
 	auto size = getBoundingBox().size;
 
 	_healthComp->setScaleX(0.9);
-	_healthComp->setScaleY(1.4);
+	_healthComp->setScaleY(2.0);
 	_healthComp->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-	_healthComp->setPosition(position + Vec2(size.width / 2, size.height));
+	_healthComp->setPosition(position + Vec2(size.width / 2, size.height - 20));
 	addChild(_healthComp);
 
 	return true;
 }
 
 bool Hero::initMagicComp(std::string heroName)
-{
-	ValueMap heroDataAtEachLevel = (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroDataAtEachLevel.plist"))[heroName].asValueMap();
-	ValueMap heroData = (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroData.plist"))[heroName].asValueMap();
-	
-	auto defaultRecoverRate = heroData["MPRecoverRate"].asInt();
-	auto defaultMaxMagic = heroDataAtEachLevel["MP"].asValueVector().at(1).asInt();
+{	
+	auto defaultRecoverRate = _heroData["MPRecoverRate"].asInt();
+	auto defaultMaxMagic = _heroDataAtEachLevel["MP"].asValueVector().at(1).asInt();
 	_magicComp = StateComponent::create(EStateType::MAGIC, defaultMaxMagic, defaultRecoverRate);
 
 	auto position = getPosition();
 	auto size = getBoundingBox().size;
 
 	_magicComp->setScaleX(0.9);
-	_magicComp->setScaleY(0.7);
+	_magicComp->setScaleY(1.0);
 	_magicComp->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-	_magicComp->setPosition(position + Vec2(size.width / 2, size.height - 11));
+	_magicComp->setPosition(position + Vec2(size.width / 2, size.height - 35));
 	addChild(_magicComp);
 
 	return true;
@@ -110,9 +123,7 @@ bool Hero::initMagicComp(std::string heroName)
 
 bool Hero::initExpComp()
 {
-	auto levelUpNeededExp = (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\CommonData.plist"))["ExpNeeded"].asValueVector().at(1);
-	_expComp = ExpComponent::create(levelUpNeededExp.asInt());
-	_expComp->setScale(0.7);
+	_expComp = ExpComponent::create(_commonData["ExpNeeded"].asValueVector().at(1).asInt());
 	_expComp->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
 
 	auto healthCompSize = _healthComp->getBoundingBox().size;
@@ -130,21 +141,147 @@ bool Hero::initRecordComp()
 	return true;
 }
 
-
-bool Hero::levelUp()
-{
-	return false;
-}
-
-
-bool Hero::die()
-{
-	return false;
-}
-
 bool Hero::attack()
 {
 	return false;
+}
+
+void Hero::takeDamage(EDamageType damageType, INT32 damage, Actor* instigator)
+{
+	INT32 actualDamage;
+
+	if (damageType == EDamageType::PHYSICS_DAMAGE)
+	{
+		actualDamage = static_cast<INT32>((1.0 - 1.0 * _defense / (_defense + 602.f)) * damage);
+	}
+	else
+	{
+		actualDamage = static_cast<INT32>((1.0 - 1.0 * _magicDefense / (_magicDefense + 602.f)) * damage);
+	}
+
+	_healthComp->changeStateBy(-1 * actualDamage);
+	_lastAttackFrom = instigator;
+
+	auto damageByHero = dynamic_cast<Hero*>(instigator);
+	if (damageByHero && _healthComp->getCurrentState() > 0)
+	{
+		_causeDamageActors.insert(GetCurrentTime() / 1000.f, damageByHero);
+	}
+	if (_healthComp->getCurrentState() <= 0)
+	{
+		die();
+	}
+}
+
+void Hero::die()
+{
+	setVisible(false);
+	auto nowTime = GetCurrentTime() / 1000.f;
+	_alreadyDead = true;
+	_lastTimeDead = nowTime;
+	_resurgenceTime = 6 + 4 * getExpComp()->getLevel() + nowTime;
+	removeAllBuff();
+
+	_recordComp->updateDeath();
+
+	auto money = getRecordComp()->getMoney();
+	getRecordComp()->setMoney(money * 2 / 3);
+
+	auto expForKill = (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\CommonData.plist"))["ExpNeeded"].asValueVector()[getExpComp()->getLevel()].asInt();
+	auto goldForKill = money / 3 + getExpComp()->getLevel() * 80;
+
+	auto lastAttackHero = dynamic_cast<Hero*>(_lastAttackFrom);
+	if (lastAttackHero)
+	{
+		lastAttackHero->getRecordComp()->addMoney(goldForKill / 3);
+		goldForKill = goldForKill * 2 / 3;
+		lastAttackHero->getRecordComp()->updateKill();
+
+		if (!lastAttackHero->getAlreadyDead())
+		{
+			lastAttackHero->addExp(expForKill / 3);
+			expForKill = expForKill * 2 / 3;
+		}
+
+		std::set<Hero*> assistHeroes;
+		for (auto& i : _causeDamageActors)
+		{
+			if (i.first + 2 >= nowTime && i.second != lastAttackHero && assistHeroes.find(i.second) == assistHeroes.end())
+			{
+				i.second->getRecordComp()->updateAssist();
+				assistHeroes.insert(i.second);
+			}
+		}
+		assistHeroes.clear();
+	}
+	else
+	{
+		std::set<Hero*> assistHeroes;
+		for (auto& i : _causeDamageActors)
+		{
+			if (i.first + 2 >= nowTime && assistHeroes.find(i.second) == assistHeroes.end())
+			{
+				i.second->getRecordComp()->updateAssist();
+				assistHeroes.insert(i.second);
+			}
+		}
+		assistHeroes.clear();
+	}
+
+	_causeDamageActors.clear();
+
+	INT32 heroCount = 0;
+	for (auto& i : _combatScene->_heroes)
+	{
+		if (!i->getAlreadyDead() && i->getCamp() != _camp && i->getPosition().distance(getPosition()) <= VISION_RADIUS)
+		{
+			++heroCount;
+		}
+	}
+	if (heroCount == 0)
+	{
+		return;
+	}
+
+	auto goldForEachHero = goldForKill / heroCount;
+	auto expForEachHero = expForKill / heroCount;
+	for (auto& i : _combatScene->_heroes)
+	{
+		if (!i->getAlreadyDead() && i->getCamp() != _camp && i->getPosition().distance(getPosition()) <= VISION_RADIUS)
+		{
+			i->getRecordComp()->addMoney(goldForEachHero);
+			i->addExp(expForEachHero);
+		}
+	}
+}
+
+void Hero::removeAllBuff()
+{
+	_vertigoLastTo = 0.f;
+	_silenceLastTo = 0.f;
+	_multipleLastTo = 0.f;
+
+	for (auto& i : _allBuff)
+	{
+		_magicComp->changeMaxBy(-1 * i->getMP());
+		_magicComp->changeRecoverRate(-1 * i->getMPRevoer());
+		_attack -= i->getAttack();
+		_defense -= i->getDefense();
+		_magicDefense -= i->getMagicDefense();
+		_healthComp->changeMaxBy(-1 * i->getHP());
+		_healthComp->changeMaxBy(-1 * i->getHPRecover());
+		_minAttackInterval += i->getAttackInterval();
+	}
+
+	_allBuff.clear();
+}
+
+void Hero::removeBuff(Buff* buff)
+{
+	MovingActor::removeBuff(buff);
+
+	_magicComp->changeMaxBy(-1 * buff->getMP());
+	_magicComp->changeRecoverRate(-1 * buff->getMPRevoer());
 }
 
 void Hero::takeBuff(Buff* buff)
@@ -153,10 +290,41 @@ void Hero::takeBuff(Buff* buff)
 
 	_magicComp->changeMaxBy(buff->getMP());
 	_magicComp->changeRecoverRate(buff->getMPRevoer());
+	
+	auto buffType = buff->getBuffType();
+	if (buffType == EBuffType::MULTIPLE)
+	{
+		_multipleLastTo = std::max(_multipleLastTo, buff->getEndTime());
+	}
+	else if (buffType == EBuffType::SILENCE)
+	{
+		_silenceLastTo = std::max(_silenceLastTo, buff->getEndTime());
+	}
 }
 
 void Hero::skillLevelUp(INT32 skillNumber)
 {
+	--_skillPoint;
+	switch (skillNumber)
+	{
+	case 1:
+		++_skillLevel_1;
+		_calmTime_1 = _skillData["CD"].asValueVector()[1].asValueVector()[_skillLevel_1].asFloat();
+		_magicConsume_1 = _skillData["MPConsume"].asValueVector()[1].asValueVector()[_skillLevel_1].asFloat();
+		break;
+	case 2:
+		++_skillLevel_2;
+		_calmTime_2 = _skillData["CD"].asValueVector()[2].asValueVector()[_skillLevel_2].asFloat();
+		_magicConsume_2 = _skillData["MPConsume"].asValueVector()[2].asValueVector()[_skillLevel_2].asFloat();
+		break;
+	case 3:
+		++_skillLevel_3;
+		_calmTime_3 = _skillData["CD"].asValueVector()[3].asValueVector()[_skillLevel_3].asFloat();
+		_magicConsume_3 = _skillData["MPConsume"].asValueVector()[3].asValueVector()[_skillLevel_3].asFloat();
+		break;
+	default:
+		break;
+	}
 }
 
 void Hero::castSkill_1()
@@ -173,14 +341,23 @@ void Hero::castSkill_3()
 
 void Hero::reborn()
 {
-}
+	_alreadyDead = false;
+	_healthComp->changeStateBy(_healthComp->getMaxState());
+	_magicComp->changeStateBy(_magicComp->getMaxState());
+	setVisible(true);
 
-void Hero::takeDamage(EDamageType damageType, float damge, Actor* instigator)
-{
+	auto birthPlace = _camp == ECamp::BLUE ? BLUE_HERO_BIRTHPLACE : RED_HERO_BIRTHPLACE;
+	setPosition(birthPlace);
 }
 
 void Hero::heroMove()
 {
+	auto nowTime = GetCurrentTime() / 1000.f;
+	if (nowTime <= _vertigoLastTo)
+	{
+		return;
+	}
+
 	EDirection oldDirection = _direction;
 
 	updateDirection();
@@ -226,6 +403,37 @@ void Hero::updateDirection()
 	{
 		_direction = EDirection::DOWNRIGHT;
 	}
+}
+
+void Hero::addExp(INT32 delta)
+{
+	if (_expComp->addExp(delta))
+	{
+		levelUp();
+	}
+}
+
+void Hero::levelUp()
+{
+	auto newLevel = _expComp->getLevel();
+
+	auto levelUpNeededExp = _commonData["ExpNeeded"].asValueVector().at(newLevel).asInt();
+	_expComp->setLevelUpNeededExp(levelUpNeededExp);
+
+	auto deltaHp = _heroDataAtEachLevel["HP"].asValueVector().at(newLevel).asInt() - _heroDataAtEachLevel["HP"].asValueVector().at(newLevel - 1).asInt();
+	_healthComp->changeMaxBy(deltaHp);
+
+	auto deltaMagic = _heroDataAtEachLevel["MP"].asValueVector().at(newLevel).asInt() - _heroDataAtEachLevel["MP"].asValueVector().at(newLevel - 1).asInt();
+	_magicComp->changeMaxBy(deltaMagic);
+
+	auto deltaArmor = _heroDataAtEachLevel["Armor"].asValueVector().at(newLevel).asInt() - _heroDataAtEachLevel["Armor"].asValueVector().at(newLevel - 1).asInt();
+	_defense += deltaArmor;
+
+	auto deltaMagicDefense = _heroDataAtEachLevel["MagicDefense"].asValueVector().at(newLevel).asInt() - _heroDataAtEachLevel["MagicDefense"].asValueVector().at(newLevel - 1).asInt();
+	_magicDefense += deltaMagicDefense;
+
+	auto deltaAttack= _heroDataAtEachLevel["BaseDamage"].asValueVector().at(newLevel).asInt() - _heroDataAtEachLevel["BaseDamage"].asValueVector().at(newLevel - 1).asInt();
+	_attack += deltaAttack;
 }
 
 void Hero::stopMove()

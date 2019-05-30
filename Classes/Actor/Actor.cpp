@@ -5,6 +5,8 @@
 #include "Actor/Hero.h"
 #include "Scene/HelloWorldScene.h"
 #include "Actor/Projectile.h"
+#include "Component/Record.h"
+#include <string>
 
 Actor* Actor::create(HelloWorld* combatScene, ECamp camp)
 {
@@ -38,17 +40,53 @@ bool Actor::init(HelloWorld* combatScene, ECamp camp)
 void Actor::takeBuff(Buff* buff)
 {
 	_allBuff.pushBack(buff);
+	_attack += buff->getAttack();
+	_defense += buff->getDefense();
+	_magicDefense += buff->getMagicDefense();
+	_healthComp->changeMaxBy(buff->getHP());
+	_healthComp->changeRecoverRate(buff->getHPRecover());
+	_minAttackInterval -= buff->getAttackInterval();
+}
+
+void Actor::clearBuff()
+{
+	auto nowTime = GetCurrentTime() / 1000.f;
+
+	for (auto it = _allBuff.begin(); it != _allBuff.end();)
+	{
+		if ((*it)->getEndTime() <= nowTime)
+		{
+			removeBuff(*it);
+			it = _allBuff.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
 }
 
 void Actor::takeDamage(EDamageType damageType, INT32 damage, Actor* instigator)
 {
-	if (_healthComp->getCurrentState() < damage)
+	INT32 actualDamage;
+
+	if (damageType == EDamageType::PHYSICS_DAMAGE)
 	{
-		_alreadyDead = true;
+		actualDamage = static_cast<INT32>((1.0 - 1.0 * _defense / (_defense + 602.f)) * damage);
+	}
+	else
+	{
+		actualDamage = static_cast<INT32>((1.0 - 1.0 * _magicDefense / (_magicDefense + 602.f)) * damage);
 	}
 
-	_healthComp->changeStateBy(-1 * damage);
-	die();
+	_healthComp->changeStateBy(-1 * actualDamage);
+
+	_lastAttackFrom = instigator;
+
+	if (_healthComp->getCurrentState() <= 0)
+	{
+		die();
+	}
 }
 
 void Actor::initData(HelloWorld* combatScene, ECamp camp)
@@ -73,9 +111,19 @@ void Actor::initHealthComp()
 	addChild(_healthComp);
 }
 
+void Actor::removeBuff(Buff* buff)
+{
+	_attack -= buff->getAttack();
+	_defense -= buff->getDefense();
+	_magicDefense -= buff->getMagicDefense();
+	_healthComp->changeMaxBy(-1 * buff->getHP());
+	_healthComp->changeRecoverRate(-1 * buff->getHPRecover());
+	_minAttackInterval += buff->getAttackInterval();
+}
+
 bool Actor::attack()
 {
-	auto nowTime = GetCurrentTime() / 1000;
+	auto nowTime = GetCurrentTime() / 1000.f;
 
 	if (nowTime - _lastAttackTime < TOWER_MIN_ATTACK_INTERVAL)
 	{
@@ -100,7 +148,7 @@ bool Actor::attack()
 	{
 		_lastAttackTime = nowTime;
 
-		auto projectile = Projectile::create(_attack, SPEED_FLY, this, _attackTarget);
+		auto projectile = Projectile::create("pictures/others/bullet.png",  _attack, SPEED_FLY, this, _attackTarget);
 		projectile->setPosition(getPosition());
 		projectile->setScale(2);
 		_combatScene->getMap()->addChild(projectile);
@@ -139,8 +187,26 @@ void Actor::updateAttackTarget()
 	}
 }
 
-bool Actor::die()
+void Actor::die()
 {
-	return false;
+	_alreadyDead = true;
+	_allBuff.clear();
 
+	auto lastAttackHero = dynamic_cast<Hero*>(_lastAttackFrom);
+	if (lastAttackHero)
+	{
+		lastAttackHero->getRecordComp()->addMoney(30);
+	}
+
+	for (auto& i : _combatScene->_heroes)
+	{
+		if (_camp != i->getCamp())
+		{
+			i->getRecordComp()->addMoney(100);
+			if (i->getPosition().distance(getPosition()) <= VISION_RADIUS)
+			{
+				i->addExp(200);
+			}
+		}
+	}
 }

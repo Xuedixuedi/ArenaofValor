@@ -13,25 +13,29 @@ USING_NS_CC;
 
 class MovingActor :public Actor
 {
+	CC_SYNTHESIZE(bool, _isAttacking, IsAttacking);
+	CC_SYNTHESIZE(EAttackMode, _attackMode, AttackMode);
 	CC_SYNTHESIZE(EDirection, _direction, Direction);
 	CC_SYNTHESIZE(float, _standingAngle, StandingAngle);
 	CC_SYNTHESIZE(float, _moveSpeed, MoveSpeed);
 	CC_SYNTHESIZE(Animation*, _attackAnimation, AttackAnimation);
+	CC_SYNTHESIZE(float, _vertigoLastTo, VertigoLastTo);
+
+protected:
+
+	virtual void die();
+
+	virtual void removeBuff(Buff* buff);
 
 public:
-
-	virtual bool die();
 
 	virtual bool attack();
 
 	virtual void takeBuff(Buff* buff);
 
-	virtual void takeDamage(EDamageType damageType, float damge, Actor* instigator);
-
 	virtual bool init(const std::string& filename, ECamp camp);
 
 	static MovingActor* create(const std::string& filename, ECamp camp);
-
 
 };
 

@@ -8,7 +8,7 @@ class MapInfo
 {
 private:
 
-	SizeINT _mapSize;
+	CC_SYNTHESIZE(SizeINT, _mapSize, MapSize);
 
 	SizeINT _tileSize;
 

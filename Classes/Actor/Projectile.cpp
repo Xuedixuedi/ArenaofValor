@@ -4,10 +4,10 @@
 
 #define PI 3.1415926
 
-Projectile* Projectile::create(float damge, float speed, Actor* fromActor, Actor* target)
+Projectile* Projectile::create(const std::string& filename, float damge, float speed, Actor* fromActor, Actor* target)
 {
 	Projectile* projectile = new(std::nothrow)Projectile;
-	if (projectile && projectile->init(damge, speed, fromActor, target))
+	if (projectile && projectile->init(filename, damge, speed, fromActor, target))
 	{
 		projectile->autorelease();
 		return projectile;
@@ -17,14 +17,14 @@ Projectile* Projectile::create(float damge, float speed, Actor* fromActor, Actor
 }
 
 
-bool Projectile::init(float damage, float speed, Actor* fromActor, Actor* target)
+bool Projectile::init(const std::string& filename, float damage, float speed, Actor* fromActor, Actor* target)
 {
 	if (!Sprite::init())
 	{
 		return false;
 	}
 
-	setTexture("pictures/others/bullet.png");
+	setTexture(filename);
 	setPosition(fromActor->getPosition());
 	setScale(0.5);
 

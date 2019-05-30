@@ -1,6 +1,8 @@
 #include "Soldier.h"
 #include "Scene/HelloWorldScene.h"
 #include "PathFind/SoldierPath.h"
+#include "Component/Record.h"
+#include "Component/ExpComponent.h"
 
 Soldier* Soldier::create(HelloWorld* combatScene, EAttackMode attackMode, ECamp camp, ERoad road, SoldierPath* soldierPathPoints)
 {
@@ -72,6 +74,7 @@ void Soldier::initData(HelloWorld* combatScene, EAttackMode attackMode, ECamp ca
 	_minAttackInterval = MIN_ATTACK_INTERVAL;
 	_isAttacking = false;
 	_direction = EDirection::NODIR;
+	_vertigoLastTo = 0.f;
 	//_arrivedFirstDest = false;
 	//_isDisturbed = false;
 
@@ -123,9 +126,13 @@ void Soldier::initHealthComp()
 
 void Soldier::updateState()
 {
-	auto nowTime = GetCurrentTime() / 1000;
+	auto nowTime = GetCurrentTime() / 1000.f;
+	if (nowTime <= _vertigoLastTo)
+	{
+		return;
+	}
 
-	if (nowTime - _lastAttackTime <= _minAttackInterval / 2)
+	if (nowTime - _lastAttackTime <= _minAttackInterval)
 	{
 		return;
 	}
@@ -136,7 +143,7 @@ void Soldier::updateState()
 		{
 			auto distanceToInstigator = _instigator->getPosition().distance(getPosition());
 
-			if (distanceToInstigator <= _attackRadius + _instigator->getBoundingBox().size.width / 3)
+			if (distanceToInstigator <= _attackRadius)
 			{
 				_isMovingToDest = false;
 				attack(_instigator);
@@ -158,8 +165,6 @@ void Soldier::updateState()
 			_nextDest = _soldierPathPoints->getNextPoint(getPosition());
 			_isMovingToDest = true;
 			moveTo(_nextDest);
-			log("MyPositin: %f, %f", getPositionX(), getPositionY());
-			log("NewDest : %f, %f", _nextDest.x, _nextDest.y);
 		}
 
 		return;
@@ -175,6 +180,7 @@ void Soldier::updateState()
 			if (_soldierPathPoints->getNextPoint(_nextDest) == Vec2::ZERO)
 			{
 				stopAllActions();
+				_direction = EDirection::NODIR;
 				
 				return;
 			}
@@ -225,7 +231,7 @@ void Soldier::attack(Actor* attackTarget)
 	auto animate = Animate::create(animation);
 	runAction(animate);
 
-	auto nowTime = GetCurrentTime() / 1000;
+	auto nowTime = GetCurrentTime() / 1000.f;
 
 	if (_attackMode == EAttackMode::MELEE)
 	{
@@ -234,9 +240,52 @@ void Soldier::attack(Actor* attackTarget)
 	}
 	else
 	{
-
+		auto projectile = Projectile::create("pictures/others/RemoteSoldierArrow.png", _attack, SPEED_FLY, this, attackTarget);
+		projectile->setScale(1.5f);
+		_combatScene->_readyToLaunch.insert(nowTime + _minAttackInterval / 10 * 3, projectile);
 	}
 	_lastAttackTime = nowTime;
+}
+
+void Soldier::die()
+{
+	_alreadyDead = true;
+	_allBuff.clear();
+
+	auto goldForKill = _attackMode == EAttackMode::MELEE ? MELEE_GOLD : REMOTE_GOLD;
+	auto expForKill = _attackMode == EAttackMode::MELEE ? MELEE_EXP : REMOTE_EXP;
+
+	INT32 heroCount = 0;
+	for (auto& i : _combatScene->_heroes)
+	{
+		if (!i->getAlreadyDead() && i->getCamp() != _camp && i->getPosition().distance(getPosition()) <= VISION_RADIUS)
+		{
+			++heroCount;
+		}
+	}
+	
+	auto lastAttackHero = dynamic_cast<Hero*>(_lastAttackFrom);
+	if (lastAttackHero)
+	{
+		lastAttackHero->getRecordComp()->addMoney(goldForKill / 3);
+		goldForKill = goldForKill * 2 / 3;
+	}
+
+	if (heroCount == 0)
+	{
+		return;
+	}
+
+	auto goldForEachHero = goldForKill / heroCount;
+	auto expForEachHero = expForKill / heroCount;
+	for (auto& i : _combatScene->_heroes)
+	{
+		if (!i->getAlreadyDead() && i->getCamp() != _camp && i->getPosition().distance(getPosition()) <= VISION_RADIUS)
+		{
+			i->getRecordComp()->addMoney(goldForEachHero);
+			i->addExp(expForEachHero);
+		}
+	}
 }
 
 void Soldier::moveTo(const Vec2& targetPosition)

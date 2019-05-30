@@ -30,7 +30,6 @@ class Actor : public cocos2d::Sprite
 	CC_SYNTHESIZE(float, _minAttackInterval, MinAttackInterval);
 	CC_SYNTHESIZE(StateComponent*, _healthComp, HealthComp);
 	CC_SYNTHESIZE(Actor*, _lastAttackFrom, LastAttackFrom);
-	CC_SYNTHESIZE(Bonus*, _bonus, Bonus);
 	CC_SYNTHESIZE(Vector<Buff*>, _allBuff, AllBuff);
 	CC_SYNTHESIZE(Actor*, _attackTarget, AttackTarget);
 
@@ -40,15 +39,19 @@ protected:
 
 	virtual void initHealthComp();
 
+	virtual void removeBuff(Buff* buff);
+
 public:
 
 	virtual void updateAttackTarget();
 
-	virtual bool die();
+	virtual void die();
 
 	virtual bool attack();
 
 	virtual void takeBuff(Buff* buff);
+
+	virtual void clearBuff();
 
 	virtual void takeDamage(EDamageType damageType, INT32 damge, Actor* instigator);
 
@@ -57,7 +60,5 @@ public:
 	static Actor* create(HelloWorld* combatScene, ECamp camp);
 
 };
-
-
 
 #endif // !Actor_h
