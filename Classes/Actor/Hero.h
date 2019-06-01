@@ -44,6 +44,8 @@ class Hero :public MovingActor
 
 public:
 
+	virtual bool checkSkillStatus(INT32 skillNumber);
+
 	virtual bool attack();
 
 	virtual void takeDamage(EDamageType damageType, INT32 damage, Actor* instigator);
@@ -54,11 +56,15 @@ public:
 
 	virtual void castSkill_1();
 
+	virtual void castSkill_1(Point mousePosition);
+
+	virtual void castSkill_2();
+
 	virtual void castSkill_2(Point mousePosition);
 
-	virtual bool checkSkillStatus(INT32 skillNumber);
-
 	virtual void castSkill_3();
+
+	virtual void castSkill_3(Point mousePosition);
 
 	virtual void reborn();
 
@@ -73,6 +79,11 @@ public:
 	static Hero* create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode);
 
 protected:
+	virtual void playAttackAnimation();
+
+	virtual void updateAttackTarget(INT32 radius);
+
+	virtual void updateAttackTarget();
 
 	ValueMap _heroDataAtEachLevel;
 
@@ -95,12 +106,6 @@ protected:
 	virtual void updateDirection();
 
 	virtual void startAnimation();
-
-	virtual void updateAttackTarget();
-
-	virtual void updateAttackTarget(INT32 radius);
-
-	virtual void playAttackAnimation();
 
 	virtual bool initHeroData(HelloWorld* combatScene, std::string heroName, ECamp camp, EAttackMode attackMode);
 

@@ -24,6 +24,7 @@ public:
 	void calculatePosition();
 
 	float calculateDistance() const;
+
 };
 
 #endif // !__PROJECTILE_H__

@@ -353,7 +353,7 @@ void LoadingScene::LoadingAnimation()
 		skillAnimation->addSpriteFrameWithFile(StringUtils::format("pictures/hero/HouYi/%s%d.png", skillAnimationName.getCString(), i));
 	}
 	AnimationCache::getInstance()->addAnimation(skillAnimation, skillAnimationName.getCString());
-	
+
 
 
 	String soldierType = "RedMelee";
@@ -604,7 +604,7 @@ void LoadingScene::LoadingAnimation()
 	}
 	animation_82->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sRight1.png", soldierType.getCString(), soldierType.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_82, StringUtils::format("%sAttackRight", soldierType.getCString()));
-	
+
 	changeScene();
 }
 

@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 
-USING_NS_CC; 
+USING_NS_CC;
 
 class LoadingScene :public cocos2d::Scene
 {

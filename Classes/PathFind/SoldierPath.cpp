@@ -97,7 +97,7 @@ Vec2 SoldierPath::getNextPoint(const Vec2& vecPoint)
 		{
 
 			auto tempIndex = rand()%_pathGraph[minIndex].size();
-			log("%d", tempIndex);
+			//log("%d", tempIndex);
 			desVecPoint = _pathPoints[_pathGraph[minIndex][tempIndex]];
 			auto res = _mapInfo.getPrecisePosition(desVecPoint);;
 			return res;

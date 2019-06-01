@@ -15,7 +15,7 @@ HRocker* HRocker::createHRocker(const char* rockerImageName, const char* rockerB
 }
 void HRocker::rockerInit(const char* rockerImageName, const char* rockerBGImageName, Point position)
 {
-	//添加摇杆背景图  
+	//添加摇杆背景图 
 	Sprite* spRockerBG = Sprite::create(rockerBGImageName);
 	spRockerBG->setVisible(false);
 	spRockerBG->setPosition(position);
@@ -50,7 +50,7 @@ void HRocker::startRocker(bool _isStopOther)
 	rocker->setVisible(true);
 	Sprite* rockerBG = (Sprite*)getChildByTag(TAG_ROCKERBG);
 	rockerBG->setVisible(true);
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener, 2);
+	//Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listener, 2);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(listenerKeyBoard, 2);
 }
 //停止摇杆  
