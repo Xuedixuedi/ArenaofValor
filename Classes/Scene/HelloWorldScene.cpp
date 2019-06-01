@@ -3,9 +3,8 @@
 #include "Component/StateComponent.h"
 #include "GameController/HRocker.h"
 #include "Actor/Actor.h"
-#include "../Component/Record.h"
+#include "Component/Record.h"
 #include "Component/ExpComponent.h"
-#include "GameController/HRocker.h"
 #include "Hero/HouYi.h"
 #include "PathFind/SoldierPath.h"
 
@@ -34,7 +33,7 @@ bool HelloWorld::init()
 
 	initMapLayer();
 
-	loadingAnimation();
+//	loadingAnimation();
 	initTower();
 	initLabelRecord();
 	initHero();
@@ -60,7 +59,7 @@ void HelloWorld::initMapLayer()
 	wallLayer->setZOrder(0);
 
 	_mapInformation = MapInfo(_map);
-	_soldierPathPoints = SoldierPath::create("A:/major/exedir/wzry/Data/PathPoints.txt", _mapInformation);
+	_soldierPathPoints = SoldierPath::create("D:/LatestFiles/hello/Data/PathPoints.txt", _mapInformation);
 	_actors.pushBack(_soldierPathPoints);
 
 	auto collisionLayer = _map->getLayer("collision");
@@ -107,190 +106,40 @@ void HelloWorld::initHRocker()
 
 void HelloWorld::initSkillPanel()
 {
-	//添加技能面板
-	auto sprSkill_1 = Sprite::create();
-}
+	String heroName = _myHero->getHeroName();
 
-void HelloWorld::loadingAnimation()
-{
-	String heroName = "HouYi";
+	auto sprSkill_1 = Sprite::create(StringUtils::format("pictures//hero//%s//%sSkill11.png",heroName.getCString(),heroName.getCString()));
+	sprSkill_1->setPosition(Vec2(949, 88));
+	sprSkill_1->setTag(TAG_SPRSKILL_1);
+	addChild(sprSkill_1);
 
-	auto animation_00 = Animation::create();
-	animation_00->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup1.png", heroName.getCString(), heroName.getCString()));
-	animation_00->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup2.png", heroName.getCString(), heroName.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_00, StringUtils::format("%sMoveUp", heroName.getCString()));
+	auto sprSkill_2 = Sprite::create(StringUtils::format("pictures//hero//%s//%sSkill21.png", heroName.getCString(), heroName.getCString()));
+	sprSkill_2->setPosition(Vec2(1027, 222));
+	sprSkill_2->setTag(TAG_SPRSKILL_2);
+	addChild(sprSkill_2);
 
-	auto animation_01 = Animation::create();
-	animation_01->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supLeft1.png", heroName.getCString(), heroName.getCString()));
-	animation_01->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supLeft2.png", heroName.getCString(), heroName.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_01, StringUtils::format("%sMoveUpLeft", heroName.getCString()));
+	auto sprSkill_3 = Sprite::create(StringUtils::format("pictures//hero//%s//%sSkill31.png", heroName.getCString(), heroName.getCString()));
+	sprSkill_3->setPosition(Vec2(1161.5, 298.5));
+	sprSkill_3->setTag(TAG_SPRSKILL_3);
+	addChild(sprSkill_3);
 
-	auto animation_02 = Animation::create();
-	animation_02->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supRight1.png", heroName.getCString(), heroName.getCString()));
-	animation_02->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supRight2.png", heroName.getCString(), heroName.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_02, StringUtils::format("%sMoveUpRight", heroName.getCString()));
+	auto sprPlus_1 = Sprite::create("pictures//others//SkillLevelUp.png");
+	sprPlus_1->setPosition(870.0, 151.0);
+	sprPlus_1->setTag(TAG_SPRPLUS_1);
+	sprPlus_1->setVisible(false);
+	addChild(sprPlus_1);
 
-	auto animation_03 = Animation::create();
-	animation_03->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sleft1.png", heroName.getCString(), heroName.getCString()));
-	animation_03->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sleft2.png", heroName.getCString(), heroName.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_03, StringUtils::format("%sMoveLeft", heroName.getCString()));
+	auto sprPlus_2 = Sprite::create("pictures//others//SkillLevelUp.png");
+	sprPlus_2->setPosition(959.0, 290.0);
+	sprPlus_2->setTag(TAG_SPRPLUS_2);
+	sprPlus_2->setVisible(false);
+	addChild(sprPlus_2);
 
-	auto animation_04 = Animation::create();
-	animation_04->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sright1.png", heroName.getCString(), heroName.getCString()));
-	animation_04->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sright2.png", heroName.getCString(), heroName.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_04, StringUtils::format("%sMoveRight", heroName.getCString()));
-
-	auto animation_05 = Animation::create();
-	animation_05->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdown1.png", heroName.getCString(), heroName.getCString()));
-	animation_05->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdown2.png", heroName.getCString(), heroName.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_05, StringUtils::format("%sMoveDown", heroName.getCString()));
-
-	auto animation_06 = Animation::create();
-	animation_06->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownLeft1.png", heroName.getCString(), heroName.getCString()));
-	animation_06->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownLeft2.png", heroName.getCString(), heroName.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_06, StringUtils::format("%sMoveDownLeft", heroName.getCString()));
-
-	auto animation_07 = Animation::create();
-	animation_07->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight1.png", heroName.getCString(), heroName.getCString()));
-	animation_07->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight2.png", heroName.getCString(), heroName.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_07, StringUtils::format("%sMoveDownRight", heroName.getCString()));
-
-
-	String skillAnimationName = "HouYiSkill2";
-	auto skillAnimation = Animation::create();
-	for (int i = 1; i < 5; ++i)
-	{
-		skillAnimation->addSpriteFrameWithFile(StringUtils::format("pictures/hero/HouYi/%s%d.png", skillAnimationName.getCString(), i));
-	}
-	AnimationCache::getInstance()->addAnimation(skillAnimation, skillAnimationName.getCString());
-
-
-
-	String soldierType = "BlueMelee";
-
-	auto animation_51 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_51->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sUp%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	AnimationCache::getInstance()->addAnimation(animation_51, StringUtils::format("%sMoveUp", soldierType.getCString()));
-
-	auto animation_52 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_52->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sDown%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	AnimationCache::getInstance()->addAnimation(animation_52, StringUtils::format("%sMoveDown", soldierType.getCString()));
-
-	auto animation_53 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_53->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sLeft%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	AnimationCache::getInstance()->addAnimation(animation_53, StringUtils::format("%sMoveLeft", soldierType.getCString()));
-
-	auto animation_54 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_54->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sRight%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	AnimationCache::getInstance()->addAnimation(animation_54, StringUtils::format("%sMoveRight", soldierType.getCString()));
-
-	auto animation_55 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_55->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackUp%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	animation_55->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sUp1.png", soldierType.getCString(), soldierType.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_55, StringUtils::format("%sAttackUp", soldierType.getCString()));
-
-	auto animation_56 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_56->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackDown%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	animation_56->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sDown1.png", soldierType.getCString(), soldierType.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_56, StringUtils::format("%sAttackDown", soldierType.getCString()));
-
-	auto animation_57 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_57->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackLeft%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	animation_57->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sLeft1.png", soldierType.getCString(), soldierType.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_57, StringUtils::format("%sAttackLeft", soldierType.getCString()));
-
-	auto animation_58 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_58->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackRight%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	animation_58->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sRight1.png", soldierType.getCString(), soldierType.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_58, StringUtils::format("%sAttackRight", soldierType.getCString()));
-
-
-	soldierType = "BlueRemote";
-
-	auto animation_59 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_59->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sUp%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	AnimationCache::getInstance()->addAnimation(animation_59, StringUtils::format("%sMoveUp", soldierType.getCString()));
-
-	auto animation_60 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_60->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sDown%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	AnimationCache::getInstance()->addAnimation(animation_60, StringUtils::format("%sMoveDown", soldierType.getCString()));
-
-	auto animation_61 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_61->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sLeft%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	AnimationCache::getInstance()->addAnimation(animation_61, StringUtils::format("%sMoveLeft", soldierType.getCString()));
-
-	auto animation_62 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_62->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sRight%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	AnimationCache::getInstance()->addAnimation(animation_62, StringUtils::format("%sMoveRight", soldierType.getCString()));
-
-	auto animation_63 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_63->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackUp%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	animation_63->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sUp1.png", soldierType.getCString(), soldierType.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_63, StringUtils::format("%sAttackUp", soldierType.getCString()));
-
-	auto animation_64 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_64->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackDown%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	animation_64->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sDown1.png", soldierType.getCString(), soldierType.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_64, StringUtils::format("%sAttackDown", soldierType.getCString()));
-
-	auto animation_65 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_65->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackLeft%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	animation_65->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sLeft1.png", soldierType.getCString(), soldierType.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_65, StringUtils::format("%sAttackLeft", soldierType.getCString()));
-
-	auto animation_66 = Animation::create();
-	for (int i = 1; i <= 4; ++i)
-	{
-		animation_66->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sAttackRight%d.png", soldierType.getCString(), soldierType.getCString(), i));
-	}
-	animation_66->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sRight1.png", soldierType.getCString(), soldierType.getCString()));
-	AnimationCache::getInstance()->addAnimation(animation_66, StringUtils::format("%sAttackRight", soldierType.getCString()));
-
+	auto sprPlus_3 = Sprite::create("pictures//others//SkillLevelUp.png");
+	sprPlus_3->setPosition(1095, 367.0);
+	sprPlus_3->setTag(TAG_SPRPLUS_3);
+	sprPlus_3->setVisible(false);
+	addChild(sprPlus_3);
 }
 
 void HelloWorld::initTower()
@@ -316,6 +165,8 @@ void HelloWorld::update(float delta)
 	updateSoldiersState();
 
 	clearObjects();
+
+	updateSkillPanel();
 }
 
 void HelloWorld::clearObjects()
@@ -500,12 +351,98 @@ void HelloWorld::updateHeroPosition()
 	}
 }
 
+void HelloWorld::updateSkillPanel()
+{
+	auto nowTime = GetCurrentTime() / 1000.f;
+	auto heroName = _myHero->getHeroName();
+	auto skillPoints = _myHero->getSkillPoint();
+
+	auto skillTime_1 = _myHero->getCalmTime_1() + _myHero->getLastSkillTime_1();
+	auto skillTime_2 = _myHero->getCalmTime_2() + _myHero->getLastSkillTime_2();
+	auto skillTime_3 = _myHero->getCalmTime_3() + _myHero->getLastSkillTime_3();
+
+	auto skillLevel_1 = _myHero->getSkillLevel_1();
+	auto skillLevel_2 = _myHero->getSkillLevel_2();
+	auto skillLevel_3 = _myHero->getSkillLevel_3();
+
+	auto sprSkill_1 = dynamic_cast<Sprite*>(getChildByTag(TAG_SPRSKILL_1));
+	auto sprSkill_2 = dynamic_cast<Sprite*>(getChildByTag(TAG_SPRSKILL_2));
+	auto sprSkill_3 = dynamic_cast<Sprite*>(getChildByTag(TAG_SPRSKILL_3));
+	auto sprPlus_1 = dynamic_cast<Sprite*>(getChildByTag(TAG_SPRPLUS_1));
+	auto sprPlus_2 = dynamic_cast<Sprite*>(getChildByTag(TAG_SPRPLUS_2));
+	auto sprPlus_3 = dynamic_cast<Sprite*>(getChildByTag(TAG_SPRPLUS_3));
+
+	if (skillLevel_1 == 0 || skillTime_1 >= nowTime)
+	{
+		sprSkill_1->setTexture(StringUtils::format("pictures//hero//%s//%sSkill11.png", heroName.getCString(), heroName.getCString()));
+	}
+	else
+	{
+		sprSkill_1->setTexture(StringUtils::format("pictures//hero//%s//%sSkill1.png", heroName.getCString(), heroName.getCString()));
+	}
+
+	if (skillLevel_2 == 0 || skillTime_2 >= nowTime)
+	{
+		sprSkill_2->setTexture(StringUtils::format("pictures//hero//%s//%sSkill21.png", heroName.getCString(), heroName.getCString()));
+	}
+	else
+	{
+		sprSkill_2->setTexture(StringUtils::format("pictures//hero//%s//%sSkill2.png", heroName.getCString(), heroName.getCString()));
+	}
+
+	if (skillLevel_3 == 0 || skillTime_3 >= nowTime)
+	{
+		sprSkill_3->setTexture(StringUtils::format("pictures//hero//%s//%sSkill31.png", heroName.getCString(), heroName.getCString()));
+	}
+	else
+	{
+		sprSkill_3->setTexture(StringUtils::format("pictures//hero//%s//%sSkill3.png", heroName.getCString(), heroName.getCString()));
+	}
+
+	if (skillPoints)
+	{
+		if (_myHero->getSkillLevel_1() < 3)
+		{
+			sprPlus_1->setVisible(true);
+		}
+		else
+		{
+			sprPlus_1->setVisible(false);
+		}
+
+		if (_myHero->getSkillLevel_2() < 3)
+		{
+			sprPlus_2->setVisible(true);
+		}
+		else
+		{
+			sprPlus_2->setVisible(false);
+		}
+
+		if (_myHero->getSkillLevel_3() < 3)
+		{
+			sprPlus_3->setVisible(true);
+		}
+		else
+		{
+			sprPlus_3->setVisible(false);
+		}
+	}
+	else
+	{
+		sprPlus_1->setVisible(false);
+		sprPlus_2->setVisible(false);
+		sprPlus_3->setVisible(false);
+	}
+
+}
+
 void HelloWorld::generateSoldiers(float delta)
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	auto origin = Director::getInstance()->getVisibleOrigin();
 
-	auto soldier_1 = Soldier::create(this, EAttackMode::MELEE, ECamp::BLUE, ERoad::DOWNWAY, _soldierPathPoints);
+	auto soldier_1 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
 	soldier_1->setPosition(visibleSize / 4);
 	soldier_1->setNextDest(_soldierPathPoints->getNextPoint(soldier_1->getPosition()));
 	soldier_1->setScale(1.5);
@@ -513,7 +450,7 @@ void HelloWorld::generateSoldiers(float delta)
 	_soldiers.pushBack(soldier_1);
 	_actors.pushBack(soldier_1);
 
-	auto soldier_2 = Soldier::create(this, EAttackMode::MELEE, ECamp::BLUE, ERoad::DOWNWAY, _soldierPathPoints);
+	auto soldier_2 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
 	soldier_2->setPosition(visibleSize / 4 + Size(0, 30));
 	soldier_2->setNextDest(_soldierPathPoints->getNextPoint(soldier_2->getPosition()));
 	soldier_2->setScale(1.5);
@@ -521,7 +458,7 @@ void HelloWorld::generateSoldiers(float delta)
 	_soldiers.pushBack(soldier_2);
 	_actors.pushBack(soldier_2);
 
-	auto soldier_3 = Soldier::create(this, EAttackMode::MELEE, ECamp::BLUE, ERoad::DOWNWAY, _soldierPathPoints);
+	auto soldier_3 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
 	soldier_3->setPosition(visibleSize / 4 + Size(0, 60));
 	soldier_3->setNextDest(_soldierPathPoints->getNextPoint(soldier_3->getPosition()));
 	soldier_3->setScale(1.5);
@@ -529,7 +466,7 @@ void HelloWorld::generateSoldiers(float delta)
 	_soldiers.pushBack(soldier_3);
 	_actors.pushBack(soldier_3);
 
-	auto soldier_4 = Soldier::create(this, EAttackMode::REMOTE, ECamp::BLUE, ERoad::DOWNWAY, _soldierPathPoints);
+	auto soldier_4 = Soldier::create(this, EAttackMode::REMOTE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
 	soldier_4->setPosition(visibleSize / 4 + Size(0, 90));
 	soldier_4->setNextDest(_soldierPathPoints->getNextPoint(soldier_4->getPosition()));
 	soldier_4->setScale(1.5);

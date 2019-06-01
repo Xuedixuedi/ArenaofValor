@@ -27,6 +27,7 @@ class Actor : public cocos2d::Sprite
 	CC_SYNTHESIZE(bool, _alreadyDead, AlreadyDead);
 	CC_SYNTHESIZE(INT32, _magicDefense, MagicDefense);
 	CC_SYNTHESIZE(float, _lastAttackTime, LastAttackTime);
+	CC_SYNTHESIZE(bool, _isAttacking, IsAttacking);
 	CC_SYNTHESIZE(float, _minAttackInterval, MinAttackInterval);
 	CC_SYNTHESIZE(StateComponent*, _healthComp, HealthComp);
 	CC_SYNTHESIZE(Actor*, _lastAttackFrom, LastAttackFrom);

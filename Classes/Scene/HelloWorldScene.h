@@ -59,6 +59,8 @@ private:
 
 	void updateHeroPosition();
 
+	void updateSkillPanel();
+
 	void initTower();
 
 	void clearObjects();
@@ -76,8 +78,6 @@ private:
 public:
 
     static cocos2d::Scene* createScene();
-
-	virtual void loadingAnimation();
 	
 	virtual void update(float delta);
 

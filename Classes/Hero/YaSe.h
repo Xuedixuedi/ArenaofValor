@@ -9,12 +9,19 @@ USING_NS_CC;
 class YaSe :public Hero
 {
 	CC_SYNTHESIZE(bool, _isEnhanced, IsEnhanced);
+	CC_SYNTHESIZE(Sprite*, _sprSkill, SprSkill);
 
 private:
 
 	void updateHP(float delta);
 
 	void applySkillDamage(float delta);
+
+	virtual void sendBuff(float delta);
+
+protected:
+
+	void die() override;
 
 public:
 

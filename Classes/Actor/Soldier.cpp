@@ -129,6 +129,8 @@ void Soldier::updateState()
 	auto nowTime = GetCurrentTime() / 1000.f;
 	if (nowTime <= _vertigoLastTo)
 	{
+		stopAllActions();
+		_direction = EDirection::NODIR;
 		return;
 	}
 

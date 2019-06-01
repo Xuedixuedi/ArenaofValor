@@ -21,8 +21,6 @@ public:
 
 	static Projectile* create(const std::string& filename, float damage, float speed, Actor* fromActor, Actor* target);
 
-	float getAngle() const;
-
 	void calculatePosition();
 
 	float calculateDistance() const;

@@ -2,8 +2,6 @@
 #include "Actor.h"
 #include "math.h"
 
-#define PI 3.1415926
-
 Projectile* Projectile::create(const std::string& filename, float damge, float speed, Actor* fromActor, Actor* target)
 {
 	Projectile* projectile = new(std::nothrow)Projectile;
@@ -36,49 +34,15 @@ bool Projectile::init(const std::string& filename, float damage, float speed, Ac
 	return true;
 }
 
-
-float Projectile::getAngle() const
-{
-	auto delta = _target->getPosition() - getPosition();
-	auto dx = delta.x;
-	auto dy = delta.y;
-
-	auto angle = atan(dy / dx);
-	
-	log("angle : %f", angle);
-
-	if (angle > 0)
-	{
-		log("dx: %f,   dy: %f", dx, dy);
-		if (dx < 0 && dy < 0)
-		{
-			angle += PI;
-		}
-	}
-	else if (angle < 0)
-	{
-		log("dx: %f,   dy: %f", dx, dy);
-		if (dx < 0 && dy>0)
-		{
-			angle += PI;
-		}
-	}
-	log("angle after: %f", angle);
-
-	angle = angle / PI * 180;
-
-
-	return 360 - angle;
-}
-
 void Projectile::calculatePosition()
 {
 	auto delta = _target->getPosition() - getPosition();
 	auto distance = delta.length();
 	auto dx = delta.x;
 	auto dy = delta.y;
-	setRotation(getAngle());
-	setPosition(getPosition() + Vec2(dx / distance * _speed / 60, dy / distance * _speed / 60));
+	auto angle = MyMath::getRad(getPosition(), _target->getPosition());
+	setRotation(360 - angle / M_PI * 180);
+	setPosition(getPosition() + MyMath::calculatePositionDelta(angle, SPEED_FLY));
 }
 
 float Projectile::calculateDistance() const

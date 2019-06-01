@@ -56,6 +56,8 @@ public:
 
 	virtual void castSkill_2(Point mousePosition);
 
+	virtual bool checkSkillStatus(INT32 skillNumber);
+
 	virtual void castSkill_3();
 
 	virtual void reborn();
@@ -93,6 +95,12 @@ protected:
 	virtual void updateDirection();
 
 	virtual void startAnimation();
+
+	virtual void updateAttackTarget();
+
+	virtual void updateAttackTarget(INT32 radius);
+
+	virtual void playAttackAnimation();
 
 	virtual bool initHeroData(HelloWorld* combatScene, std::string heroName, ECamp camp, EAttackMode attackMode);
 

@@ -51,6 +51,13 @@
 
 #define TAG_DIE                       1752459
 
+#define TAG_SPRSKILL_1                18001
+#define TAG_SPRSKILL_2                18002
+#define TAG_SPRSKILL_3                18003
+#define TAG_SPRPLUS_1                 18004
+#define TAG_SPRPLUS_2                 18005
+#define TAG_SPRPLUS_3                 18006
+
 //¼¼ÄÜ¾«ÁéTAG>=10000&&<18000
 #define TAG_JINENG		10000
 #define TAG_DAJI_SKILL1 14010

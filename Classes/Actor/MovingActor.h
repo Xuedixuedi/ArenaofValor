@@ -13,8 +13,6 @@ USING_NS_CC;
 
 class MovingActor :public Actor
 {
-	CC_SYNTHESIZE(bool, _isAttacking, IsAttacking);
-	CC_SYNTHESIZE(EAttackMode, _attackMode, AttackMode);
 	CC_SYNTHESIZE(EDirection, _direction, Direction);
 	CC_SYNTHESIZE(float, _standingAngle, StandingAngle);
 	CC_SYNTHESIZE(float, _moveSpeed, MoveSpeed);

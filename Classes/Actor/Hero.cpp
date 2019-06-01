@@ -38,11 +38,11 @@ bool Hero::init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAtta
 
 bool Hero::initHeroData(HelloWorld* combatScene, std::string heroName, ECamp camp, EAttackMode attackMode)
 {
-	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroDataAtEachLevel.plist");
+	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroDataAtEachLevel.plist");
 	_heroDataAtEachLevel = value.at(heroName).asValueMap();
-	_heroData= (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\HeroData.plist"))[heroName].asValueMap();
-	_commonData = FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\CommonData.plist");
-	_skillData = (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\SkillData.plist"))[heroName].asValueMap();
+	_heroData= (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroData.plist"))[heroName].asValueMap();
+	_commonData = FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\CommonData.plist");
+	_skillData = (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\SkillData.plist"))[heroName].asValueMap();
 
 	_combatScene = combatScene;
 	setTexture(StringUtils::format("pictures\\hero\\%s\\%sright1.png", heroName.c_str(),heroName.c_str()));
@@ -80,7 +80,7 @@ bool Hero::initHeroData(HelloWorld* combatScene, std::string heroName, ECamp cam
 	_skillLevel_1 = _skillLevel_2 = _skillLevel_3 = 0;
 	_lastSkillTime_1 = _lastSkillTime_2 = _lastSkillTime_3 = 0.f;
 
-	_skillPoint = 0;
+	_skillPoint = 1;
 
 	return true;
 }
@@ -187,7 +187,7 @@ void Hero::die()
 	auto money = getRecordComp()->getMoney();
 	getRecordComp()->setMoney(money * 2 / 3);
 
-	auto expForKill = (FileUtils::getInstance()->getValueMapFromFile("A:\\major\\exedir\\wzry\\Data\\CommonData.plist"))["ExpNeeded"].asValueVector()[getExpComp()->getLevel()].asInt();
+	auto expForKill = (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\CommonData.plist"))["ExpNeeded"].asValueVector()[getExpComp()->getLevel()].asInt();
 	auto goldForKill = money / 3 + getExpComp()->getLevel() * 80;
 
 	auto lastAttackHero = dynamic_cast<Hero*>(_lastAttackFrom);
@@ -335,6 +335,41 @@ void Hero::castSkill_2(Point mousePosition)
 {
 }
 
+bool Hero::checkSkillStatus(INT32 skillNumber)
+{
+	auto nowTime = GetCurrentTime() / 1000.f;
+
+	if (_vertigoLastTo >= nowTime || _silenceLastTo >= nowTime)
+	{
+		return false;
+	}
+
+	switch (skillNumber)
+	{
+	case 1:
+		if (_skillLevel_1 == 0 || _lastSkillTime_1 + _calmTime_1 >= nowTime || _magicComp->getCurrentState() < _magicConsume_1)
+		{
+			return false;
+		}
+		break;
+	case 2:
+		if (_skillLevel_2 == 0 || _lastSkillTime_2 + _calmTime_2 >= nowTime || _magicComp->getCurrentState() < _magicConsume_2)
+		{
+			return false;
+		}
+		break;
+	case 3:
+		if (_skillLevel_3 == 0 || _lastSkillTime_3 + _calmTime_3 >= nowTime || _magicComp->getCurrentState() < _magicConsume_3)
+		{
+			return false;
+		}
+		break;
+	default:
+		return false;
+	}
+	return true;
+}
+
 void Hero::castSkill_3()
 {
 }
@@ -353,6 +388,10 @@ void Hero::reborn()
 void Hero::heroMove()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
+	if (nowTime - _lastAttackTime < _minAttackInterval)
+	{
+		return;
+	}
 	if (nowTime <= _vertigoLastTo)
 	{
 		return;
@@ -373,34 +412,42 @@ void Hero::updateDirection()
 {
 	if (_standingAngle < MIN_DEGREE_IN_RAD || _standingAngle > 15 * MIN_DEGREE_IN_RAD)
 	{
+	//	setTexture(StringUtils::format("pictures//hero//%s//%sright1.png", _heroName.getCString(), _heroName.getCString()));
 		_direction = EDirection::RIGHT;
 	}
 	else if (_standingAngle < 3 * MIN_DEGREE_IN_RAD)
 	{
+	//	setTexture(StringUtils::format("pictures//hero//%s//%supRight1.png", _heroName.getCString(), _heroName.getCString()));
 		_direction = EDirection::UPRIGHT;
 	}
 	else if (_standingAngle < 5 * MIN_DEGREE_IN_RAD)
 	{
+	//	setTexture(StringUtils::format("pictures//hero//%s//%sup1.png", _heroName.getCString(), _heroName.getCString()));
 		_direction = EDirection::UP;
 	}
 	else if (_standingAngle < 7 * MIN_DEGREE_IN_RAD)
 	{
+	//	setTexture(StringUtils::format("pictures//hero//%s//%supLeft1.png", _heroName.getCString(), _heroName.getCString()));
 		_direction = EDirection::UPLEFT;
 	}
 	else if (_standingAngle < 9 * MIN_DEGREE_IN_RAD)
 	{
+	//	setTexture(StringUtils::format("pictures//hero//%s//%sleft1.png", _heroName.getCString(), _heroName.getCString()));
 		_direction = EDirection::LEFT;
 	}
 	else if (_standingAngle < 11 * MIN_DEGREE_IN_RAD)
 	{
+	//	setTexture(StringUtils::format("pictures//hero//%s//%sdownRight1.png", _heroName.getCString(), _heroName.getCString()));
 		_direction = EDirection::DOWNLEFT;
 	}
 	else if (_standingAngle < 13 * MIN_DEGREE_IN_RAD)
 	{
+	//	setTexture(StringUtils::format("pictures//hero//%s//%sdown1.png", _heroName.getCString(), _heroName.getCString()));
 		_direction = EDirection::DOWN;
 	}
 	else
 	{
+	//	setTexture(StringUtils::format("pictures//hero//%s//%sdownRight1.png", _heroName.getCString(), _heroName.getCString()));
 		_direction = EDirection::DOWNRIGHT;
 	}
 }
@@ -434,10 +481,17 @@ void Hero::levelUp()
 
 	auto deltaAttack= _heroDataAtEachLevel["BaseDamage"].asValueVector().at(newLevel).asInt() - _heroDataAtEachLevel["BaseDamage"].asValueVector().at(newLevel - 1).asInt();
 	_attack += deltaAttack;
+
+	++_skillPoint;
 }
 
 void Hero::stopMove()
 {
+	auto nowTime = GetCurrentTime() / 1000.f;
+	if (nowTime - _lastAttackTime < _minAttackInterval)
+	{
+		return;
+	}
 	stopAllActions();
 
 	switch (_direction)
@@ -510,4 +564,140 @@ void Hero::startAnimation()
 
 	auto animate = Animate::create(animation);
 	runAction(RepeatForever::create(animate));
+}
+
+void Hero::updateAttackTarget()
+{
+	INT32 minHealth = 10000000;
+	Actor* tmpTarget = NULL;
+
+	Vector<Hero*>& allHeroes = _combatScene->_heroes;
+	Vector<Soldier*>& allSoldiers = _combatScene->_soldiers;
+	Vector<Actor*>& allTowers = _combatScene->_towers;
+	for (auto it = allHeroes.begin(); it != allHeroes.end(); ++it)
+	{
+		if ((*it)->getHealthComp()->getCurrentState() < minHealth && _camp != (*it)->getCamp() && !(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
+		{
+			minHealth = (*it)->getHealthComp()->getCurrentState();
+			tmpTarget = *it;
+		}
+	}
+	if (!tmpTarget)
+	{
+		for (auto it = allSoldiers.begin(); it != allSoldiers.end(); ++it)
+		{
+			if ((*it)->getHealthComp()->getCurrentState() < minHealth)
+			{
+				if (_camp != (*it)->getCamp() && !(*it)->getAlreadyDead())
+				{
+					if ((*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
+					{
+						minHealth = (*it)->getHealthComp()->getCurrentState();
+						tmpTarget = *it;
+					}
+				}
+			}
+		}
+	}
+	if (!tmpTarget)
+	{
+		for (auto it = allTowers.begin(); it != allTowers.end(); ++it)
+		{
+			if ((*it)->getHealthComp()->getCurrentState() > minHealth && _camp != (*it)->getCamp() && !(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
+			{
+				minHealth = (*it)->getHealthComp()->getCurrentState();
+				tmpTarget = *it;
+			}
+		}
+	}
+
+	_attackTarget = tmpTarget;
+}
+
+void Hero::updateAttackTarget(INT32 radius)
+{
+	INT32 minHealth = 10000000;
+	Actor* tmpTarget = NULL;
+
+	Vector<Hero*>& allHeroes = _combatScene->_heroes;
+	Vector<Soldier*>& allSoldiers = _combatScene->_soldiers;
+	Vector<Actor*>& allTowers = _combatScene->_towers;
+	for (auto it = allHeroes.begin(); it != allHeroes.end(); ++it)
+	{
+		if ((*it)->getHealthComp()->getCurrentState() < minHealth && _camp != (*it)->getCamp() && !(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= radius)
+		{
+			minHealth = (*it)->getHealthComp()->getCurrentState();
+			tmpTarget = *it;
+		}
+	}
+	if (!tmpTarget)
+	{
+		for (auto it = allSoldiers.begin(); it != allSoldiers.end(); ++it)
+		{
+			if ((*it)->getHealthComp()->getCurrentState() < minHealth)
+			{
+				if (_camp != (*it)->getCamp() && !(*it)->getAlreadyDead())
+				{
+					if ((*it)->getPosition().distance(this->getPosition()) <= radius)
+					{
+						minHealth = (*it)->getHealthComp()->getCurrentState();
+						tmpTarget = *it;
+					}
+				}
+			}
+		}
+	}
+	if (!tmpTarget)
+	{
+		for (auto it = allTowers.begin(); it != allTowers.end(); ++it)
+		{
+			if ((*it)->getHealthComp()->getCurrentState() > minHealth && _camp != (*it)->getCamp() && !(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= radius)
+			{
+				minHealth = (*it)->getHealthComp()->getCurrentState();
+				tmpTarget = *it;
+			}
+		}
+	}
+
+	_attackTarget = tmpTarget;
+}
+
+void Hero::playAttackAnimation()
+{
+	auto animation = Animation::create();
+	switch (_direction)
+	{
+	case UP:
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sAttackUp", _heroName.getCString()));
+		break;
+	case DOWN:
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sAttackDown", _heroName.getCString()));
+		break;
+	case LEFT:
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sAttackLeft", _heroName.getCString()));
+		break;
+	case RIGHT:
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sAttackRight", _heroName.getCString()));
+		break;
+	case UPLEFT:
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sAttackUpLeft", _heroName.getCString()));
+		break;
+	case UPRIGHT:
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sAttackUpRight", _heroName.getCString()));
+		break;
+	case DOWNLEFT:
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sAttackDownLeft", _heroName.getCString()));
+		break;
+	case DOWNRIGHT:
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sAttackDownRight", _heroName.getCString()));
+		break;
+	case NODIR:
+		break;
+	default:
+		break;
+	}
+	animation->setDelayPerUnit(_minAttackInterval / 6);
+	animation->setLoops(1);
+	auto animate = Animate::create(animation);
+	runAction(animate);
 }

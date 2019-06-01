@@ -22,6 +22,11 @@ bool YaSe::init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAtta
 		return false;
 	}
 
+	_sprSkill = Sprite::create("pictures//hero//YaSe//YaSeSkill2Spr.png");
+	_sprSkill->setPosition(getBoundingBox().size / 2);
+	addChild(_sprSkill);
+	_sprSkill->runAction(Hide::create());
+
 	schedule(schedule_selector(YaSe::updateHP), 2.f, -1, 0.f);
 
 	return true;
@@ -29,25 +34,118 @@ bool YaSe::init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAtta
 
 bool YaSe::attack()
 {
-	return false;
+	auto nowTime = GetCurrentTime() / 1000.f;
+	if (nowTime - _lastAttackTime < _minAttackInterval)
+	{
+		return false;
+	}
+	if (_vertigoLastTo > nowTime)
+	{
+		return false;
+	}
+	updateAttackTarget();
+	if (!_attackTarget)
+	{
+		return false;
+	}
+
+	_standingAngle = MyMath::getRad(getPosition(), _attackTarget->getPosition());
+	updateDirection();
+	playAttackAnimation();
+
+	auto damage = _attack;
+	if (_isEnhanced && nowTime - _lastSkillTime_1 < 3)
+	{
+		switch (_skillLevel_3)
+		{
+		case 1:
+			damage += 180;
+			break;
+		case 2:
+			damage += 230;
+			break;
+		case 3:
+			damage == 280;
+			break;
+		}
+	}
+	_isEnhanced = false;
+
+	for (auto& i : _combatScene->_heroes)
+	{
+		if (i->getCamp() != _camp && !i->getAlreadyDead() && getPosition().distance(i->getPosition()) < _attackRadius)
+		{
+			auto angle = MyMath::getRad(getPosition(), i->getPosition());
+			if (fabs(angle - _standingAngle) < 4 * MIN_DEGREE_IN_RAD)
+			{
+				if (i == _attackTarget)
+				{
+					_combatScene->_damages.push_back(Damage(damage, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+				}
+				else
+				{
+					_combatScene->_damages.push_back(Damage(damage * 0.5, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+				}
+			}
+		}
+	}
+
+	for (auto& i : _combatScene->_soldiers)
+	{
+		if (i->getCamp() != _camp && getPosition().distance(i->getPosition()) < _attackRadius)
+		{
+			auto angle = MyMath::getRad(getPosition(), i->getPosition());
+			if (fabs(angle - _standingAngle) < 4 * MIN_DEGREE_IN_RAD)
+			{
+				if (i == _attackTarget)
+				{
+					_combatScene->_damages.push_back(Damage(damage, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+				}
+				else
+				{
+					_combatScene->_damages.push_back(Damage(damage * 0.5, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+				}
+			}
+		}
+	}
+
+	for (auto& i : _combatScene->_towers)
+	{
+		if (i->getCamp() != _camp && getPosition().distance(i->getPosition()) < _attackRadius + 100.f)
+		{
+			auto angle = MyMath::getRad(getPosition(), i->getPosition());
+			if (fabs(angle - _standingAngle) < 4 * MIN_DEGREE_IN_RAD)
+			{
+				if (i == _attackTarget)
+				{
+					_combatScene->_damages.push_back(Damage(damage, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+				}
+				else
+				{
+					_combatScene->_damages.push_back(Damage(damage * 0.5, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+				}
+			}
+		}
+	}
+
+	_lastAttackTime = nowTime;
+	return true;
 }
 
 void YaSe::updateHP(float delta)
 {
-	auto maxHP = _healthComp->getMaxState();
-	_healthComp->changeStateBy(maxHP / 50);
+	if (!_alreadyDead)
+	{
+		auto maxHP = _healthComp->getMaxState();
+		_healthComp->changeStateBy(maxHP / 50);
+	}
 }
 
 void YaSe::castSkill_1()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
 
-	if (_lastSkillTime_1 + _calmTime_1 >= nowTime && _silenceLastTo > nowTime)
-	{
-		return;
-	}
-
-	auto buff = Buff::create(EBuffType::NORMAL, 3.f, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	auto buff = Buff::create(EBuffType::NORMAL, 3.f, 0, 0, 0, 0, 0, 0, 0, _moveSpeed * 0.3, 0);
 	takeBuff(buff);
 
 	_isEnhanced = true;
@@ -55,6 +153,15 @@ void YaSe::castSkill_1()
 
 void YaSe::castSkill_2()
 {
+	auto action = Sequence::create
+	(
+		Show::create(),
+		DelayTime::create(5.f),
+		Hide::create(),
+		NULL
+	);
+	_sprSkill->runAction(action);
+
 	schedule(schedule_selector(YaSe::applySkillDamage), 1.f, 5, 0.f);
 }
 
@@ -92,7 +199,44 @@ void YaSe::applySkillDamage(float delta)
 	}
 }
 
+void YaSe::sendBuff(float delta)
+{
+	_attackTarget->takeBuff(Buff::create(EBuffType::VERTIGO, 1.5, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+}
+
+void YaSe::die()
+{
+	Hero::die();
+
+	_sprSkill->runAction(Hide::create());
+}
+
 void YaSe::castSkill_3()
 {
+	updateAttackTarget(DEFAULT_ATTACK_RADIUS_REMOTE);
+	if (_attackTarget)
+	{
+		auto attackHero = dynamic_cast<Hero*>(_attackTarget);
+		if (attackHero)
+		{
+			auto nowTime = GetCurrentTime() / 1000.f;
+			_magicComp->changeStateBy(-1 * _magicConsume_3);
+			_standingAngle = MyMath::getRad(getPosition(), attackHero->getPosition());
+			updateDirection();
+			auto action = Sequence::create
+			(
+				MoveTo::create(0.2, attackHero->getPosition()),
+				CallFunc::create(CC_CALLBACK_0(YaSe::playAttackAnimation, this)),
+				NULL
+			);
+			runAction(action);
 
+			auto damage = attackHero->getHealthComp()->getMaxState() * (0.1 + 0.05 * _skillLevel_3);
+			_combatScene->_damages.push_back(Damage(damage, this, attackHero, EDamageType::MAGIC_DAMAGE, 0.2 + _minAttackInterval / 2));
+			scheduleOnce(schedule_selector(YaSe::sendBuff), 0.2 + _minAttackInterval / 2);
+
+			_lastAttackTime = nowTime + 0.2;
+			_lastSkillTime_3 = nowTime;
+		}
+	}
 }
