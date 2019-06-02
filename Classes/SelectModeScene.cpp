@@ -1,6 +1,7 @@
 #include "SelectModeScene.h"
 #include "SelectHeroScene.h"
 #include "StartGameScene.h"
+#include "SimpleAudioEngine.h" 
 
 USING_NS_CC;
 
@@ -23,6 +24,13 @@ bool SelectMode::init()
 	{
 		return false;
 	}
+
+	//声音
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	if (!audio->isBackgroundMusicPlaying()) {
+		audio->playBackgroundMusic("Audio/StartGame.mp3", true);
+	}
+
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();//获得可视区域的出发点坐标，在处理相对位置时，确保节点在不同分辨率下的位置一致。
@@ -48,36 +56,74 @@ bool SelectMode::init()
 		backMenu->setPosition(Vec2(x, y));
 	}
 
-	MenuItemImage *onevoneMenu = MenuItemImage::create(
-		"SelectMode/1v1.png",
-		"SelectMode/1v11.png",
-		CC_CALLBACK_1(SelectMode::menu1v1CallBack, this)
+	MenuItemImage *singleMenu = MenuItemImage::create(
+		"SelectMode/Danji.png",
+		"SelectMode/Danji1.png",
+		CC_CALLBACK_1(SelectMode::menuSingleCallBack, this)
 	);
 
-	if (onevoneMenu == nullptr ||
-		onevoneMenu->getContentSize().width <= 0 ||
-		onevoneMenu->getContentSize().height <= 0)
+	if (singleMenu == nullptr ||
+		singleMenu->getContentSize().width <= 0 ||
+		singleMenu->getContentSize().height <= 0)
 	{
-		problemLoading("'1v1.png' and '1v1.png'");
+		problemLoading("'singleMenu.png'");
 	}
 	else
 	{
-		float x = origin.x + 783.5;
-		float y = visibleSize.height - 387.5;
-		onevoneMenu->setPosition(Vec2(x, y));
+		float x = origin.x + 803.0;
+		float y = visibleSize.height - 182.0;
+		singleMenu->setPosition(Vec2(x, y));
+	}
+
+	MenuItemImage *networkMenu = MenuItemImage::create(
+		"SelectMode/Lianji.png",
+		"SelectMode/Lianji1.png",
+		CC_CALLBACK_1(SelectMode::menuNetworkCallBack, this)
+	);
+
+	if (networkMenu == nullptr ||
+		networkMenu->getContentSize().width <= 0 ||
+		networkMenu->getContentSize().height <= 0)
+	{
+		problemLoading("'networkMenu.png'");
+	}
+	else
+	{
+		float x = origin.x + 803.0;
+		float y = visibleSize.height - 382.0;
+		networkMenu->setPosition(Vec2(x, y));
+	}
+
+	MenuItemImage *comingMenu = MenuItemImage::create(
+		"SelectMode/Qidai.png",
+		"SelectMode/Qidai.png",
+		CC_CALLBACK_1(SelectMode::menuComingCallBack, this)
+	);
+
+	if (comingMenu == nullptr ||
+		comingMenu->getContentSize().width <= 0 ||
+		comingMenu->getContentSize().height <= 0)
+	{
+		problemLoading("'networkMenu.png'");
+	}
+	else
+	{
+		float x = origin.x + 803.0;
+		float y = visibleSize.height - 580.0;
+		comingMenu->setPosition(Vec2(x, y));
 	}
 
 	//backMenu->setPosition(Director::getInstance()->convertToGL(Vec2(0, 0)));
-	Menu *mu = Menu::create(backMenu, onevoneMenu, NULL);
+	Menu *mu = Menu::create(backMenu, singleMenu, networkMenu, comingMenu, NULL);
 	mu->setPosition(Vec2::ZERO);
 	this->addChild(mu, 1);
 
 
 	// add the picture splash screen"
-	auto background = Sprite::create("SelectMode/PVE1.png");
+	auto background = Sprite::create("SelectMode/background.png");
 	if (background == nullptr)
 	{
-		//problemLoading("'Timi.jpg'");
+		problemLoading("'background.jpg'");
 	}
 	else
 	{
@@ -100,10 +146,25 @@ void SelectMode::menuBackCallBack(Ref *pSender) {
 	log("Touch Helo Menu Item %p", item);
 }
 
-void SelectMode::menu1v1CallBack(Ref *pSender) {
+void SelectMode::menuSingleCallBack(cocos2d::Ref * pSender)
+{
 	auto nextScene = SelectHero::create();
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
 	MenuItem *item = (MenuItem*)pSender;
 	log("Touch Helo Menu Item %p", item);
 }
+
+void SelectMode::menuNetworkCallBack(cocos2d::Ref * pSender)
+{
+	auto nextScene = SelectHero::create();
+	Director::getInstance()->replaceScene(
+		TransitionSlideInT::create(1.0f / 60, nextScene));
+	MenuItem *item = (MenuItem*)pSender;
+	log("Touch Helo Menu Item %p", item);
+}
+
+void SelectMode::menuComingCallBack(cocos2d::Ref * pSender)
+{
+}
+

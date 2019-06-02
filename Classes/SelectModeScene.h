@@ -14,8 +14,9 @@ public:
 
 	//·µ»Ø¼üºÍ1V1¼ü
 	void menuBackCallBack(cocos2d::Ref *pSender);
-	void menu1v1CallBack(cocos2d::Ref *pSender);
-
+	void menuSingleCallBack(cocos2d::Ref *pSender);
+	void menuNetworkCallBack(cocos2d::Ref *pSender);
+	void menuComingCallBack(cocos2d::Ref * pSender);
 	// a selector callback
 	//void menuCloseCallback(cocos2d::Ref* pSender);
 

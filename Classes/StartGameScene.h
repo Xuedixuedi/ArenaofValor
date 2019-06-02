@@ -14,6 +14,8 @@ public:
 
 	//¿ªÊ¼ÓÎÏ·¼ü
 	void menuStartCallBack(cocos2d::Ref *pSender);
+	void menuEndCallBack(cocos2d::Ref *pSender);
+	void menuMusicCallBack(cocos2d::Ref *pSender);
 
 	CREATE_FUNC(StartGame);
 
