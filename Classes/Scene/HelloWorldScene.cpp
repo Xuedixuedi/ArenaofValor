@@ -9,7 +9,8 @@
 #include "Hero/HouYi.h"
 #include "PathFind/SoldierPath.h"
 #include "Actor/BuffProjectile.h"
-
+#include "Hero/YaSe.h"
+#include "Hero/DaJi.h"
 
 Scene* HelloWorld::createScene()
 {
@@ -88,7 +89,7 @@ void HelloWorld::initHero()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	_myHero = HouYi::create(this, ECamp::BLUE, "HouYi", EAttackMode::REMOTE);
+	_myHero = DaJi::create(this, ECamp::BLUE, "DaJi", EAttackMode::REMOTE);
 	//log("HP: %d", _myHero->getHealthComp()->getMaxState());
 	_myHero->setPosition(visibleSize / 2);
 	_myHero->setTag(TAG_MYHERO);
@@ -105,6 +106,7 @@ void HelloWorld::initHero()
 	labelDie->setVisible(false);
 	labelDie->setTag(TAG_DIE);
 	addChild(labelDie);
+
 }
 
 void HelloWorld::initHRocker()
@@ -276,7 +278,8 @@ void HelloWorld::updateBullets()
 	}
 	
 	auto tmpSpr = this->getMap()->getChildByTag(TAG_DAJI_SKILL2);
-	auto daJiBuffProjectile = dynamic_cast<BuffProjectile*>(tmpSpr);
+	auto daJiBuffProjectile = dynamic_cast<Projectile*>(tmpSpr);
+	//妲己的二技能飞行物
 	if (daJiBuffProjectile)
 	{
 		if (!daJiBuffProjectile->getTarget()->getAlreadyDead())
@@ -285,14 +288,18 @@ void HelloWorld::updateBullets()
 			{
 				auto target = daJiBuffProjectile->getTarget();
 				target->takeDamage(EDamageType::MAGIC_DAMAGE, daJiBuffProjectile->getDamage(), daJiBuffProjectile->getFromActor());
-				auto buff = daJiBuffProjectile->getBuff();
+				auto buff = Buff::create(EBuffType::VERTIGO, 1.5, 0, 0, -60, 0, 0, 0, 0, 0, 0);
 				target->takeBuff(buff);
 				_map->removeChild(daJiBuffProjectile);
 			}
 			else
 			{
-				_map->removeChild(daJiBuffProjectile);
+				daJiBuffProjectile->calculatePosition();
 			}
+		}
+		else
+		{
+			_map->removeChild(daJiBuffProjectile);
 		}
 	}
 }
@@ -340,7 +347,7 @@ void HelloWorld::updateHeroPosition()
 		if (_mapInformation.checkCollision(newPosition))
 		{
 			_myHero->heroMove();
-			if(!_myHero->getIsAttacking())
+			if (GetCurrentTime() / 1000.f - _myHero->getLastAttackTime() > _myHero->getMinAttackInterval())
 				_map->setPosition(_map->getPosition() - positionDelta);
 		}
 	}
@@ -389,7 +396,8 @@ void HelloWorld::generateSoldiers(float delta)
 
 	auto skillPosition = visibleSize / 4 + (Size)_map->getPosition();
 	//log("skillPosition: %f, %f", skillPosition.width, skillPosition.height);
-	_myHero->castSkill_2(visibleSize / 4 + (Size)_map->getPosition());
+	//_myHero->castSkill_2(visibleSize / 4 + (Size)_map->getPosition());
+
 }
 
 void HelloWorld::selectSpriteForTouch(Point touchLocation)
@@ -420,11 +428,7 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 	this->selectSpriteForTouch(touchLocation);
 
 	//释放攻击/技能
-	auto nowTime = GetCurrentTime() / 1000;
-	if (_myHero->getLastAttackTime() == 0)
-	{
-		_myHero->setLastAttackTime(nowTime);
-	}
+	auto nowTime = GetCurrentTime() / 1000.f;
 	if (_isMouseSprite)
 	{
 		_isMouseSprite = false;
@@ -432,10 +436,11 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 	}
 	if (isKeyPressed(EventKeyboard::KeyCode::KEY_1)&& _myHero->checkSkillStatus(1))
 	{
-		auto houYi = dynamic_cast<HouYi*>(_myHero);
-		if (houYi)
+		auto daJi = dynamic_cast<DaJi*>(_myHero);
+		if (daJi)
 		{
-			_myHero->castSkill_1();
+			auto point = touch->getLocation();
+			_myHero->castSkill_1(point);
 			keys[EventKeyboard::KeyCode::KEY_1] = false;
 		}
 	}
@@ -448,6 +453,7 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 			_myHero->castSkill_2(point);
 			keys[EventKeyboard::KeyCode::KEY_2] = false;
 		}
+
 	}
 	else if (isKeyPressed(EventKeyboard::KeyCode::KEY_3) && _myHero->checkSkillStatus(3))
 	{
@@ -458,9 +464,11 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 			_myHero->castSkill_3(point);
 			keys[EventKeyboard::KeyCode::KEY_3] = false;
 		}
+
 	}
 	else
 	{
+
 		//不在攻击间隔内
 		if (nowTime - _myHero->getLastAttackTime() > _myHero->getMinAttackInterval())
 		{
@@ -469,7 +477,6 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 	}
 	return true;
 }
-
 
 bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 {
@@ -485,6 +492,44 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 			_isMouseSprite = true;
 			_mouseSprite->setVisible(true);
 		}
+		if (keyCode == EventKeyboard::KeyCode::KEY_3)
+		{
+			_isMouseSprite = true;
+			_mouseSprite->setVisible(true);
+		}
+	}
+	auto yaSe = dynamic_cast<YaSe*>(_myHero);
+	if (yaSe)
+	{
+		if (keyCode == EventKeyboard::KeyCode::KEY_1)
+		{
+			_myHero->castSkill_1();
+		}
+		if (keyCode == EventKeyboard::KeyCode::KEY_2)
+		{
+			_myHero->castSkill_2();
+		}
+		if (keyCode == EventKeyboard::KeyCode::KEY_3)
+		{
+			_myHero->castSkill_3();
+		}
+	}
+	auto daJi = dynamic_cast<DaJi*>(_myHero);
+	if (daJi)
+	{
+		if (keyCode == EventKeyboard::KeyCode::KEY_1)
+		{
+			_isMouseSprite = true;
+			_mouseSprite->setVisible(true);
+		}
+		if (keyCode == EventKeyboard::KeyCode::KEY_2)
+		{
+			_myHero->castSkill_2();
+		}
+		if (keyCode == EventKeyboard::KeyCode::KEY_3)
+		{
+			_myHero->castSkill_3();
+		}
 	}
 	keys[keyCode] = true;
 	return true;
@@ -499,7 +544,14 @@ bool HelloWorld::onReleaseKey(EventKeyboard::KeyCode keyCode, Event * event)
 			keys[keyCode] = false;
 		}
 	}
-
+	auto yaSe = dynamic_cast<YaSe*>(_myHero);
+	if (yaSe)
+	{
+		if (keyCode == EventKeyboard::KeyCode::KEY_1 || keyCode == EventKeyboard::KeyCode::KEY_3 || keyCode == EventKeyboard::KeyCode::KEY_2)
+		{
+			keys[keyCode] = false;
+		}
+	}
 	//keys[keyCode] = false;
 
 	return true;

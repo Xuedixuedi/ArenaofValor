@@ -196,25 +196,19 @@ bool HouYi::attack()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
 	//当不满足攻击间隔的时候，按攻击键调attack的情况
-	if (_isAttacking&&nowTime - _lastAttackTime < _minAttackInterval)
+	if (nowTime - _lastAttackTime < _minAttackInterval)
 	{
 		return false;
 	}
 	//先重新生成攻击目标
 	updateAttackTarget();
-	if (!_attackTarget)
-	{
-		auto animation = Animation::create();
-		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sAttackRight", _heroName.getCString()));
-		animation->setDelayPerUnit(_minAttackInterval * 10);
-		animation->setLoops(1);
-		auto animate = Animate::create(animation);
-		runAction(animate);
-		return false;
-	}
 	//更新攻击状态和停止动画
 	stopAllActions();
-	_isAttacking = true;
+	//检查攻击目标
+	if (!_attackTarget)
+	{
+		return false;
+	}
 	//根据新的攻击目标计算攻击时人物的角度
 	_standingAngle = MyMath::getRad(getPosition(), _attackTarget->getPosition());
 	updateDirection();

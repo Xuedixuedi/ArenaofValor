@@ -8,7 +8,7 @@
 #define ORIGIN_INTERVAL				  0.2
 #define PRESS						  1
 #define RELEASE						  2
-#define MIN_ATTACK_INTERVAL			  0.6
+#define MIN_ATTACK_INTERVAL			  2.0
 
 #define VISION_RADIUS				  400
 

@@ -78,8 +78,8 @@ public:
 
 	static Hero* create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode);
 
-protected:
 	virtual void playAttackAnimation();
+protected:
 
 	virtual void updateAttackTarget(INT32 radius);
 

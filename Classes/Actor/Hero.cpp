@@ -368,11 +368,7 @@ void Hero::reborn()
 void Hero::heroMove()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
-	if (nowTime - _lastAttackTime > _minAttackInterval)
-	{
-		_isAttacking = false;
-	}
-	if (_isAttacking)
+	if (nowTime - _lastAttackTime < _minAttackInterval)
 	{
 		return;
 	}
@@ -473,14 +469,11 @@ void Hero::levelUp()
 void Hero::stopMove()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
-	if (nowTime - _lastAttackTime > _minAttackInterval)
-	{
-		_isAttacking = false;
-	}
-	if (_isAttacking)
+	if (nowTime - _lastAttackTime < _minAttackInterval)
 	{
 		return;
 	}
+
 
 	stopAllActions();
 
@@ -593,6 +586,18 @@ bool Hero::checkSkillStatus(INT32 skillNumber)
 
 void Hero::playAttackAnimation()
 {
+	////For test
+	//String heroName = "YaSe";
+	//auto animation_30 = Animation::create();
+	//for (int i = 1; i <= 3; ++i)
+	//{
+	//	
+	//	animation_30->addSpriteFrameWithFile(StringUtils::format("pictures\\hero\\%s\\%sAttackDownRight%d.png", heroName.getCString(), heroName.getCString(), i));
+	//}
+	//animation_30->addSpriteFrameWithFile(StringUtils::format("pictures\\hero\\%s\\%sdownRight1.png", heroName.getCString(), heroName.getCString()));
+	//AnimationCache::getInstance()->addAnimation(animation_30, StringUtils::format("%sAttackDownRight", heroName.getCString()));
+	//auto animation = animation_30;
+	
 	auto animation = Animation::create();
 	switch (_direction)
 	{
