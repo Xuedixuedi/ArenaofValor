@@ -23,6 +23,7 @@ bool YaSe::init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAtta
 	}
 
 	_sprSkill = Sprite::create("pictures//hero//YaSe//YaSeSkill2Spr.png");
+	auto tmp = _sprSkill;
 	_sprSkill->setPosition(getBoundingBox().size / 2);
 	addChild(_sprSkill);
 	_sprSkill->runAction(Hide::create());
@@ -48,15 +49,16 @@ bool YaSe::attack()
 	{
 		return false;
 	}
-
+	stopAllActions();
 	_standingAngle = MyMath::getRad(getPosition(), _attackTarget->getPosition());
 	updateDirection();
+	_lastAttackTime = nowTime;
 	playAttackAnimation();
 
 	auto damage = _attack;
 	if (_isEnhanced && nowTime - _lastSkillTime_1 < 3)
 	{
-		switch (_skillLevel_3)
+		switch (_skillLevel_1)
 		{
 		case 1:
 			damage += 180;
@@ -65,50 +67,68 @@ bool YaSe::attack()
 			damage += 230;
 			break;
 		case 3:
-			damage == 280;
+			damage += 280;
 			break;
 		}
 	}
 	_isEnhanced = false;
-
-	for (auto& i : _combatScene->_heroes)
+	Vector<Hero*>& allHeroes = _combatScene->_heroes;
+	Vector<Soldier*>& allSoldiers = _combatScene->_soldiers;
+	Vector<Actor*>& allTowers = _combatScene->_towers;
+	for (auto it = allHeroes.begin(); it != allHeroes.end(); ++it)
 	{
-		if (i->getCamp() != _camp && !i->getAlreadyDead() && getPosition().distance(i->getPosition()) < _attackRadius)
+		if ((*it)->getCamp() != _camp && !(*it)->getAlreadyDead() && getPosition().distance((*it)->getPosition()) < _attackRadius)
 		{
-			auto angle = MyMath::getRad(getPosition(), i->getPosition());
+			auto angle = MyMath::getRad(getPosition(), (*it)->getPosition());
 			if (fabs(angle - _standingAngle) < 4 * MIN_DEGREE_IN_RAD)
 			{
-				if (i == _attackTarget)
+				if ((*it) == _attackTarget)
 				{
-					_combatScene->_damages.push_back(Damage(damage, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+					_combatScene->_damages.push_back(Damage(damage, this, *it, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
 				}
 				else
 				{
-					_combatScene->_damages.push_back(Damage(damage * 0.5, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+					_combatScene->_damages.push_back(Damage(damage * 0.5, this, *it, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
 				}
 			}
 		}
 	}
-
-	for (auto& i : _combatScene->_soldiers)
+	for (auto it = allSoldiers.begin(); it != allSoldiers.end(); ++it)
 	{
-		if (i->getCamp() != _camp && getPosition().distance(i->getPosition()) < _attackRadius)
+		if ((*it)->getCamp() != _camp && getPosition().distance((*it)->getPosition()) < _attackRadius)
 		{
-			auto angle = MyMath::getRad(getPosition(), i->getPosition());
+			auto angle = MyMath::getRad(getPosition(), (*it)->getPosition());
 			if (fabs(angle - _standingAngle) < 4 * MIN_DEGREE_IN_RAD)
 			{
-				if (i == _attackTarget)
+				if (*it == _attackTarget)
 				{
-					_combatScene->_damages.push_back(Damage(damage, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+					_combatScene->_damages.push_back(Damage(damage, this, *it, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
 				}
 				else
 				{
-					_combatScene->_damages.push_back(Damage(damage * 0.5, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+					_combatScene->_damages.push_back(Damage(damage * 0.5, this, *it, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
 				}
 			}
 		}
 	}
-
+	for (auto it = allTowers.begin(); it != allTowers.end(); ++it)
+	{
+		if ((*it)->getCamp() != _camp && getPosition().distance((*it)->getPosition()) < _attackRadius + 100.f)
+		{
+			auto angle = MyMath::getRad(getPosition(), (*it)->getPosition());
+			if (fabs(angle - _standingAngle) < 4 * MIN_DEGREE_IN_RAD)
+			{
+				if ((*it) == _attackTarget)
+				{
+					_combatScene->_damages.push_back(Damage(damage, this, *it, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+				}
+				else
+				{
+					_combatScene->_damages.push_back(Damage(damage * 0.5, this, *it, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+				}
+			}
+		}
+	}
 	for (auto& i : _combatScene->_towers)
 	{
 		if (i->getCamp() != _camp && getPosition().distance(i->getPosition()) < _attackRadius + 100.f)
@@ -128,7 +148,6 @@ bool YaSe::attack()
 		}
 	}
 
-	_lastAttackTime = nowTime;
 	return true;
 }
 
@@ -216,7 +235,7 @@ void YaSe::castSkill_3()
 	updateAttackTarget(DEFAULT_ATTACK_RADIUS_REMOTE);
 	if (_attackTarget)
 	{
-		auto attackHero = dynamic_cast<Hero*>(_attackTarget);
+		auto attackHero = dynamic_cast<Soldier*>(_attackTarget);
 		if (attackHero)
 		{
 			auto nowTime = GetCurrentTime() / 1000.f;

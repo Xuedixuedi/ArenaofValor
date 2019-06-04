@@ -5,6 +5,7 @@
 #include "MovingActor.h"
 #include "Actor.h"
 
+class Equipment;
 class ExpComponent;
 class StateComponent;
 class Record;
@@ -44,6 +45,10 @@ class Hero :public MovingActor
 
 public:
 
+	virtual void getEquip(Equipment* equip);
+
+	virtual void sellEquip(INT32 equipNumber);
+
 	virtual bool attack();
 
 	virtual void takeDamage(EDamageType damageType, INT32 damage, Actor* instigator);
@@ -52,13 +57,19 @@ public:
 
 	virtual void skillLevelUp(INT32 skillNumber);
 
+	virtual bool checkSkillStatus(INT32 skillNumber);
+
 	virtual void castSkill_1();
+
+	virtual void castSkill_1(Point mousePosition);
+
+	virtual void castSkill_2();
 
 	virtual void castSkill_2(Point mousePosition);
 
-	virtual bool checkSkillStatus(INT32 skillNumber);
-
 	virtual void castSkill_3();
+
+	virtual void castSkill_3(Point mousePosition);
 
 	virtual void reborn();
 
@@ -72,6 +83,8 @@ public:
 
 	static Hero* create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode);
 
+	virtual void playAttackAnimation();
+
 protected:
 
 	ValueMap _heroDataAtEachLevel;
@@ -83,6 +96,8 @@ protected:
 	Map<float, Hero*> _causeDamageActors;
 
 	ValueMap _skillData;
+
+	Equipment* _equips[NUMBER_OF_EQUIPGRID];
 
 	virtual void levelUp();
 
@@ -99,8 +114,6 @@ protected:
 	virtual void updateAttackTarget();
 
 	virtual void updateAttackTarget(INT32 radius);
-
-	virtual void playAttackAnimation();
 
 	virtual bool initHeroData(HelloWorld* combatScene, std::string heroName, ECamp camp, EAttackMode attackMode);
 

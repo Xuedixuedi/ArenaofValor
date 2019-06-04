@@ -1,5 +1,5 @@
-#ifndef __HOUYI_H__
-#define __HOUYI_H__
+#ifndef __YASE_H__
+#define __YASE_H__
 
 #include "cocos2d.h"
 #include "Actor/Hero.h"

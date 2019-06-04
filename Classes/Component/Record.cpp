@@ -16,7 +16,6 @@ bool Record::init()
 
 	initLabel();
 
-
 	schedule(schedule_selector(Record::updateMoney), 1.f, -1, 1.f);
 
 	return true;
@@ -26,22 +25,21 @@ void Record::initSprite()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	auto sprKill = Sprite::create("pictures/others/Attact.png");
-	sprKill->setPosition(Vec2(visibleSize.width * 3 / 5 + 15, visibleSize.height - 50));
-	addChild(sprKill);
+	_sprKill = Sprite::create("pictures/others/Attact.png");
+	_sprKill->setPosition(Vec2(visibleSize.width * 3 / 5 + 15, visibleSize.height - 50));
+	addChild(_sprKill);
 
-	auto sprDeath = Sprite::create("pictures/others/Dead.png");
-	sprDeath->setPosition(Vec2(visibleSize.width * 3 / 5 + 95, visibleSize.height - 50));
-	addChild(sprDeath);
+	_sprDeath = Sprite::create("pictures/others/Dead.png");
+	_sprDeath->setPosition(Vec2(visibleSize.width * 3 / 5 + 95, visibleSize.height - 50));
+	addChild(_sprDeath);
 
-	auto sprAssist = Sprite::create("pictures/others/Help.png");
-	sprAssist->setPosition(Vec2(visibleSize.width * 3 / 5 + 175, visibleSize.height - 50));
-	addChild(sprAssist);
+	_sprAssist = Sprite::create("pictures/others/Help.png");
+	_sprAssist->setPosition(Vec2(visibleSize.width * 3 / 5 + 175, visibleSize.height - 50));
+	addChild(_sprAssist);
 
-	auto sprGold = Sprite::create("pictures/others/gold.png");
-	auto boundingBoxSize = sprGold->getBoundingBox().size;
-	sprGold->setPosition(Vec2(47.5, 404));
-	addChild(sprGold);
+	_sprGold = Sprite::create("pictures/others/gold.png");
+	_sprGold->setPosition(Vec2(47.5, 404));
+	addChild(_sprGold);
 }
 
 void Record::initLabel()

@@ -8,7 +8,7 @@
 #define ORIGIN_INTERVAL				  0.2
 #define PRESS						  1
 #define RELEASE						  2
-#define MIN_ATTACK_INTERVAL			  3.0
+#define MIN_ATTACK_INTERVAL			  0.8
 
 #define VISION_RADIUS				  400
 
@@ -20,13 +20,13 @@
 #define TOWER_ATTACK				  470
 
 #define DEFAULT_ATTACK_RADIUS_MELEE   100
-#define DEFAULT_ATTACK_RADIUS_REMOTE  250
+#define DEFAULT_ATTACK_RADIUS_REMOTE  500
 #define DEFAULT_HOSTILITY_RADIUS	  500	
 
-#define SOLDIER_MOVE_SPEED			  240
+#define SOLDIER_MOVE_SPEED			  140	//240
 #define SOLDIER_ARMOR				  30
 #define SOLDIER_MAGIC_DEFENSE         50
-#define SOLDIER_ATTACK                100
+#define SOLDIER_ATTACK                10 //100
 #define SOLDIER_HP                    1000
 
 #define MELEE_GOLD					  30
@@ -51,6 +51,12 @@
 
 #define TAG_DIE                       1752459
 
+#define NUMBER_OF_EQUIPMENT		      9
+#define	NUMBER_OF_EQUIPGRID			  6
+#define EQUIP_CIRCLE_RADIUS			  40
+
+
+//¼¼ÄÜÃæ°åTAG>18000&&<19000
 #define TAG_SPRSKILL_1                18001
 #define TAG_SPRSKILL_2                18002
 #define TAG_SPRSKILL_3                18003

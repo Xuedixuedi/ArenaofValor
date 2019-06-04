@@ -38,11 +38,11 @@ bool Hero::init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAtta
 
 bool Hero::initHeroData(HelloWorld* combatScene, std::string heroName, ECamp camp, EAttackMode attackMode)
 {
-	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroDataAtEachLevel.plist");
+	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("Data\\HeroDataAtEachLevel.plist");
 	_heroDataAtEachLevel = value.at(heroName).asValueMap();
-	_heroData= (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\HeroData.plist"))[heroName].asValueMap();
-	_commonData = FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\CommonData.plist");
-	_skillData = (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\SkillData.plist"))[heroName].asValueMap();
+	_heroData= (FileUtils::getInstance()->getValueMapFromFile("Data\\HeroData.plist"))[heroName].asValueMap();
+	_commonData = FileUtils::getInstance()->getValueMapFromFile("Data\\CommonData.plist");
+	_skillData = (FileUtils::getInstance()->getValueMapFromFile("Data\\SkillData.plist"))[heroName].asValueMap();
 
 	_combatScene = combatScene;
 	setTexture(StringUtils::format("pictures\\hero\\%s\\%sright1.png", heroName.c_str(),heroName.c_str()));
@@ -81,6 +81,11 @@ bool Hero::initHeroData(HelloWorld* combatScene, std::string heroName, ECamp cam
 	_lastSkillTime_1 = _lastSkillTime_2 = _lastSkillTime_3 = 0.f;
 
 	_skillPoint = 1;
+
+	for (int i = 0; i < NUMBER_OF_EQUIPGRID; ++i)
+	{
+		_equips[i] = nullptr;
+	}
 
 	return true;
 }
@@ -141,6 +146,33 @@ bool Hero::initRecordComp()
 	return true;
 }
 
+void Hero::getEquip(Equipment* equip)
+{
+	auto buff = equip->getBuff();
+	takeBuff(buff);
+	_allBuff.popBack();
+	for (int i = 0; i < NUMBER_OF_EQUIPGRID; ++i)
+	{
+		if (_equips[i] == nullptr)
+		{
+			_equips[i] = equip;
+		}
+	}
+	log("%d", equip->getGoldToBuy());
+	_recordComp->addMoney(-1 * equip->getGoldToBuy());
+}
+
+void Hero::sellEquip(INT32 equipNumber)
+{
+	auto buff = _equips[equipNumber]->getBuff();
+	if (buff)
+	{
+		removeBuff(buff);
+		_recordComp->addMoney(_equips[equipNumber]->getGoldForSell());
+		_equips[equipNumber] = nullptr;
+	}
+}
+
 bool Hero::attack()
 {
 	return false;
@@ -187,7 +219,7 @@ void Hero::die()
 	auto money = getRecordComp()->getMoney();
 	getRecordComp()->setMoney(money * 2 / 3);
 
-	auto expForKill = (FileUtils::getInstance()->getValueMapFromFile("D:\\LatestFiles\\hello\\Data\\CommonData.plist"))["ExpNeeded"].asValueVector()[getExpComp()->getLevel()].asInt();
+	auto expForKill = (FileUtils::getInstance()->getValueMapFromFile("Data\\CommonData.plist"))["ExpNeeded"].asValueVector()[getExpComp()->getLevel()].asInt();
 	auto goldForKill = money / 3 + getExpComp()->getLevel() * 80;
 
 	auto lastAttackHero = dynamic_cast<Hero*>(_lastAttackFrom);
@@ -331,6 +363,14 @@ void Hero::castSkill_1()
 {
 }
 
+void Hero::castSkill_1(Point mousePosition)
+{
+}
+
+void Hero::castSkill_2()
+{
+}
+
 void Hero::castSkill_2(Point mousePosition)
 {
 }
@@ -371,6 +411,10 @@ bool Hero::checkSkillStatus(INT32 skillNumber)
 }
 
 void Hero::castSkill_3()
+{
+}
+
+void Hero::castSkill_3(Point mousePosition)
 {
 }
 
@@ -590,6 +634,7 @@ void Hero::updateAttackTarget()
 			{
 				if (_camp != (*it)->getCamp() && !(*it)->getAlreadyDead())
 				{
+					log("soldierPosition: %f, %f    heroPosition: %f, %f", (*it)->getPositionX(), (*it)->getPositionY(), getPositionX(), getPositionY());
 					if ((*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
 					{
 						minHealth = (*it)->getHealthComp()->getCurrentState();

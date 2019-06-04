@@ -1,9 +1,9 @@
 #include "Equipment.h"
 
-Equipment* Equipment::create(const std::string& filename, EBuffType buffType, INT32 goldToBuy, INT32 goldForSell)
+Equipment* Equipment::create(const std::string& filename, Buff* buff, INT32 goldToBuy, INT32 goldForSell)
 {
 	Equipment* equipment = new(std::nothrow)Equipment;
-	if (equipment && equipment->init(filename, buffType, goldToBuy, goldForSell))
+	if (equipment && equipment->init(filename, buff, goldToBuy, goldForSell))
 	{
 		equipment->autorelease();
 		return equipment;
@@ -13,7 +13,7 @@ Equipment* Equipment::create(const std::string& filename, EBuffType buffType, IN
 }
 
 
-bool Equipment::init(const std::string& filename, EBuffType buffType, INT32 goldToBuy, INT32 goldForSell)
+bool Equipment::init(const std::string& filename, Buff* buff, INT32 goldToBuy, INT32 goldForSell)
 {
 	if (!Sprite::init())
 	{
@@ -22,7 +22,7 @@ bool Equipment::init(const std::string& filename, EBuffType buffType, INT32 gold
 
 	setTexture(filename);
 
-	_buffType = buffType;
+	_buff = buff;
 	_goldToBuy = goldToBuy;
 	_goldForSell = goldForSell;
 

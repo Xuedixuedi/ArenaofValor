@@ -10,6 +10,7 @@ Buff* Buff::create(EBuffType buffType, float duration, INT32 attack,
 	))
 	{
 		buff->autorelease();
+
 		return buff;
 	}
 	CC_SAFE_DELETE(buff);
@@ -40,6 +41,5 @@ bool Buff::init(EBuffType buffType, float duration, INT32 attack,
 	_duration = duration;
 	_beginTime = GetCurrentTime() / 1000.f;
 	_endTime = _beginTime + duration;
-
 	return true;
 }

@@ -12,6 +12,11 @@ class Record :public cocos2d::Layer
 	CC_SYNTHESIZE(INT32, _assist, Assist);
 	CC_SYNTHESIZE(INT32, _money, Money);
 
+	CC_SYNTHESIZE(Sprite*, _sprKill, SprKill);
+	CC_SYNTHESIZE(Sprite*, _sprAssist, SprAssist);
+	CC_SYNTHESIZE(Sprite*, _sprDeath, SprDeath);
+	CC_SYNTHESIZE(Sprite*, _sprGold, SprGold);
+
 private:
 
 	Label* _labelKill;

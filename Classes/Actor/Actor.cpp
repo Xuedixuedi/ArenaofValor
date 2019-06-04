@@ -33,6 +33,8 @@ bool Actor::init(HelloWorld* combatScene, ECamp camp)
 	
 	initData(combatScene, camp);
 	initHealthComp();
+	//对法强的补充
+	_magicAttack = 0;
 
 	return true;
 }
@@ -180,7 +182,7 @@ void Actor::updateAttackTarget()
 			if (!i->getAlreadyDead() && i->getCamp() != _camp && i->getPosition().distance(getPosition()) <= _attackRadius)
 			{
 				_attackTarget = i;
-				log("refCount: %d", _attackTarget->getReferenceCount());
+				//log("refCount: %d", _attackTarget->getReferenceCount());
 				break;
 			}
 		}
