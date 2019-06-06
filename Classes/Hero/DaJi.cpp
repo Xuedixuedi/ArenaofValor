@@ -1,11 +1,10 @@
 #include "DaJi.h"
 #include "Scene/HelloWorldScene.h"
-#include"Actor/BuffProjectile.h"
 
 DaJi* DaJi::create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode)
 {
 	DaJi* daJi = new(std::nothrow) DaJi;
-	if (daJi&&daJi->init(combatScene, camp, heroName, attackMode))
+	if (daJi && daJi->init(combatScene, camp, heroName, attackMode))
 	{
 		daJi->autorelease();
 		return daJi;

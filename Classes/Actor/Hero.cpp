@@ -6,6 +6,7 @@
 #include "Component/Bonus.h"
 #include "Scene/HelloWorldScene.h"
 #include <set>
+#include "Actor/Actor.h"
 
 
 Hero* Hero::create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode)
@@ -148,8 +149,7 @@ bool Hero::initRecordComp()
 
 void Hero::getEquip(Equipment* equip)
 {
-	auto buff = equip->getBuff();
-	takeBuff(buff);
+	takeBuff(equip);
 	_allBuff.popBack();
 	for (int i = 0; i < NUMBER_OF_EQUIPGRID; ++i)
 	{
@@ -158,19 +158,14 @@ void Hero::getEquip(Equipment* equip)
 			_equips[i] = equip;
 		}
 	}
-	log("%d", equip->getGoldToBuy());
 	_recordComp->addMoney(-1 * equip->getGoldToBuy());
 }
 
 void Hero::sellEquip(INT32 equipNumber)
 {
-	auto buff = _equips[equipNumber]->getBuff();
-	if (buff)
-	{
-		removeBuff(buff);
-		_recordComp->addMoney(_equips[equipNumber]->getGoldForSell());
-		_equips[equipNumber] = nullptr;
-	}
+	removeBuff(_equips[equipNumber]);
+	_recordComp->addMoney(_equips[equipNumber]->getGoldForSell());
+	_equips[equipNumber] = nullptr;
 }
 
 bool Hero::attack()
@@ -379,7 +374,7 @@ bool Hero::checkSkillStatus(INT32 skillNumber)
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
 
-	if (_vertigoLastTo >= nowTime || _silenceLastTo >= nowTime)
+	if (_alreadyDead || _vertigoLastTo >= nowTime || _silenceLastTo >= nowTime)
 	{
 		return false;
 	}
@@ -603,7 +598,7 @@ void Hero::startAnimation()
 		break;
 	}
 
-	animation->setDelayPerUnit(0.2f);
+	animation->setDelayPerUnit(0.15f);
 	animation->setLoops(-1);
 
 	auto animate = Animate::create(animation);
@@ -634,7 +629,7 @@ void Hero::updateAttackTarget()
 			{
 				if (_camp != (*it)->getCamp() && !(*it)->getAlreadyDead())
 				{
-					log("soldierPosition: %f, %f    heroPosition: %f, %f", (*it)->getPositionX(), (*it)->getPositionY(), getPositionX(), getPositionY());
+			//		log("soldierPosition: %f, %f    heroPosition: %f, %f", (*it)->getPositionX(), (*it)->getPositionY(), getPositionX(), getPositionY());
 					if ((*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
 					{
 						minHealth = (*it)->getHealthComp()->getCurrentState();
@@ -741,7 +736,7 @@ void Hero::playAttackAnimation()
 	default:
 		break;
 	}
-	animation->setDelayPerUnit(_minAttackInterval / 6);
+	animation->setDelayPerUnit(_minAttackInterval / 4);
 	animation->setLoops(1);
 	auto animate = Animate::create(animation);
 	runAction(animate);

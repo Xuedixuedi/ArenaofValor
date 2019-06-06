@@ -16,12 +16,19 @@ Spring* Spring::create(HelloWorld* combatScene, ECamp camp)
 
 bool Spring::init(HelloWorld* combatScene, ECamp camp)
 {
-	if (!Actor::init(combatScene, camp))
+	if (!Actor::init("pictures/building/redTower.png", combatScene, camp))
 	{
 		return false;
 	}
 
-	setTexture("pictures//others//wzryLogo.png");
+	if (camp == ECamp::BLUE)
+	{
+		setTexture("pictures//others//BlueSpring.png");
+	}
+	else
+	{
+		setTexture("pictures//others//RedSpring.png");
+	}
 	_minAttackInterval = 0.15;
 	_healthComp->setVisible(false);
 	_attackRadius = 400;

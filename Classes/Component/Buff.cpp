@@ -21,7 +21,7 @@ bool Buff::init(EBuffType buffType, float duration, INT32 attack,
 	INT32 defense, INT32 magicDefense, INT32 HP, INT32 MP,
 	INT32 HPRecover, INT32 MPRecover, float moveSpeed, float attackInterval)
 {
-	if (!Node::init())
+	if (!Sprite::init())
 	{
 		return false;
 	}
@@ -41,5 +41,27 @@ bool Buff::init(EBuffType buffType, float duration, INT32 attack,
 	_duration = duration;
 	_beginTime = GetCurrentTime() / 1000.f;
 	_endTime = _beginTime + duration;
+	return true;
+}
+
+bool Buff::init(ValueVector& data)
+{
+	if (!Sprite::init())
+	{
+		return false;
+	}
+
+	_buffType = EBuffType::NORMAL;
+	_duration = data.at(0).asFloat();
+	_attack = data.at(1).asInt();
+	_defense = data.at(2).asInt();
+	_magicDefense = data.at(3).asInt();
+	_HP = data.at(4).asInt();
+	_MP = data.at(5).asInt();
+	_HPRecover = data.at(6).asInt();
+	_MPRecover = data.at(7).asInt();
+	_moveSpeed = data.at(8).asFloat();
+	_attackInterval = data.at(9).asFloat();
+
 	return true;
 }

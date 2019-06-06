@@ -79,8 +79,9 @@ void StateComponent::changeMaxBy(INT32 delta)
 
 void StateComponent::changeMaxTo(INT32 newMaxState)
 {
+	auto oldMaxState = _maxState;
 	setMaxState(newMaxState);
-	setCurrentState(_currentState + newMaxState - _maxState);
+	setCurrentState(_currentState + newMaxState - oldMaxState);
 
 	updatePercent();
 }

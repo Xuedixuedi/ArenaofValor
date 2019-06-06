@@ -6,12 +6,12 @@
 #include "Scene/HelloWorldScene.h"
 #include "Actor/Projectile.h"
 #include "Component/Record.h"
-#include <string>
 
-Actor* Actor::create(HelloWorld* combatScene, ECamp camp)
+
+Actor* Actor::create(const std::string& filename, HelloWorld* combatScene, ECamp camp)
 {
 	Actor* sprite = new (std::nothrow) Actor();
-	if (sprite && sprite->init(combatScene, camp))
+	if (sprite && sprite->init(filename, combatScene, camp))
 	{
 		sprite->autorelease();
 		return sprite;
@@ -20,17 +20,13 @@ Actor* Actor::create(HelloWorld* combatScene, ECamp camp)
 	return nullptr;
 }
 
-bool Actor::init(HelloWorld* combatScene, ECamp camp)
+bool Actor::init(const std::string& filename, HelloWorld* combatScene, ECamp camp)
 {
-	if (camp == ECamp::RED && !Sprite::initWithFile("pictures/building/redTower.png"))
+	if (!Sprite::initWithFile(filename))
 	{
 		return false;
 	}
-	else if (camp == ECamp::BLUE && !Sprite::initWithFile("pictures/building/blueTower.png"))
-	{
-		return false;
-	}
-	
+
 	initData(combatScene, camp);
 	initHealthComp();
 	//对法强的补充
@@ -102,6 +98,7 @@ void Actor::initData(HelloWorld* combatScene, ECamp camp)
 	_magicDefense = TOWER_MAGIC_DEFNESE;
 	_lastAttackTime = 0.f;
 	_attackTarget = nullptr;
+	_minAttackInterval = TOWER_MIN_ATTACK_INTERVAL;
 }
 
 void Actor::initHealthComp()
@@ -127,7 +124,7 @@ bool Actor::attack()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
 
-	if (nowTime - _lastAttackTime < TOWER_MIN_ATTACK_INTERVAL)
+	if (nowTime - _lastAttackTime < _minAttackInterval)
 	{
 		return false;
 	}

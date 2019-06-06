@@ -191,7 +191,6 @@ void HouYi::updateSprSkillPosition(float delta)
 	}
 }
 
-
 bool HouYi::attack()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
@@ -217,6 +216,7 @@ bool HouYi::attack()
 
 	if (_punishState < 3)
 	{
+		log("%d", _attack);
 		auto projectile = Projectile::create("pictures/others/RemoteSoldierArrow.png", _attack, SPEED_FLY, this, _attackTarget);
 		projectile->setScale(1.5f);
 		_combatScene->_readyToLaunch.insert(nowTime + _minAttackInterval / 10 * 3, projectile);

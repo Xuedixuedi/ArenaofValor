@@ -13,7 +13,7 @@ enum EBuffType
 	NORMAL
 };
 
-class Buff : public cocos2d::Node
+class Buff : public cocos2d::Sprite
 {
 public:
 	// Ù–‘
@@ -37,6 +37,8 @@ public:
 		INT32 defense, INT32 magicDefense, INT32 HP, INT32 MP,
 		INT32 HPRecover, INT32 MPRecover, float moveSpeed, float attackInterval
 	);
+
+	virtual bool init(ValueVector& data);
 
 	static Buff* create(EBuffType buffType, float duration, INT32 attack,
 		INT32 defense, INT32 magicDefense, INT32 HP, INT32 MP,

@@ -1,6 +1,6 @@
 #pragma once
 #ifndef __Actor_h__
-#define _Actor_h_
+#define __Actor_h_
 
 #include <iostream>
 #include <string>
@@ -9,6 +9,7 @@
 #include "../Const/Constant.h"
 #include "Component/Buff.h"
 #include "Component/Equipment.h"
+
 USING_NS_CC;
 
 class StateComponent;
@@ -58,9 +59,9 @@ public:
 
 	virtual void takeDamage(EDamageType damageType, INT32 damge, Actor* instigator);
 
-	virtual bool init(HelloWorld* combatScene, ECamp camp);
+	virtual bool init(const std::string& filename, HelloWorld* combatScene, ECamp camp);
 	//
-	static Actor* create(HelloWorld* combatScene, ECamp camp);
+	static Actor* create(const std::string& filename, HelloWorld* combatScene, ECamp camp);
 
 };
 

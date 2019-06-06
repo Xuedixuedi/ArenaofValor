@@ -1,30 +1,30 @@
 #include "Equipment.h"
 
-Equipment* Equipment::create(const std::string& filename, Buff* buff, INT32 goldToBuy, INT32 goldForSell)
+Equipment* Equipment::create(EEQUIPMENT equip)
 {
 	Equipment* equipment = new(std::nothrow)Equipment;
-	if (equipment && equipment->init(filename, buff, goldToBuy, goldForSell))
+	if (equipment && equipment->init(equip))
 	{
 		equipment->autorelease();
 		return equipment;
 	}
 	CC_SAFE_DELETE(equipment);
-	return nullptr;
+	return equipment;
 }
 
-
-bool Equipment::init(const std::string& filename, Buff* buff, INT32 goldToBuy, INT32 goldForSell)
+bool Equipment::init(EEQUIPMENT equip)
 {
-	if (!Sprite::init())
+	ValueVector equipData = FileUtils::getInstance()->getValueVectorFromFile("Data/EquipData.plist").at(static_cast<INT32>(equip)).asValueVector();
+	if (!Buff::init(equipData))
 	{
 		return false;
 	}
 
-	setTexture(filename);
+	setTexture(StringUtils::format("pictures/others/%d.png", static_cast<INT32>(equip) + 1));
 
-	_buff = buff;
-	_goldToBuy = goldToBuy;
-	_goldForSell = goldForSell;
-
+	_goldToBuy = equipData.at(10).asInt();
+	_goldForSell = equipData.at(11).asInt();
+	
 	return true;
 }
+

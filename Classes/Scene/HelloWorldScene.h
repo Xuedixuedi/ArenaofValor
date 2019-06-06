@@ -8,6 +8,7 @@
 #include "Actor/Actor.h"
 #include "Const/Constant.h"
 #include "Const/MapInfo.h"
+#include <string>
 
 USING_NS_CC;
 
@@ -27,6 +28,8 @@ class HelloWorld : public cocos2d::Scene
 	CC_SYNTHESIZE(HRocker*, _rocker, Rocker);
 	CC_SYNTHESIZE(TMXTiledMap*, _map, Map);
 	CC_SYNTHESIZE(MapInfo, _mapInformation, MapInformation);
+	CC_SYNTHESIZE(Actor*, _blueShuiJin, BlueShuiJin);
+	CC_SYNTHESIZE(Actor*, _redShuiJin, RedShuiJin);
 
 public:
 	//公开容器
@@ -37,8 +40,12 @@ public:
 	Vector<Soldier*> _soldiers;
 	Map<float, Projectile*> _readyToLaunch;
 	std::vector<Damage> _damages;
+
 private:
-	SoldierPath* _soldierPathPoints;
+
+	Sprite* _sprBG;
+	SoldierPath* _blueSoldierPathPoints;
+	SoldierPath* _redSoldierPathPoints;
 	void generateSoldiers(float delta);
 	void selectSpriteForTouch(Point touchLocation);
 	//初始化
@@ -77,6 +84,7 @@ private:
 	void updateSkillPanel();
 
 public:
+
     static cocos2d::Scene* createScene();
     virtual bool init();
 	virtual void initSpring();

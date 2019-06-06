@@ -8,26 +8,26 @@
 #define ORIGIN_INTERVAL				  0.2
 #define PRESS						  1
 #define RELEASE						  2
-#define MIN_ATTACK_INTERVAL			  0.8
+#define MIN_ATTACK_INTERVAL			  1.0
 
 #define VISION_RADIUS				  400
 
 #define TOWER_MIN_ATTACK_INTERVAL	  2
-#define TOWER_HP					  4000
+#define TOWER_HP					  8000
 #define TOWER_ATTACK_RADIUS           500
-#define TOWER_ARMOR				      50
+#define TOWER_ARMOR				      300
 #define TOWER_MAGIC_DEFNESE           100
 #define TOWER_ATTACK				  470
 
 #define DEFAULT_ATTACK_RADIUS_MELEE   100
-#define DEFAULT_ATTACK_RADIUS_REMOTE  500
+#define DEFAULT_ATTACK_RADIUS_REMOTE  300
 #define DEFAULT_HOSTILITY_RADIUS	  500	
 
 #define SOLDIER_MOVE_SPEED			  140	//240
-#define SOLDIER_ARMOR				  30
+#define SOLDIER_ARMOR				  20
 #define SOLDIER_MAGIC_DEFENSE         50
-#define SOLDIER_ATTACK                10 //100
-#define SOLDIER_HP                    1000
+#define SOLDIER_ATTACK                100 //100
+#define SOLDIER_HP                    800
 
 #define MELEE_GOLD					  30
 #define MELEE_EXP					  70
@@ -96,7 +96,11 @@
 #define TAG__TA 1001
 #define TAG_JIA 1010
 
-#define RED_TOWER_POSITION  Vec2(4464, 688)
+#define RED_TOWER_POSITION		Vec2(4464, 688)
+#define BLUE_TOWER_POSITION		Vec2(1936, 688)
+#define RED_SHUIJIN_POSITION	Vec2(5776, 688)
+#define BLUE_SHUIJIN_POSITION   Vec2(624,688)
+
 
 USING_NS_CC;
 
@@ -139,6 +143,19 @@ enum EDamageType
 {
 	PHYSICS_DAMAGE,
 	MAGIC_DAMAGE
+};
+
+enum EEQUIPMENT
+{
+	CAOXIE,
+	TIEJIAN,
+	BISHOU,
+	LANBAOSHI,
+	HUFU,
+	HONGBAOSHI,
+	PIFENG,
+	BUJIA,
+	SHUIJIN
 };
 
 typedef std::vector<std::vector<bool>> DyaDicVector;

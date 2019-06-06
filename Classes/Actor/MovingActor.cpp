@@ -48,5 +48,6 @@ void MovingActor::takeBuff(Buff* buff)
 	if (buff->getBuffType() == EBuffType::VERTIGO)
 	{
 		_vertigoLastTo = std::max(_vertigoLastTo, buff->getEndTime());
+		log("%f", _vertigoLastTo);
 	}
 }

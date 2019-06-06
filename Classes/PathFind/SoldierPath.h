@@ -29,8 +29,6 @@ public:
 	virtual bool init(const std::string& filename, MapInfo map);
 
 	static SoldierPath* create(const std::string& filename, MapInfo map);
-
-
 };
 
 #endif // !__SOLDIERPATH_H__

@@ -127,6 +127,7 @@ void Soldier::initHealthComp()
 void Soldier::updateState()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
+//	log("%f %f", nowTime, _vertigoLastTo);
 	if (nowTime <= _vertigoLastTo)
 	{
 		stopAllActions();

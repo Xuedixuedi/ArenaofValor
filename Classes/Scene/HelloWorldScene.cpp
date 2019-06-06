@@ -13,6 +13,7 @@
 #include "Hero/DaJi.h"
 #include "Actor/Spring.h"
 #include "Scene/ShopLayer.h"
+
 Scene* HelloWorld::createScene()
 {
 	return HelloWorld::create();
@@ -34,7 +35,7 @@ bool HelloWorld::init()
 	_visibleSize = Director::getInstance()->getVisibleSize();
 	_origin = Director::getInstance()->getVisibleOrigin();
 	
-	//test();
+//	test();
 
 	initMapLayer();
 
@@ -63,11 +64,19 @@ bool HelloWorld::init()
 
 void HelloWorld::initSpring()
 {
-	auto spring = Spring::create(this, ECamp::BLUE);
 	auto size = _map->getBoundingBox().size;
-	spring->setPosition(Vec2(200, size.height / 2));
-	spring->setScale(0.3);
-	_map->addChild(spring);
+
+	auto blueSpring = Spring::create(this, ECamp::BLUE);
+	blueSpring->setPosition(Vec2(500, size.height / 2));
+	blueSpring->setScale(0.3);
+	blueSpring->setScale(3);
+	_map->addChild(blueSpring);
+
+	auto redSpring = Spring::create(this, ECamp::RED);
+	redSpring->setPosition(Vec2(5900, size.height / 2));
+	redSpring->setScale(0.3);
+	redSpring->setScale(3);
+	_map->addChild(redSpring);
 }
 
 void HelloWorld::initShop()
@@ -81,6 +90,11 @@ void HelloWorld::initShop()
 
 void HelloWorld::initMapLayer()
 {
+	_sprBG = Sprite::create("pictures//others//BG.png");
+	_sprBG->setAnchorPoint(Vec2(0, 0.5));
+	_sprBG->setPosition(Vec2(-1000, 360));
+	addChild(_sprBG);
+
 	_map = TMXTiledMap::create("map/map2.tmx");
 	auto size = _map->getBoundingBox().size;
 	_map->setAnchorPoint(Vec2::ZERO);
@@ -91,8 +105,10 @@ void HelloWorld::initMapLayer()
 	wallLayer->setZOrder(0);
 
 	_mapInformation = MapInfo(_map);
-	_soldierPathPoints = SoldierPath::create("Data/PathPoints.txt", _mapInformation);
-	_actors.pushBack(_soldierPathPoints);
+	_blueSoldierPathPoints = SoldierPath::create("Data/BluePathPoints.txt", _mapInformation);
+	_redSoldierPathPoints = SoldierPath::create("Data/RedPathPoints.txt", _mapInformation);
+	_actors.pushBack(_blueSoldierPathPoints);
+	_actors.pushBack(_redSoldierPathPoints);
 
 	auto collisionLayer = _map->getLayer("collision");
 	collisionLayer->setVisible(false);
@@ -110,7 +126,7 @@ void HelloWorld::initHero()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	_myHero = DaJi::create(this, ECamp::BLUE, "DaJi", EAttackMode::REMOTE);
+	_myHero = HouYi::create(this, ECamp::BLUE, "HouYi", EAttackMode::REMOTE);
 	//log("HP: %d", _myHero->getHealthComp()->getMaxState());
 	_myHero->setPosition(visibleSize / 2);
 	_myHero->setTag(TAG_MYHERO);
@@ -139,12 +155,33 @@ void HelloWorld::initHRocker()
 
 void HelloWorld::initTower()
 {
-	auto tower = Actor::create(this, ECamp::RED);
-	tower->setPosition(RED_TOWER_POSITION);
-	tower->setScale(0.7);
-	_map->addChild(tower);
-	_towers.pushBack(tower);
-	_actors.pushBack(tower);
+	auto redTower = Actor::create("pictures/building/redTower.png", this, ECamp::RED);
+	redTower->setPosition(RED_TOWER_POSITION);
+	redTower->setScale(0.7);
+	_map->addChild(redTower);
+	_towers.pushBack(redTower);
+	_actors.pushBack(redTower);
+
+	auto blueTower = Actor::create("pictures/building/blueTower.png", this, ECamp::BLUE);
+	blueTower->setPosition(BLUE_TOWER_POSITION);
+	blueTower->setScale(0.7);
+	_map->addChild(blueTower);
+	_towers.pushBack(blueTower);
+	_actors.pushBack(blueTower);
+
+	_blueShuiJin = Actor::create("pictures/building/blueShuiJin.png", this, ECamp::BLUE);
+	_blueShuiJin->setPosition(BLUE_SHUIJIN_POSITION);
+	_blueShuiJin->getHealthComp()->changeMaxTo(16000);
+	_map->addChild(_blueShuiJin);
+	_towers.pushBack(_blueShuiJin);
+	_actors.pushBack(_blueShuiJin);
+
+	_redShuiJin = Actor::create("pictures/building/redShuiJin.png", this, ECamp::RED);
+	_redShuiJin->setPosition(RED_SHUIJIN_POSITION);
+	_redShuiJin->getHealthComp()->changeMaxTo(16000);
+	_map->addChild(_redShuiJin);
+	_towers.pushBack(_redShuiJin);
+	_actors.pushBack(_redShuiJin);
 }
 
 void HelloWorld::initListener()
@@ -369,7 +406,10 @@ void HelloWorld::updateHeroPosition()
 		{
 			_myHero->heroMove();
 			if (GetCurrentTime() / 1000.f - _myHero->getLastAttackTime() > _myHero->getMinAttackInterval())
+			{
 				_map->setPosition(_map->getPosition() - positionDelta);
+				_sprBG->setPosition(_sprBG->getPosition() - positionDelta);
+			}
 		}
 	}
 	else
@@ -383,42 +423,53 @@ void HelloWorld::generateSoldiers(float delta)
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	auto origin = Director::getInstance()->getVisibleOrigin();
 
-	auto soldier_1 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
-	soldier_1->setPosition(visibleSize / 4);
-	soldier_1->setNextDest(_soldierPathPoints->getNextPoint(soldier_1->getPosition()));
+	auto soldier_1 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _blueSoldierPathPoints);
+	soldier_1->setPosition(visibleSize / 4 + Size(200, 0));
+	soldier_1->setNextDest(_blueSoldierPathPoints->getNextPoint(soldier_1->getPosition()));
 	soldier_1->setScale(1.5);
 	_map->addChild(soldier_1);
 	_soldiers.pushBack(soldier_1);
 	_actors.pushBack(soldier_1);
 
-	auto soldier_2 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
-	soldier_2->setPosition(visibleSize / 4 + Size(0, 30));
-	soldier_2->setNextDest(_soldierPathPoints->getNextPoint(soldier_2->getPosition()));
+	auto soldier_2 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _blueSoldierPathPoints);
+	soldier_2->setPosition(visibleSize / 4 + Size(100, 0));
+	soldier_2->setNextDest(_blueSoldierPathPoints->getNextPoint(soldier_2->getPosition()));
 	soldier_2->setScale(1.5);
 	_map->addChild(soldier_2);
 	_soldiers.pushBack(soldier_2);
 	_actors.pushBack(soldier_2);
 
-	auto soldier_3 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
-	soldier_3->setPosition(visibleSize / 4 + Size(0, 60));
-	soldier_3->setNextDest(_soldierPathPoints->getNextPoint(soldier_3->getPosition()));
-	soldier_3->setScale(1.5);
-	_map->addChild(soldier_3);
-	_soldiers.pushBack(soldier_3);
-	_actors.pushBack(soldier_3);
-
-	auto soldier_4 = Soldier::create(this, EAttackMode::REMOTE, ECamp::RED, ERoad::DOWNWAY, _soldierPathPoints);
-	soldier_4->setPosition(visibleSize / 4 + Size(0, 90));
-	soldier_4->setNextDest(_soldierPathPoints->getNextPoint(soldier_4->getPosition()));
+	auto soldier_4 = Soldier::create(this, EAttackMode::REMOTE, ECamp::RED, ERoad::DOWNWAY, _blueSoldierPathPoints);
+	soldier_4->setPosition(visibleSize / 4);
+	soldier_4->setNextDest(_blueSoldierPathPoints->getNextPoint(soldier_4->getPosition()));
 	soldier_4->setScale(1.5);
 	_map->addChild(soldier_4);
 	_soldiers.pushBack(soldier_4);
 	_actors.pushBack(soldier_4);
+	
+	auto soldier_5 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _redSoldierPathPoints);
+	soldier_5->setPosition(Size(6200, 360) - visibleSize / 4);
+	soldier_5->setNextDest(_redSoldierPathPoints->getNextPoint(soldier_5->getPosition()));
+	soldier_5->setScale(1.5);
+	_map->addChild(soldier_5);
+	_soldiers.pushBack(soldier_5);
+	_actors.pushBack(soldier_5);
 
-	auto skillPosition = visibleSize / 4 + (Size)_map->getPosition();
-	//log("skillPosition: %f, %f", skillPosition.width, skillPosition.height);
-	//_myHero->castSkill_2(visibleSize / 4 + (Size)_map->getPosition());
+	auto soldier_6 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _redSoldierPathPoints);
+	soldier_6->setPosition(Size(6300, 360) - visibleSize / 4);
+	soldier_6->setNextDest(_redSoldierPathPoints->getNextPoint(soldier_6->getPosition()));
+	soldier_6->setScale(1.5);
+	_map->addChild(soldier_6);
+	_soldiers.pushBack(soldier_6);
+	_actors.pushBack(soldier_6);
 
+	auto soldier_8 = Soldier::create(this, EAttackMode::REMOTE, ECamp::RED, ERoad::DOWNWAY, _redSoldierPathPoints);
+	soldier_8->setPosition(Size(6400, 360) - visibleSize / 4);
+	soldier_8->setNextDest(_redSoldierPathPoints->getNextPoint(soldier_8->getPosition()));
+	soldier_8->setScale(1.5);
+	_map->addChild(soldier_8);
+	_soldiers.pushBack(soldier_8);
+	_actors.pushBack(soldier_8);
 }
 
 void HelloWorld::selectSpriteForTouch(Point touchLocation)
@@ -452,13 +503,11 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		INT32 no;
 		if ((equip = _shop->getNumberOfEquip(touch->getLocation())) != nullptr)
 		{
-			log("%d", equip->getBuff()->getMoveSpeed());
-			log("%f", _myHero->getMoveSpeed());
 			if (getLabelRecord()->getMoney() >= equip->getGoldToBuy())
 			{
 				_shop->getEquip(equip);
 				_myHero->getEquip(equip);
-				log("%f", _myHero->getMoveSpeed());
+		//		log("%f", _myHero->getMoveSpeed());
 			}
 		}
 		else if ((no = _shop->removeEquip(touch->getLocation())) != -1)
@@ -576,7 +625,7 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 			_isMouseSprite = true;
 			_mouseSprite->setVisible(true);
 		}
-		if (keyCode == EventKeyboard::KeyCode::KEY_2)
+		if (keyCode == EventKeyboard::KeyCode::KEY_2 && daJi->checkSkillStatus(2))
 		{
 			_myHero->castSkill_2();
 		}
@@ -588,6 +637,7 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 	keys[keyCode] = true;
 	return true;
 }
+
 bool HelloWorld::onReleaseKey(EventKeyboard::KeyCode keyCode, Event * event)
 {
 	auto houYi = dynamic_cast<HouYi*>(_myHero);
@@ -610,6 +660,7 @@ bool HelloWorld::onReleaseKey(EventKeyboard::KeyCode keyCode, Event * event)
 
 	return true;
 }
+
 bool HelloWorld::isKeyPressed(EventKeyboard::KeyCode keyCode)
 {
 	if (keys[keyCode])
@@ -628,7 +679,7 @@ bool HelloWorld::onMouseMove(Event * ee)
 	auto ex = e->getCursorX();
 	auto ey = e->getCursorY();
 	_mouseSprite->setPosition(Vec2(ex, ey));
-	log("Mouse(%f,%f)", ex, ey);
+//	log("Mouse(%f,%f)", ex, ey);
 
 	return true;
 }
