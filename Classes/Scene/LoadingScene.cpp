@@ -7,7 +7,6 @@ cocos2d::Scene* LoadingScene::createScene()
 	return LoadingScene::create();
 }
 
-
 bool LoadingScene::init()
 {
 	if (!Scene::init())
@@ -152,42 +151,65 @@ void LoadingScene::LoadingAnimation()
 	heroName = "YaSe";
 
 	auto animation_16 = Animation::create();
-	animation_16->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup1.png", heroName.getCString(), heroName.getCString()));
-	animation_16->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup2.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_16->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	AnimationCache::getInstance()->addAnimation(animation_16, StringUtils::format("%sMoveUp", heroName.getCString()));
 
 	auto animation_17 = Animation::create();
-	animation_17->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supLeft1.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_17->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supLeft%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	animation_17->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supLeft2.png", heroName.getCString(), heroName.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_17, StringUtils::format("%sMoveUpLeft", heroName.getCString()));
 
 	auto animation_18 = Animation::create();
-	animation_18->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supRight1.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_18->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supRight%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	animation_18->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supRight2.png", heroName.getCString(), heroName.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_18, StringUtils::format("%sMoveUpRight", heroName.getCString()));
 
 	auto animation_19 = Animation::create();
-	animation_19->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sleft1.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_19->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sleft%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	animation_19->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sleft2.png", heroName.getCString(), heroName.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_19, StringUtils::format("%sMoveLeft", heroName.getCString()));
 
 	auto animation_20 = Animation::create();
-	animation_20->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sright1.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_20->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sright%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	animation_20->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sright2.png", heroName.getCString(), heroName.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_20, StringUtils::format("%sMoveRight", heroName.getCString()));
 
 	auto animation_21 = Animation::create();
-	animation_21->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdown1.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_21->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdown%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	animation_21->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdown2.png", heroName.getCString(), heroName.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_21, StringUtils::format("%sMoveDown", heroName.getCString()));
 
 	auto animation_22 = Animation::create();
-	animation_22->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownLeft1.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_22->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownLeft%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	animation_22->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownLeft2.png", heroName.getCString(), heroName.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_22, StringUtils::format("%sMoveDownLeft", heroName.getCString()));
 
 	auto animation_23 = Animation::create();
-	animation_23->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight1.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_23->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	animation_23->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight2.png", heroName.getCString(), heroName.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_23, StringUtils::format("%sMoveDownRight", heroName.getCString()));
 
@@ -258,43 +280,59 @@ void LoadingScene::LoadingAnimation()
 	heroName = "DaJi";
 
 	auto animation_32 = Animation::create();
-	animation_32->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supLeft1.png", heroName.getCString(), heroName.getCString()));
-	animation_32->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supLeft2.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_32->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supLeft%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	AnimationCache::getInstance()->addAnimation(animation_32, StringUtils::format("%sMoveUpLeft", heroName.getCString()));
 
 	auto animation_33 = Animation::create();
-	animation_33->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supRight1.png", heroName.getCString(), heroName.getCString()));
-	animation_33->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supRight2.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_33->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%supRight%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	AnimationCache::getInstance()->addAnimation(animation_33, StringUtils::format("%sMoveUpRight", heroName.getCString()));
 
 	auto animation_34 = Animation::create();
-	animation_34->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sleft1.png", heroName.getCString(), heroName.getCString()));
-	animation_34->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sleft2.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_34->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sleft%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	AnimationCache::getInstance()->addAnimation(animation_34, StringUtils::format("%sMoveLeft", heroName.getCString()));
 
 	auto animation_35 = Animation::create();
-	animation_35->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sright1.png", heroName.getCString(), heroName.getCString()));
-	animation_35->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sright2.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_35->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sright%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	AnimationCache::getInstance()->addAnimation(animation_35, StringUtils::format("%sMoveRight", heroName.getCString()));
 
 	auto animation_36 = Animation::create();
-	animation_36->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdown1.png", heroName.getCString(), heroName.getCString()));
-	animation_36->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdown2.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_36->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdown%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	AnimationCache::getInstance()->addAnimation(animation_36, StringUtils::format("%sMoveDown", heroName.getCString()));
 
 	auto animation_37 = Animation::create();
-	animation_37->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownLeft1.png", heroName.getCString(), heroName.getCString()));
-	animation_37->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownLeft2.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_37->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownLeft%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	AnimationCache::getInstance()->addAnimation(animation_37, StringUtils::format("%sMoveDownLeft", heroName.getCString()));
 
 	auto animation_38 = Animation::create();
-	animation_38->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight1.png", heroName.getCString(), heroName.getCString()));
-	animation_38->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight2.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_38->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sdownRight%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	AnimationCache::getInstance()->addAnimation(animation_38, StringUtils::format("%sMoveDownRight", heroName.getCString()));
 
 	auto animation_39 = Animation::create();
-	animation_39->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup1.png", heroName.getCString(), heroName.getCString()));
-	animation_39->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup2.png", heroName.getCString(), heroName.getCString()));
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_39->addSpriteFrameWithFileName(StringUtils::format("pictures\\hero\\%s\\%sup%d.png", heroName.getCString(), heroName.getCString(), i));
+	}
 	AnimationCache::getInstance()->addAnimation(animation_39, StringUtils::format("%sMoveUp", heroName.getCString()));
 
 	auto animation_40 = Animation::create();

@@ -67,15 +67,15 @@ void HelloWorld::initSpring()
 	auto size = _map->getBoundingBox().size;
 
 	auto blueSpring = Spring::create(this, ECamp::BLUE);
-	blueSpring->setPosition(Vec2(500, size.height / 2));
+	blueSpring->setPosition(BLUE_HERO_BIRTHPLACE);
 	blueSpring->setScale(0.3);
-	blueSpring->setScale(3);
+	blueSpring->setScale(1.5);
 	_map->addChild(blueSpring);
 
 	auto redSpring = Spring::create(this, ECamp::RED);
-	redSpring->setPosition(Vec2(5900, size.height / 2));
+	redSpring->setPosition(RED_HERO_BIRTHPLACE);
 	redSpring->setScale(0.3);
-	redSpring->setScale(3);
+	redSpring->setScale(1.5);
 	_map->addChild(redSpring);
 }
 
@@ -126,7 +126,7 @@ void HelloWorld::initHero()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	_myHero = HouYi::create(this, ECamp::BLUE, "HouYi", EAttackMode::REMOTE);
+	_myHero = YaSe::create(this, ECamp::BLUE, "YaSe", EAttackMode::MELEE);
 	//log("HP: %d", _myHero->getHealthComp()->getMaxState());
 	_myHero->setPosition(visibleSize / 2);
 	_myHero->setTag(TAG_MYHERO);
@@ -423,7 +423,7 @@ void HelloWorld::generateSoldiers(float delta)
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	auto origin = Director::getInstance()->getVisibleOrigin();
 
-	auto soldier_1 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _blueSoldierPathPoints);
+	auto soldier_1 = Soldier::create(this, EAttackMode::MELEE, ECamp::BLUE, ERoad::DOWNWAY, _blueSoldierPathPoints);
 	soldier_1->setPosition(visibleSize / 4 + Size(200, 0));
 	soldier_1->setNextDest(_blueSoldierPathPoints->getNextPoint(soldier_1->getPosition()));
 	soldier_1->setScale(1.5);
@@ -431,7 +431,7 @@ void HelloWorld::generateSoldiers(float delta)
 	_soldiers.pushBack(soldier_1);
 	_actors.pushBack(soldier_1);
 
-	auto soldier_2 = Soldier::create(this, EAttackMode::MELEE, ECamp::RED, ERoad::DOWNWAY, _blueSoldierPathPoints);
+	auto soldier_2 = Soldier::create(this, EAttackMode::MELEE, ECamp::BLUE, ERoad::DOWNWAY, _blueSoldierPathPoints);
 	soldier_2->setPosition(visibleSize / 4 + Size(100, 0));
 	soldier_2->setNextDest(_blueSoldierPathPoints->getNextPoint(soldier_2->getPosition()));
 	soldier_2->setScale(1.5);
@@ -439,7 +439,7 @@ void HelloWorld::generateSoldiers(float delta)
 	_soldiers.pushBack(soldier_2);
 	_actors.pushBack(soldier_2);
 
-	auto soldier_4 = Soldier::create(this, EAttackMode::REMOTE, ECamp::RED, ERoad::DOWNWAY, _blueSoldierPathPoints);
+	auto soldier_4 = Soldier::create(this, EAttackMode::REMOTE, ECamp::BLUE, ERoad::DOWNWAY, _blueSoldierPathPoints);
 	soldier_4->setPosition(visibleSize / 4);
 	soldier_4->setNextDest(_blueSoldierPathPoints->getNextPoint(soldier_4->getPosition()));
 	soldier_4->setScale(1.5);
@@ -571,7 +571,6 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 	}
 	else
 	{
-
 		//不在攻击间隔内
 		if (nowTime - _myHero->getLastAttackTime() > _myHero->getMinAttackInterval())
 		{
@@ -652,6 +651,14 @@ bool HelloWorld::onReleaseKey(EventKeyboard::KeyCode keyCode, Event * event)
 	if (yaSe)
 	{
 		if (keyCode == EventKeyboard::KeyCode::KEY_1 || keyCode == EventKeyboard::KeyCode::KEY_3 || keyCode == EventKeyboard::KeyCode::KEY_2)
+		{
+			keys[keyCode] = false;
+		}
+	}
+	auto daJi = dynamic_cast<DaJi*>(_myHero);
+	if (daJi)
+	{
+		if (keyCode == EventKeyboard::KeyCode::KEY_2 || keyCode == EventKeyboard::KeyCode::KEY_3)
 		{
 			keys[keyCode] = false;
 		}

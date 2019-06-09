@@ -242,13 +242,18 @@ void YaSe::castSkill_3()
 			_magicComp->changeStateBy(-1 * _magicConsume_3);
 			_standingAngle = MyMath::getRad(getPosition(), attackHero->getPosition());
 			updateDirection();
+			auto delta = attackHero->getPosition() - getPosition();
 			auto action = Sequence::create
 			(
-				MoveTo::create(0.2, attackHero->getPosition()),
+				MoveBy::create(0.2, delta),
 				CallFunc::create(CC_CALLBACK_0(YaSe::playAttackAnimation, this)),
 				NULL
 			);
 			runAction(action);
+			if (this == _combatScene->getMyHero())
+			{
+				_combatScene->getMap()->runAction(MoveBy::create(0.2, -1 * delta));
+			}
 
 			auto damage = attackHero->getHealthComp()->getMaxState() * (0.1 + 0.05 * _skillLevel_3);
 			_combatScene->_damages.push_back(Damage(damage, this, attackHero, EDamageType::MAGIC_DAMAGE, 0.2 + _minAttackInterval / 2));

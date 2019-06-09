@@ -16,7 +16,7 @@ bool Record::init()
 
 	initLabel();
 
-	schedule(schedule_selector(Record::updateMoney), 1.f, -1, 1.f);
+	schedule(schedule_selector(Record::updateMoney), 2.f, -1, 1.f);
 
 	return true;
 }

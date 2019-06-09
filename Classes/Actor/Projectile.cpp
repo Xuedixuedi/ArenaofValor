@@ -43,7 +43,7 @@ void Projectile::calculatePosition()
 	auto dx = delta.x;
 	auto dy = delta.y;
 	setRotation(360 - MyMath::getRad(getPosition(), _target->getPosition()) / M_PI * 180);
-	setPosition(getPosition() + Vec2(dx / distance * _speed / 60, dy / distance * _speed / 60));
+	setPosition(getPosition() + Vec2(dx / distance * _speed / FRAMES_PER_SECOND, dy / distance * _speed / FRAMES_PER_SECOND));
 }
 
 float Projectile::calculateDistance() const

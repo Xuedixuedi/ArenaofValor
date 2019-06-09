@@ -54,6 +54,7 @@ void DaJi::updateSprSkill_1_Position(float delta)
 
 void DaJi::castSkill_1(Point mousePosition)
 {
+	log("HPRecover : %d", _healthComp->getRecoverRate());
 	//技能蓝耗
 	_magicComp->changeStateBy(-1 * _magicConsume_1);
 	//更新技能释放时间
@@ -72,6 +73,7 @@ void DaJi::castSkill_1(Point mousePosition)
 
 void DaJi::castSkill_2()
 {
+	log("HPRecover : %d", _healthComp->getRecoverRate());
 	updateAttackTarget();
 	if (_attackTarget)
 	{
@@ -94,6 +96,7 @@ void DaJi::castSkill_2()
 
 void DaJi::castSkill_3()
 {
+	log("HPRecover : %d", _healthComp->getRecoverRate());
 	updateAttackTarget();
 	if (_attackTarget)
 	{		

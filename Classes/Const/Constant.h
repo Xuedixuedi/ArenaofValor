@@ -4,6 +4,8 @@
 
 #include "cocos2d.h"
 
+#define FRAMES_PER_SECOND             30
+
 #define ORIGIN_RADIUS				  700
 #define ORIGIN_INTERVAL				  0.2
 #define PRESS						  1
@@ -34,8 +36,8 @@
 #define REMOTE_GOLD					  20
 #define REMOTE_EXP					  50
 
-#define BLUE_HERO_BIRTHPLACE          Point(540, 360)
-#define RED_HERO_BIRTHPLACE           Point(540, 360)
+#define BLUE_HERO_BIRTHPLACE          Point(340, 260)
+#define RED_HERO_BIRTHPLACE           Point(6040, 1276)
 
 #define MIN_DEGREE_IN_RAD             0.3926991
 
@@ -215,7 +217,7 @@ namespace MyMath
 
 	inline Vec2 calculatePositionDelta(float angle, float speed)
 	{
-		return Vec2(cos(angle) * speed / 60, sin(angle) * speed / 60);
+		return Vec2(cos(angle) * speed / FRAMES_PER_SECOND, sin(angle) * speed / FRAMES_PER_SECOND);
 	}
 };
 
