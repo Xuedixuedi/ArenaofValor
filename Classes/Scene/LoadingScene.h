@@ -5,7 +5,7 @@
 
 USING_NS_CC;
 
-class LoadingScene :public cocos2d::Scene
+class LoadingScene :public cocos2d::Layer
 {
 private:
 
@@ -14,6 +14,8 @@ private:
 	void changeScene();
 
 public:
+
+	Sprite* _sprLoading;
 
 	static cocos2d::Scene* createScene();
 

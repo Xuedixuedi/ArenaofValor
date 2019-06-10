@@ -143,6 +143,8 @@ bool Hero::initExpComp()
 bool Hero::initRecordComp()
 {
 	_recordComp = Record::create();
+	_combatScene->getMap()->addChild(_recordComp);
+	_recordComp->setVisible(false);
 
 	return true;
 }
@@ -207,6 +209,10 @@ void Hero::die()
 	_alreadyDead = true;
 	_lastTimeDead = nowTime;
 	_resurgenceTime = 6 + 4 * getExpComp()->getLevel() + nowTime;
+
+	auto birthPlace = _camp == ECamp::BLUE ? BLUE_HERO_BIRTHPLACE : RED_HERO_BIRTHPLACE;
+	setPosition(birthPlace);
+
 	removeAllBuff();
 
 	_recordComp->updateDeath();
@@ -419,9 +425,6 @@ void Hero::reborn()
 	_healthComp->changeStateBy(_healthComp->getMaxState());
 	_magicComp->changeStateBy(_magicComp->getMaxState());
 	setVisible(true);
-
-	auto birthPlace = _camp == ECamp::BLUE ? BLUE_HERO_BIRTHPLACE : RED_HERO_BIRTHPLACE;
-	setPosition(birthPlace);
 }
 
 void Hero::heroMove()
@@ -643,7 +646,7 @@ void Hero::updateAttackTarget()
 	{
 		for (auto it = allTowers.begin(); it != allTowers.end(); ++it)
 		{
-			if ((*it)->getHealthComp()->getCurrentState() > minHealth && _camp != (*it)->getCamp() && !(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
+			if ((*it)->getHealthComp()->getCurrentState() < minHealth && _camp != (*it)->getCamp() && !(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
 			{
 				minHealth = (*it)->getHealthComp()->getCurrentState();
 				tmpTarget = *it;

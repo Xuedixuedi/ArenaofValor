@@ -51,7 +51,7 @@ private:
 	//≥ı ºªØ
 	void initMapLayer();
 	void initLabelRecord();
-	void initHero();
+	void initHero(const std::string& myHeroName, const std::string& aiHeroName);
 	void initHRocker();
 	void initSkillPanel();
 	void initTower();
@@ -82,14 +82,16 @@ private:
 	EventListenerMouse* listenerMouse;
 	virtual bool onMouseMove(Event* event);
 	void updateSkillPanel();
+	bool gameEnd();
+	void changeScene(float delta);
 
 public:
 
     static cocos2d::Scene* createScene();
-    virtual bool init();
+    virtual bool init(const std::string& myHeroName, const std::string& aiHeroName);
 	virtual void initSpring();
 	virtual void initShop();
-    CREATE_FUNC(HelloWorld);
+	static HelloWorld* create(const std::string& myHeroName, const std::string& aiHeroName);
 };
 
 #endif 

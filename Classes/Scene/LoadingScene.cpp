@@ -1,19 +1,28 @@
 #include "LoadingScene.h"
-#include "HelloWorldScene.h"
+#include "StartGameScene.h"
 
 
 cocos2d::Scene* LoadingScene::createScene()
 {
-	return LoadingScene::create();
+	auto scene = Scene::create();
+	auto layer = LoadingScene::create();
+	scene->addChild(layer);
+	return scene;
 }
 
 bool LoadingScene::init()
 {
-	if (!Scene::init())
+	if (!Layer::init())
 	{
 		return false;
 	}
 
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	auto origin = Director::getInstance()->getVisibleOrigin();
+	_sprLoading = Sprite::create("pictures/others/loading.png");
+	_sprLoading->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+	_sprLoading->setPosition(origin + visibleSize / 2);
+	addChild(_sprLoading);
 
 	return true;
 }
@@ -658,12 +667,13 @@ void LoadingScene::LoadingAnimation()
 	}
 	animation_82->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sRight1.png", soldierType.getCString(), soldierType.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_82, StringUtils::format("%sAttackRight", soldierType.getCString()));
-
+	log("agdfshadrh");
 	changeScene();
 }
 
 void LoadingScene::changeScene()
 {
-	auto scene = HelloWorld::createScene();
-	Director::getInstance()->replaceScene(scene);
+	auto call_function = CallFunc::create
+	([] {Director::getInstance()->replaceScene(StartGame::createScene());});
+	this->runAction(call_function);
 }

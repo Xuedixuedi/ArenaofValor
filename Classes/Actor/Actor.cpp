@@ -161,25 +161,25 @@ bool Actor::attack()
 
 void Actor::updateAttackTarget()
 {
-	Vector<Hero*>& allHeroes = _combatScene->_heroes;
-	for (auto& i : allHeroes)
+	Vector<Soldier*>& allSoldiers = _combatScene->_soldiers;
+	for (auto& i : allSoldiers)
 	{
 		if (!i->getAlreadyDead() && i->getCamp() != _camp && i->getPosition().distance(getPosition()) <= _attackRadius)
 		{
 			_attackTarget = i;
+			//log("refCount: %d", _attackTarget->getReferenceCount());
 			break;
 		}
 	}
 
 	if (!_attackTarget)
 	{
-		Vector<Soldier*>& allSoldiers = _combatScene->_soldiers;
-		for (auto& i : allSoldiers)
+		Vector<Hero*>& allHeroes = _combatScene->_heroes;
+		for (auto& i : allHeroes)
 		{
 			if (!i->getAlreadyDead() && i->getCamp() != _camp && i->getPosition().distance(getPosition()) <= _attackRadius)
 			{
 				_attackTarget = i;
-				//log("refCount: %d", _attackTarget->getReferenceCount());
 				break;
 			}
 		}

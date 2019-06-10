@@ -228,7 +228,7 @@ void Soldier::attack(Actor* attackTarget)
 		break;
 	}
 
-	animation->setDelayPerUnit(_minAttackInterval / 10);
+	animation->setDelayPerUnit(_minAttackInterval / 5);
 	animation->setLoops(1);
 
 	auto animate = Animate::create(animation);

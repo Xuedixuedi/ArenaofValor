@@ -13,10 +13,12 @@
 #include "Hero/DaJi.h"
 #include "Actor/Spring.h"
 #include "Scene/ShopLayer.h"
+#include "StartGameScene.h"
+#include "Hero/AIHero.h"
 
 Scene* HelloWorld::createScene()
 {
-	return HelloWorld::create();
+	return HelloWorld::create("","");
 }
 
 static void problemLoading(const char* filename)
@@ -25,7 +27,19 @@ static void problemLoading(const char* filename)
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-bool HelloWorld::init()
+HelloWorld* HelloWorld::create(const std::string& myHeroName, const std::string& aiHeroName)
+{
+	auto helloWorld = new(std::nothrow)HelloWorld;
+	if (helloWorld && helloWorld->init(myHeroName, aiHeroName))
+	{
+		helloWorld->autorelease();
+		return helloWorld;
+	}
+	CC_SAFE_DELETE(helloWorld);
+	return nullptr;
+}
+
+bool HelloWorld::init(const std::string& myHeroName, const std::string& aiHeroName)
 {
 	if (!Scene::init())
 	{
@@ -41,7 +55,7 @@ bool HelloWorld::init()
 
 	initTower();
 	initLabelRecord();
-	initHero();
+	initHero(myHeroName, aiHeroName);
 	initHRocker();
 	initListener();
 	initSkillPanel();
@@ -98,7 +112,6 @@ void HelloWorld::initMapLayer()
 	_map = TMXTiledMap::create("map/map2.tmx");
 	auto size = _map->getBoundingBox().size;
 	_map->setAnchorPoint(Vec2::ZERO);
-	//log("%f", size.height);
 	_map->setPosition(Vec2::ZERO);
 
 	auto wallLayer = _map->getLayer("Wall");
@@ -122,21 +135,47 @@ void HelloWorld::initLabelRecord()
 	addChild(_labelRecord);
 }
 
-void HelloWorld::initHero()
+void HelloWorld::initHero(const std::string& myHeroName, const std::string& aiHeroName)
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
-
-	_myHero = YaSe::create(this, ECamp::BLUE, "YaSe", EAttackMode::MELEE);
-	//log("HP: %d", _myHero->getHealthComp()->getMaxState());
-	_myHero->setPosition(visibleSize / 2);
+	if (myHeroName == "YaSe")
+	{
+		_myHero = YaSe::create(this, ECamp::RED, myHeroName, EAttackMode::MELEE);
+	}
+	else if (myHeroName == "DaJi")
+	{
+		_myHero = DaJi::create(this, ECamp::RED, myHeroName, EAttackMode::REMOTE);
+	}
+	else
+	{
+		_myHero = HouYi::create(this, ECamp::RED, myHeroName, EAttackMode::REMOTE);
+	}
+	_myHero->setPosition(Size(6400, 720) - visibleSize / 2);
 	_myHero->setTag(TAG_MYHERO);
 	_myHero->setScale(0.5);
 	_myHero->setRecordComp(_labelRecord);
 	_map->addChild(_myHero);
 	_myHero->setZOrder(1);
+	_myHero->getRecordComp()->setVisible(true);
+	_map->setPosition(visibleSize / 2 - (Size)_myHero->getPosition());
 	_heroes.pushBack(_myHero);
 	_actors.pushBack(_myHero);
 
+	AIHero* aiHero;
+	if (aiHeroName == "YaSe")
+	{
+		aiHero = AIHero::create(this, ECamp::RED, aiHeroName, EAttackMode::MELEE, _redSoldierPathPoints);
+	}
+	else
+	{
+		aiHero = AIHero::create(this, ECamp::RED, aiHeroName, EAttackMode::REMOTE, _redSoldierPathPoints);
+	}
+	aiHero->setPosition(Size(6400, 720) - visibleSize / 2);
+	aiHero->setScale(0.5);
+	_map->addChild(aiHero);
+	aiHero->setZOrder(1);
+	_heroes.pushBack(aiHero);
+	_actors.pushBack(aiHero);
 
 	auto labelDie = Label::create("D I E", "fonts/HELVETICAEXT-NORMAL.TTF", 100);
 	labelDie->setPosition(visibleSize / 2);
@@ -210,14 +249,16 @@ void HelloWorld::initListener()
 
 void HelloWorld::update(float delta)
 {
-	TowerAttack();
-	updateHeroPosition();
-	updateBullets();
-	updateDamages();
-	updateSoldiersState();
-	updateSkillPanel();
-
-	clearObjects();
+	if (!gameEnd())
+	{
+		TowerAttack();
+		updateHeroPosition();
+		updateBullets();
+		updateDamages();
+		updateSoldiersState();
+		updateSkillPanel();
+		clearObjects();
+	}
 }
 
 void HelloWorld::clearObjects()
@@ -234,7 +275,7 @@ void HelloWorld::clearObjects()
 
 				if ((*it) == _myHero)
 				{
-					_map->setPosition(Vec2::ZERO);
+					_map->setPosition(_visibleSize / 2 - static_cast<Size>(_myHero->getPosition()));
 					getChildByTag(TAG_DIE)->setVisible(false);
 				}
 			}
@@ -393,11 +434,20 @@ void HelloWorld::updateSoldiersState()
 			i->updateState();
 		}
 	}
+
+	for (auto& i : _heroes)
+	{
+		auto aiHero = dynamic_cast<AIHero*>(i);
+		if (aiHero && !aiHero->getAlreadyDead())
+		{
+			aiHero->updateState();
+		}
+	}
 }
 
 void HelloWorld::updateHeroPosition()
 {
-	if (_rocker->getIsCanMove())
+	if (_rocker->getIsCanMove() && !_myHero->getAlreadyDead())
 	{
 		_myHero->setStandingAngle(_rocker->getAngle());
 		auto positionDelta = MyMath::calculatePositionDelta(_myHero->getStandingAngle(),_myHero->getMoveSpeed());
@@ -778,6 +828,39 @@ void HelloWorld::updateSkillPanel()
 		sprPlus_3->setVisible(false);
 	}
 
+}
+
+bool HelloWorld::gameEnd()
+{
+	if (_blueShuiJin->getAlreadyDead())
+	{
+		unscheduleUpdate();
+		_eventDispatcher->removeAllEventListeners();
+		auto sprDefeated = Sprite::create("pictures/others/defeate.png");
+		sprDefeated->setPosition(_visibleSize / 2);
+		addChild(sprDefeated);
+		scheduleOnce(schedule_selector(HelloWorld::changeScene), 5.f);
+		return true;
+	}
+	else if (_redShuiJin->getAlreadyDead())
+	{
+		unscheduleUpdate();
+		_eventDispatcher->removeAllEventListeners();
+		auto sprVictory = Sprite::create("pictures/others/victory.png");
+		sprVictory->setPosition(_visibleSize / 2);
+		addChild(sprVictory);
+		scheduleOnce(schedule_selector(HelloWorld::changeScene), 5.f);
+		return true;
+	}
+
+	return false;
+}
+
+void HelloWorld::changeScene(float delta)
+{
+	auto nextScene = StartGame::create();
+	Director::getInstance()->replaceScene(
+		TransitionSlideInT::create(1.0f / 60, nextScene));
 }
 
 void HelloWorld::initSkillPanel()

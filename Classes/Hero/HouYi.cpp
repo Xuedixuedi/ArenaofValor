@@ -51,8 +51,6 @@ void HouYi::castSkill_1()
 
 void HouYi::castSkill_2(Point mousePosition)
 {
-	//For test
-	_calmTime_2 = 0.01;
 	//
 	auto nowTime = GetCurrentTime() / 1000.f;
 	//TODO: ø€¿∂
@@ -104,7 +102,7 @@ void HouYi::castSkill_2(Point mousePosition)
 
 		Vector<Hero*>& allHeroes = _combatScene->_heroes;
 		Vector<Soldier*> allSoldiers = _combatScene->_soldiers;
-		auto buff = Buff::create(EBuffType::NORMAL, 2, 0, 0, 0, 0, 0, 0, 0, -180, 0);
+		auto buff = Buff::create(EBuffType::NORMAL, 2, 0, 0, 0, 0, 0, 0, 0, -80, 0);
 
 		for (auto it = allHeroes.begin(); it != allHeroes.end(); ++it)
 		{
@@ -136,16 +134,18 @@ void HouYi::castSkill_3(Point mousePosition)
 {
 	_magicComp->changeStateBy(-1 * _magicConsume_3);
 	auto nowTime = GetCurrentTime() / 1000.f;
+	auto actualPosition = mousePosition - _combatScene->getMap()->getPosition();
 	_lastSkillTime_3 = nowTime;
-	_birdAngle = MyMath::getRad(getPosition(), mousePosition - _combatScene->getMap()->getPosition());
+	_birdAngle = MyMath::getRad(getPosition(), actualPosition);
 	_skillPosition = getPosition();
 
-	auto sprSkill = Sprite::create("pictures//others//YaSeleft.png");
+	auto sprSkill = Sprite::create("pictures/hero/HouYi/HouYiSkill3Logo.png");
+	sprSkill->setRotation(360 - _birdAngle / M_PI * 180);
 	sprSkill->setPosition(getPosition());
 	sprSkill->setTag(TAG_HOUYI_SKILL3);
 	_combatScene->getMap()->addChild(sprSkill);
 
-	schedule(schedule_selector(HouYi::updateSprSkillPosition), 1 / 60, -1, 0.f);
+	schedule(schedule_selector(HouYi::updateSprSkillPosition), 1 / FRAMES_PER_SECOND, -1, 0.f);
 }
 
 void HouYi::updateSprSkillPosition(float delta)
@@ -165,9 +165,9 @@ void HouYi::updateSprSkillPosition(float delta)
 	}
 
 	auto targetPosition = Vec2::ZERO;
-	for (auto it = _combatScene->_soldiers.begin(); it != _combatScene->_soldiers.end(); ++it)
+	for (auto it = _combatScene->_heroes.begin(); it != _combatScene->_heroes.end(); ++it)
 	{
-		if (_camp != (*it)->getCamp() && (*it)->getPosition().distance(sprSkill->getPosition()) < contactLimit)
+		if (_camp != (*it)->getCamp() && (*it)->getPosition().distance(sprSkill->getPosition()) < contactLimit && !(*it)->getAlreadyDead())
 		{
 			unschedule(schedule_selector(HouYi::updateSprSkillPosition));
 			_combatScene->getMap()->removeChild(sprSkill);
@@ -180,9 +180,9 @@ void HouYi::updateSprSkillPosition(float delta)
 	{
 		auto buff = Buff::create(EBuffType::VERTIGO, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		auto damage = 525 + _skillLevel_3 * 175;
-		for (auto it = _combatScene->_soldiers.begin(); it != _combatScene->_soldiers.end(); ++it)
+		for (auto it = _combatScene->_heroes.begin(); it != _combatScene->_heroes.end(); ++it)
 		{
-			if (_camp != (*it)->getCamp() && (*it)->getPosition().distance(targetPosition) < effectRadius)
+			if (_camp != (*it)->getCamp() && (*it)->getPosition().distance(targetPosition) < effectRadius && !(*it)->getAlreadyDead())
 			{
 				(*it)->takeBuff(buff);
 				(*it)->takeDamage(EDamageType::MAGIC_DAMAGE, damage, this);
