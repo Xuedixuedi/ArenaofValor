@@ -31,6 +31,7 @@ public:
 	//需要一个iocontext和endpoints进行初始化
 	chat_client(boost::asio::io_context& io_service, const tcp::resolver::results_type& endpoints) : io_service_(io_service), socket_(io_service)
 	{
+
 		boost::asio::async_connect(socket_, endpoints, boost::bind(&chat_client::handle_connect, this, boost::asio::placeholders::error));
 	}
 	//接受一个chat_message对象，异步回调do_write;
@@ -43,7 +44,7 @@ public:
 	{
 		io_service_.post(boost::bind(&chat_client::do_close, this));
 	}
-private:
+public:
 	//连接回调函数，进行异步调用handle_read_header
 	void handle_connect(const boost::system::error_code& error)
 	{
@@ -71,16 +72,21 @@ private:
 		{
 			////
 			//std::string temp1(read_msg_.body());
-			//this_client->t_lock.lock();
+			//this->t_lock.lock();
 			//std::string temp(read_msg_.body(), read_msg_.body_length());
 			//this_client->_orderList.push_back(temp);
 			//this_client->t_lock.unlock();
 			////
-			CCLOG("%s", read_msg_.body());
+			//CCLOG("%s", read_msg_.body());
 			//log("%s", read_msg_.body());
-			//std::cout.write(read_msg_.body(), read_msg_.body_length());
-			//std::cout << "\n";
+			t_lock.lock();
+			chat_message* newMsg = new chat_message();
+			std::strcpy(newMsg->body(), read_msg_.body());
+			newMsg->body_length(read_msg_.body_length());
+			read_msg_list_.push_back(newMsg);
+			t_lock.unlock();
 			boost::asio::async_read(socket_, boost::asio::buffer(read_msg_.data(), chat_message::header_length), boost::bind(&chat_client::handle_read_header, this, boost::asio::placeholders::error));
+			
 		}
 		else
 		{
@@ -122,10 +128,11 @@ private:
 		socket_.close();
 	}
 
-private:
-
+public:
+	boost::mutex                t_lock;
 	boost::asio::io_service&    io_service_;    ///asio的核心类, 用于创建socket
 	tcp::socket                 socket_;        ///tcp类套接字
+	std::deque<chat_message*>   read_msg_list_;
 	chat_message                read_msg_;      ///每次循环所读取的数据对象
 	chat_message_queue          write_msgs_;    ///等待被发送的数据对象
 };
