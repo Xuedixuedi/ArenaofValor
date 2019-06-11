@@ -1,10 +1,9 @@
 #pragma once
 
-#ifndef __SELECTMODE_SCENE_H__
-#define __SELECTMODE_SCENE_H__
-
 #include "cocos2d.h"
 
+#ifndef __SELECTMODE_SCENE_H__
+#define __SELECTMODE_SCENE_H__
 
 class SelectMode :public cocos2d::Scene
 {
@@ -13,10 +12,10 @@ public:
 
 	virtual bool init();
 
-	//·µ»Ø¼üºÍ1V1¼ü
+	//¡¤????¨¹??1V1?¨¹
 	void menuBackCallBack(cocos2d::Ref *pSender);
 	void menuSingleCallBack(cocos2d::Ref *pSender);
-	void menuNetworkCallBack(cocos2d::Ref *pSender);
+	void menuNetworkCallBack(cocos2d::Ref *pSender,cocos2d::MenuItemImage *tsingleMenu);
 	void menu5v5CallBack(cocos2d::Ref *pSender);
 	void menu1v1CallBack(cocos2d::Ref *pSender);
 	void menuComingCallBack(cocos2d::Ref * pSender);
@@ -26,7 +25,7 @@ public:
 
 	CREATE_FUNC(SelectMode);
 private:
-	//Menu* _mu;
+	int _clickTimes = 0;
 };
 
 #endif

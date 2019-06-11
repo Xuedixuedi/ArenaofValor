@@ -26,10 +26,10 @@ bool SelectMode::init()
 	}
 
 	//声音
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	if (!audio->isBackgroundMusicPlaying()) {
-		audio->playBackgroundMusic("Audio/StartGame.mp3", true);
-	}
+	//auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	//if (!audio->isBackgroundMusicPlaying()) {
+	//	audio->playBackgroundMusic("Audio/StartGame.mp3", true);
+	//}
 
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
@@ -56,7 +56,10 @@ bool SelectMode::init()
 		backMenu->setPosition(Vec2(x, y));
 	}
 
-	MenuItemImage *singleMenu = MenuItemImage::create(
+	MenuItemImage *singleMenu;
+	MenuItemImage *networkMenu;
+
+	singleMenu = MenuItemImage::create(
 		"pictures/SelectMode/Danji.png",
 		"pictures/SelectMode/Danji1.png",
 		CC_CALLBACK_1(SelectMode::menuSingleCallBack, this)
@@ -75,10 +78,10 @@ bool SelectMode::init()
 		singleMenu->setPosition(Vec2(x, y));
 	}
 
-	MenuItemImage *networkMenu = MenuItemImage::create(
+	networkMenu = MenuItemImage::create(
 		"pictures/SelectMode/Lianji.png",
 		"pictures/SelectMode/Lianji1.png",
-		CC_CALLBACK_1(SelectMode::menuNetworkCallBack, this)
+		CC_CALLBACK_1(SelectMode::menuNetworkCallBack, this, singleMenu)
 	);
 
 	if (networkMenu == nullptr ||
@@ -155,26 +158,49 @@ void SelectMode::menuSingleCallBack(cocos2d::Ref * pSender)
 	log("Touch Helo Menu Item %p", item);
 }
 
-void SelectMode::menuNetworkCallBack(cocos2d::Ref * pSender)
+void SelectMode::menuNetworkCallBack(cocos2d::Ref * pSender, MenuItemImage *tsingleMenu)
 {
-	//auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
-	//auto bgSprite = Sprite::create("picture/SelectMode/PeopleNumBack.png");
-	//bgSprite->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
-	//this->addChild(bgSprite, 2);
-	////mu->setEnable(false);
+	if (_clickTimes) {
+		return;
+	}
+	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
+	auto bgSprite = Sprite::create("pictures/SelectMode/PeopleNumBack.png");
+	bgSprite->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 200));
+	this->addChild(bgSprite, 2);
 
-	//auto menu5v5 = MenuItemImage::create(
-	//	"picture/SelectMode/Qidai.png",
-	//	"picture/SelectMode/Qidai.png",
-	//	CC_CALLBACK_1(SelectMode::menu5v5CallBack, this)
-	//);
+	MenuItemImage *menu5v5 = MenuItemImage::create(
+		"pictures/SelectMode/5v5.png",
+		"pictures/SelectMode/5v5.png",
+		CC_CALLBACK_1(SelectMode::menu5v5CallBack, this)
+	);
 
-	auto nextScene = SelectHero::create();
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-	MenuItem *item = (MenuItem*)pSender;
-	log("Touch Helo Menu Item %p", item);
+	float x = 747.0;
+	float y = visibleSize.height / 2 - 200;
+	menu5v5->setPosition(Vec2(x, y));
 
+	MenuItemImage *menu1v1 = MenuItemImage::create(
+		"pictures/SelectMode/1v1.png",
+		"pictures/SelectMode/1v1.png",
+		CC_CALLBACK_1(SelectMode::menu1v1CallBack, this)
+	);
+
+	x = 373.0;
+	y = visibleSize.height / 2 - 200;
+	menu1v1->setPosition(Vec2(x, y));
+
+	auto mu = Menu::create(menu5v5, menu1v1, NULL);
+	mu->setPosition(Vec2::ZERO);
+	this->addChild(mu, 3);
+	//tnetworkMenu->setEnabled(false);
+
+
+	//auto nextScene = SelectHero::create();
+	//Director::getInstance()->replaceScene(
+	//	TransitionSlideInT::create(1.0f / 60, nextScene));
+	//MenuItem *item = (MenuItem*)pSender;
+	//log("Touch Helo Menu Item %p", item);
+
+	_clickTimes++;
 
 }
 

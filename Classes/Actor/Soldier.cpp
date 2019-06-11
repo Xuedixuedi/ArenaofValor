@@ -22,7 +22,7 @@ bool Soldier::init(HelloWorld* combatScene, EAttackMode attackMode, ECamp camp, 
 	{
 		return false;
 	}
-	
+
 	initData(combatScene, attackMode, camp, road, soldierPathPoints);
 	initHealthComp();
 
@@ -117,6 +117,16 @@ void Soldier::initHealthComp()
 	auto size = getBoundingBox().size;
 	size.height *= 1.5;
 
+	//不同阵营小兵血条颜色不同
+	if (_camp == ECamp::BLUE)
+	{
+		_healthComp->setColor(Color3B(0, 0, 255));
+	}
+	else
+	{
+		_healthComp->setColor(Color3B(255, 0, 0));
+	}
+
 	_healthComp->setScaleX(0.15);
 	_healthComp->setScaleY(0.4);
 	_healthComp->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
@@ -127,7 +137,7 @@ void Soldier::initHealthComp()
 void Soldier::updateState()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
-//	log("%f %f", nowTime, _vertigoLastTo);
+	//	log("%f %f", nowTime, _vertigoLastTo);
 	if (nowTime <= _vertigoLastTo)
 	{
 		stopAllActions();
@@ -184,7 +194,7 @@ void Soldier::updateState()
 			{
 				stopAllActions();
 				_direction = EDirection::NODIR;
-				
+
 				return;
 			}
 			else
@@ -266,7 +276,7 @@ void Soldier::die()
 			++heroCount;
 		}
 	}
-	
+
 	auto lastAttackHero = dynamic_cast<Hero*>(_lastAttackFrom);
 	if (lastAttackHero)
 	{
@@ -363,7 +373,7 @@ void Soldier::startAnimation()
 bool Soldier::updateInstigator()
 {
 	auto& heroes = _combatScene->_heroes;
-	for (auto& i:heroes)
+	for (auto& i : heroes)
 	{
 		if (i->getCamp() != _camp && !i->getAlreadyDead() && getPosition().distance(i->getPosition()) <= VISION_RADIUS)
 		{

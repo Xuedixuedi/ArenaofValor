@@ -150,7 +150,7 @@ bool SelectEnemyHero::init(const std::string& selectedHeroName)
 
 void SelectEnemyHero::menuHouyiCallBack(cocos2d::Ref * pSender)
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
+	//CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
 	auto nextScene = HelloWorld::create(_selectedHeroName, "HouYi");
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
@@ -158,7 +158,7 @@ void SelectEnemyHero::menuHouyiCallBack(cocos2d::Ref * pSender)
 
 void SelectEnemyHero::menuDajiCallBack(cocos2d::Ref * pSender)
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
+	//CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
 	auto nextScene = HelloWorld::create(_selectedHeroName, "DaJi");
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
@@ -166,7 +166,7 @@ void SelectEnemyHero::menuDajiCallBack(cocos2d::Ref * pSender)
 
 void SelectEnemyHero::menuYaseCallBack(cocos2d::Ref * pSender)
 {
-	CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
+	//CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
 	auto nextScene = HelloWorld::create(_selectedHeroName, "YaSe");
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));

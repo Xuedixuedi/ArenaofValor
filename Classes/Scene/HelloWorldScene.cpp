@@ -104,7 +104,7 @@ void HelloWorld::initShop()
 
 void HelloWorld::initMapLayer()
 {
-	_sprBG = Sprite::create("pictures//others//BG.png");
+	_sprBG = Sprite::create("pictures/others//BG.png");
 	_sprBG->setAnchorPoint(Vec2(0, 0.5));
 	_sprBG->setPosition(Vec2(-1000, 360));
 	addChild(_sprBG);
@@ -140,17 +140,17 @@ void HelloWorld::initHero(const std::string& myHeroName, const std::string& aiHe
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	if (myHeroName == "YaSe")
 	{
-		_myHero = YaSe::create(this, ECamp::RED, myHeroName, EAttackMode::MELEE);
+		_myHero = YaSe::create(this, ECamp::BLUE, myHeroName, EAttackMode::MELEE);
 	}
 	else if (myHeroName == "DaJi")
 	{
-		_myHero = DaJi::create(this, ECamp::RED, myHeroName, EAttackMode::REMOTE);
+		_myHero = DaJi::create(this, ECamp::BLUE, myHeroName, EAttackMode::REMOTE);
 	}
 	else
 	{
-		_myHero = HouYi::create(this, ECamp::RED, myHeroName, EAttackMode::REMOTE);
+		_myHero = HouYi::create(this, ECamp::BLUE, myHeroName, EAttackMode::REMOTE);
 	}
-	_myHero->setPosition(Size(6400, 720) - visibleSize / 2);
+	_myHero->setPosition(Size(1280, 720) - visibleSize / 2);
 	_myHero->setTag(TAG_MYHERO);
 	_myHero->setScale(0.5);
 	_myHero->setRecordComp(_labelRecord);
@@ -187,7 +187,7 @@ void HelloWorld::initHero(const std::string& myHeroName, const std::string& aiHe
 
 void HelloWorld::initHRocker()
 {
-	_rocker = HRocker::createHRocker("rocker.png", "rockerBG.png", Vec2(200, 100));
+	_rocker = HRocker::createHRocker("pictures/others/rocker.png", "pictures/others/rockerBG.png", Vec2(200, 100));
 	_rocker->startRocker(true);
 	addChild(_rocker);
 }

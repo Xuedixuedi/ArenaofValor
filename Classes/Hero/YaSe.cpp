@@ -186,7 +186,7 @@ void YaSe::castSkill_2()
 
 void YaSe::applySkillDamage(float delta)
 {
-	INT32 damage;
+	INT32 damage = 0;
 
 	switch (_skillLevel_2)
 	{

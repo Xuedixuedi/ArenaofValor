@@ -19,7 +19,7 @@ bool ExpComponent::init(INT32 levelUpNeededExp)
 		return false;
 	}
 
-	setTexture("rocker.png");
+	setTexture("pictures/others/rocker.png");
 
 	auto position = getPosition();
 	auto size = getContentSize();

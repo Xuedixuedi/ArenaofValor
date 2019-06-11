@@ -223,7 +223,7 @@ void Hero::die()
 	auto expForKill = (FileUtils::getInstance()->getValueMapFromFile("Data\\CommonData.plist"))["ExpNeeded"].asValueVector()[getExpComp()->getLevel()].asInt();
 	auto goldForKill = money / 3 + getExpComp()->getLevel() * 80;
 
-	auto lastAttackHero = dynamic_cast<Hero*>(_lastAttackFrom);
+	auto lastAttackHero = dynamic_cast<Hero*>(_lastAttackFrom);//最后一次攻击的那个
 	if (lastAttackHero)
 	{
 		lastAttackHero->getRecordComp()->addMoney(goldForKill / 3);

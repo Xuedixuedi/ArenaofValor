@@ -22,7 +22,7 @@ bool StateComponent::init(EStateType stateType, INT32 defaultState, INT32 defaul
 		return false;
 	}
 
-	loadTexture("slider2.png", TextureResType::LOCAL);
+	loadTexture("pictures/others/slider2.png", TextureResType::LOCAL);
 	_stateType = stateType;
 	_maxState = defaultState;
 	_currentState = defaultState;
@@ -31,14 +31,14 @@ bool StateComponent::init(EStateType stateType, INT32 defaultState, INT32 defaul
 
 	if (_stateType == EStateType::HEALTH)
 	{
-		setColor(Color3B(81, 205, 22));
+		setColor(Color3B(81, 205, 22));//ÉúÃü
 	}
 	else if(_stateType==EStateType::MAGIC)
 	{
-		setColor(Color3B(39, 123, 221));
+		setColor(Color3B(39, 123, 221));//À¶Ìõ
 	}
 
-	auto background = Sprite::create("slider1.png");
+	auto background = Sprite::create("pictures/others/slider1.png");
 	auto size = getContentSize();
 	background->setPosition(size / 2);
 	background->setOpacity(200);

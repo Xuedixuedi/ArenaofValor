@@ -63,7 +63,7 @@ void DaJi::castSkill_1(Point mousePosition)
 	//初始化技能精灵
 	_shockWaveAngle = MyMath::getRad(getPosition(), mousePosition - _combatScene->getMap()->getPosition());
 	_skillPosition = getPosition();
-	auto sprSkill_1 = Sprite::create("pictures//others//YaSeleft.png");
+	auto sprSkill_1 = Sprite::create("pictures/hero/DaJi/skill1.png");
 	sprSkill_1->setPosition(getPosition());
 	sprSkill_1->setTag(TAG_DAJI_SKILL1);
 	_combatScene->getMap()->addChild(sprSkill_1);
@@ -85,8 +85,8 @@ void DaJi::castSkill_2()
 		//初始化技能伤害和效果，buff在HelloWorld::updateBullets中生成
 		auto damage = 197.5 + 87.5*_skillLevel_2 + 0.66*_magicAttack;
 		//初始化技能精灵
-		auto sprSkill_2 = Projectile::create("pictures//others//YaSeleft.png", damage, SPEED_FLY, this, _attackTarget);
-		sprSkill_2->setScale(0.4);
+		auto sprSkill_2 = Projectile::create("pictures/hero/DaJi/Normal.png", damage, SPEED_FLY, this, _attackTarget);
+		sprSkill_2->setScale(0.7);
 		sprSkill_2->setTag(TAG_DAJI_SKILL2);
 		sprSkill_2->setPosition(getPosition());
 		_combatScene->getMap()->addChild(sprSkill_2);
@@ -108,8 +108,8 @@ void DaJi::castSkill_3()
 		//添加多个远程普攻飞行物
 		for (int i = 0; i < 10; i++)
 		{
-			auto projecctile = Projectile::create("pictures/others/RemoteSoldierArrow.png", _magicAttack*0.5, SPEED_FLY, this, _attackTarget);
-			projecctile->setScale(0.9);
+			auto projecctile = Projectile::create("pictures/hero/DaJi/Normal.png", _magicAttack*0.5, SPEED_FLY, this, _attackTarget);
+			projecctile->setScale(0.2);
 			_combatScene->_readyToLaunch.insert(nowTime + 0.1*i, projecctile);
 		}
 	}
@@ -136,8 +136,8 @@ bool DaJi::attack()
 	updateDirection();
 	//播放攻击动画
 	playAttackAnimation();
-	auto projecctile = Projectile::create("pictures/others/RemoteSoldierArrow.png", _magicAttack, SPEED_FLY, this, _attackTarget);
-	projecctile->setScale(0.9);
+	auto projecctile = Projectile::create("pictures/hero/DaJi/Normal.png", _magicAttack, SPEED_FLY, this, _attackTarget);
+	projecctile->setScale(0.2);
 	_combatScene->_readyToLaunch.insert(nowTime + _minAttackInterval / 10 * 2, projecctile);
 
 	return true;

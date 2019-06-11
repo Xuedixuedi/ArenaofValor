@@ -31,6 +31,7 @@ bool Spring::init(HelloWorld* combatScene, ECamp camp)
 	}
 	_minAttackInterval = 0.15;
 	_healthComp->setVisible(false);
+
 	_attackRadius = 400;
 
 	scheduleUpdate();
