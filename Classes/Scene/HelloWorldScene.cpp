@@ -13,6 +13,7 @@
 #include "Hero/DaJi.h"
 #include "Actor/Spring.h"
 #include "Scene/ShopLayer.h"
+#include "boost/asio.hpp"
 Scene* HelloWorld::createScene()
 {
 	return HelloWorld::create();
