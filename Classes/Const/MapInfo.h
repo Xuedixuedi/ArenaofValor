@@ -22,6 +22,8 @@ public:
 
 	PointINT getGridPoint(const Vec2& position) const;
 
+	void removeTowerCollision(const Vec2& towerPosition);
+
 	Vec2 getPrecisePosition(const PointINT& girdPoint) const;
 
 	bool checkCollision(const Vec2& position) const;

@@ -235,7 +235,7 @@ void YaSe::castSkill_3()
 	updateAttackTarget(DEFAULT_ATTACK_RADIUS_REMOTE);
 	if (_attackTarget)
 	{
-		auto attackHero = dynamic_cast<Soldier*>(_attackTarget);
+		auto attackHero = dynamic_cast<Hero*>(_attackTarget);
 		if (attackHero)
 		{
 			auto nowTime = GetCurrentTime() / 1000.f;
@@ -255,7 +255,7 @@ void YaSe::castSkill_3()
 				_combatScene->getMap()->runAction(MoveBy::create(0.2, -1 * delta));
 			}
 
-			auto damage = attackHero->getHealthComp()->getMaxState() * (0.1 + 0.05 * _skillLevel_3);
+			auto damage = attackHero->getHealthComp()->getMaxState() * (0.1 + 0.1 * _skillLevel_3);
 			_combatScene->_damages.push_back(Damage(damage, this, attackHero, EDamageType::MAGIC_DAMAGE, 0.2 + _minAttackInterval / 2));
 			scheduleOnce(schedule_selector(YaSe::sendBuff), 0.2 + _minAttackInterval / 2);
 

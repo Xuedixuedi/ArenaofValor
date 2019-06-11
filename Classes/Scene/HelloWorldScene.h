@@ -46,6 +46,7 @@ private:
 	Sprite* _sprBG;
 	SoldierPath* _blueSoldierPathPoints;
 	SoldierPath* _redSoldierPathPoints;
+	SoldierPath* _aiHeroPathPoints;
 	void generateSoldiers(float delta);
 	void selectSpriteForTouch(Point touchLocation);
 	//≥ı ºªØ

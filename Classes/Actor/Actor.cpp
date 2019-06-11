@@ -77,6 +77,7 @@ void Actor::takeDamage(EDamageType damageType, INT32 damage, Actor* instigator)
 		actualDamage = static_cast<INT32>((1.0 - 1.0 * _magicDefense / (_magicDefense + 602.f)) * damage);
 	}
 
+//	log("actual damage: %d", actualDamage);
 	_healthComp->changeStateBy(-1 * actualDamage);
 
 	_lastAttackFrom = instigator;

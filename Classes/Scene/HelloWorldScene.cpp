@@ -120,8 +120,10 @@ void HelloWorld::initMapLayer()
 	_mapInformation = MapInfo(_map);
 	_blueSoldierPathPoints = SoldierPath::create("Data/BluePathPoints.txt", _mapInformation);
 	_redSoldierPathPoints = SoldierPath::create("Data/RedPathPoints.txt", _mapInformation);
+	_aiHeroPathPoints = SoldierPath::create("Data/AIHeroPathPoints.txt", _mapInformation);
 	_actors.pushBack(_blueSoldierPathPoints);
 	_actors.pushBack(_redSoldierPathPoints);
+	_actors.pushBack(_aiHeroPathPoints);
 
 	auto collisionLayer = _map->getLayer("collision");
 	collisionLayer->setVisible(false);
@@ -164,11 +166,11 @@ void HelloWorld::initHero(const std::string& myHeroName, const std::string& aiHe
 	AIHero* aiHero;
 	if (aiHeroName == "YaSe")
 	{
-		aiHero = AIHero::create(this, ECamp::RED, aiHeroName, EAttackMode::MELEE, _redSoldierPathPoints);
+		aiHero = AIHero::create(this, ECamp::RED, aiHeroName, EAttackMode::MELEE, _aiHeroPathPoints);
 	}
 	else
 	{
-		aiHero = AIHero::create(this, ECamp::RED, aiHeroName, EAttackMode::REMOTE, _redSoldierPathPoints);
+		aiHero = AIHero::create(this, ECamp::RED, aiHeroName, EAttackMode::REMOTE, _aiHeroPathPoints);
 	}
 	aiHero->setPosition(Size(6400, 720) - visibleSize / 2);
 	aiHero->setScale(0.5);
@@ -211,6 +213,7 @@ void HelloWorld::initTower()
 	_blueShuiJin = Actor::create("pictures/building/blueShuiJin.png", this, ECamp::BLUE);
 	_blueShuiJin->setPosition(BLUE_SHUIJIN_POSITION);
 	_blueShuiJin->getHealthComp()->changeMaxTo(16000);
+	_blueShuiJin->setScale(0.7);
 	_map->addChild(_blueShuiJin);
 	_towers.pushBack(_blueShuiJin);
 	_actors.pushBack(_blueShuiJin);
@@ -218,6 +221,7 @@ void HelloWorld::initTower()
 	_redShuiJin = Actor::create("pictures/building/redShuiJin.png", this, ECamp::RED);
 	_redShuiJin->setPosition(RED_SHUIJIN_POSITION);
 	_redShuiJin->getHealthComp()->changeMaxTo(16000);
+	_redShuiJin->setScale(0.7);
 	_map->addChild(_redShuiJin);
 	_towers.pushBack(_redShuiJin);
 	_actors.pushBack(_redShuiJin);
@@ -312,6 +316,7 @@ void HelloWorld::clearObjects()
 		{
 			_map->removeChild(*it);
 			(*it)->getHealthComp()->unscheduleAllSelectors();
+			_mapInformation.removeTowerCollision((*it)->getPosition());
 			it = _towers.erase(it);
 		}
 		else

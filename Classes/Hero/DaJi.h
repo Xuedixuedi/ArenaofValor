@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "Actor/Hero.h"
+#include <set>
 
 USING_NS_CC;
 
@@ -13,6 +14,11 @@ class DaJi :public Hero
 	CC_SYNTHESIZE(float, _shockWaveAngle, ShockWaveAngle);
 	CC_SYNTHESIZE(Vec2, _skillPosition, SkillPosition);
 	//TODO;被动->降低魔抗的被动
+
+private:
+
+	std::set<Actor*> _skillDamageActors;
+
 public:
 
 	virtual void castSkill_1(Point mousePosition);
