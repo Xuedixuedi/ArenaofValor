@@ -45,6 +45,8 @@ class Hero :public MovingActor
 
 public:
 
+	Equipment* getEquipByNumber(INT32 equipNumber);
+
 	virtual void getEquip(Equipment* equip);
 
 	virtual void sellEquip(INT32 equipNumber);

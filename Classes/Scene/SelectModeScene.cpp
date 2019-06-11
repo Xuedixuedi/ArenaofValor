@@ -2,7 +2,9 @@
 #include "SelectHeroScene.h"
 #include "StartGameScene.h"
 #include "SimpleAudioEngine.h" 
-
+#include "cocos2d.h"
+#include "Network/Client.h"
+#include "Network/Command.h"
 USING_NS_CC;
 
 Scene* SelectMode::createScene()
@@ -24,12 +26,15 @@ bool SelectMode::init()
 	{
 		return false;
 	}
-
+	//netWork
+	_doSearching = false;
+	_isReady = false;
+	_isGetNum = false;
 	//声音
-	//auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	//if (!audio->isBackgroundMusicPlaying()) {
-	//	audio->playBackgroundMusic("Audio/StartGame.mp3", true);
-	//}
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	if (!audio->isBackgroundMusicPlaying()) {
+		audio->playBackgroundMusic("Audio/StartGame.mp3", true);
+	}
 
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
@@ -37,7 +42,7 @@ bool SelectMode::init()
 
 
 	//backbottom
-	MenuItemImage *backMenu = MenuItemImage::create(
+	MenuItemImage* backMenu = MenuItemImage::create(
 		"pictures/SelectMode/back.png",
 		"pictures/SelectMode/back1.png",
 		CC_CALLBACK_1(SelectMode::menuBackCallBack, this)
@@ -56,10 +61,7 @@ bool SelectMode::init()
 		backMenu->setPosition(Vec2(x, y));
 	}
 
-	MenuItemImage *singleMenu;
-	MenuItemImage *networkMenu;
-
-	singleMenu = MenuItemImage::create(
+	MenuItemImage* singleMenu = MenuItemImage::create(
 		"pictures/SelectMode/Danji.png",
 		"pictures/SelectMode/Danji1.png",
 		CC_CALLBACK_1(SelectMode::menuSingleCallBack, this)
@@ -78,10 +80,10 @@ bool SelectMode::init()
 		singleMenu->setPosition(Vec2(x, y));
 	}
 
-	networkMenu = MenuItemImage::create(
+	MenuItemImage* networkMenu = MenuItemImage::create(
 		"pictures/SelectMode/Lianji.png",
 		"pictures/SelectMode/Lianji1.png",
-		CC_CALLBACK_1(SelectMode::menuNetworkCallBack, this, singleMenu)
+		CC_CALLBACK_1(SelectMode::menuNetworkCallBack, this)
 	);
 
 	if (networkMenu == nullptr ||
@@ -97,7 +99,7 @@ bool SelectMode::init()
 		networkMenu->setPosition(Vec2(x, y));
 	}
 
-	MenuItemImage *comingMenu = MenuItemImage::create(
+	MenuItemImage* comingMenu = MenuItemImage::create(
 		"pictures/SelectMode/Qidai.png",
 		"pictures/SelectMode/Qidai.png",
 		CC_CALLBACK_1(SelectMode::menuComingCallBack, this)
@@ -117,7 +119,7 @@ bool SelectMode::init()
 	}
 
 	//backMenu->setPosition(Director::getInstance()->convertToGL(Vec2(0, 0)));
-	auto mu = Menu::create(backMenu, singleMenu, networkMenu, comingMenu, NULL);
+	Menu* mu = Menu::create(backMenu, singleMenu, networkMenu, comingMenu, NULL);
 	mu->setPosition(Vec2::ZERO);
 	this->addChild(mu, 1);
 
@@ -126,7 +128,7 @@ bool SelectMode::init()
 	auto background = Sprite::create("pictures/SelectMode/background.png");
 	if (background == nullptr)
 	{
-		problemLoading("'pictures/background.jpg'");
+		problemLoading("'background.jpg'");
 	}
 	else
 	{
@@ -138,14 +140,113 @@ bool SelectMode::init()
 		this->addChild(background, 0);
 	}
 
+	scheduleUpdate();
+
 	return true;
 }
 
-void SelectMode::menuBackCallBack(Ref *pSender) {
+void SelectMode::update(float delta)
+{
+	if (_doSearching)
+	{
+
+		//稳定后确定自身编号
+		if (sameTime > 30)
+		{
+			_playerNumber = numPlayer;
+			_isGetNum = true;
+		}
+		if (_isGetNum)
+		{
+			Command tmpCmd;
+			tmpCmd.category = 1;
+			tmpCmd.player = _playerNumber;
+			std::string str = tmpCmd.CreateStrings();
+			chat_message msg;
+			//TODO:test
+			log("%s", str.c_str());
+
+			//
+			msg.body_length(str.size());
+			memcpy(msg.body(), str.c_str(), msg.body_length());
+			msg.encode_header();
+			_client->write(msg);
+		}
+		//读取服务器的广播
+		_client->t_lock.lock();
+		if (_client->read_msg_list_.size())
+		{
+			//解析广播信息命令
+			std::string tmpStr = _client->read_msg_list_.front()->body();
+			tmpStr.resize(_client->read_msg_list_.front()->body_length());
+			Command cmd(tmpStr);
+			//如果不是连接请求，自动忽略
+			if (cmd.category != 1)
+			{
+				//退出前解锁
+				_client->read_msg_list_.pop_front();
+				_client->t_lock.unlock();
+				return;
+			}
+			//确定自身编号
+			if (cmd.player >= numPlayer && !_isGetNum)
+			{
+				numPlayer++;
+				sameTime = 0;
+			}
+			else if (!_isGetNum)
+			{
+				sameTime++;
+			}
+			log("%s", tmpStr.c_str());
+			_client->read_msg_list_.pop_front();
+			if (_isGetNum && (cmd.player == 1) || (_playerNumber == 1))
+			{
+				auto nextScene = SelectHero::createScene(_client, _playerNumber);
+				Director::getInstance()->replaceScene(
+					TransitionSlideInT::create(1.0f / 60, nextScene));
+			}
+		}
+		else if (!_isGetNum)
+		{
+			sameTime++;
+		}
+		_client->t_lock.unlock();
+
+	}
+}
+
+bool SelectMode::clientInit()
+{
+	try
+	{
+		sameTime = 0;
+		numPlayer = 0;
+		_doSearching = true;
+		boost::asio::io_context* io_context = new boost::asio::io_context();
+		tcp::resolver* resolver = new tcp::resolver(*io_context);
+		std::string ip = "47.101.214.65";
+		std::string port = "32345";
+		tcp::resolver::results_type* endpoints = new tcp::resolver::results_type();
+		*endpoints = resolver->resolve(ip, port);
+		auto c = chat_client::Create(*io_context, *endpoints);
+		_client = c;
+
+		boost::thread t(boost::bind(&boost::asio::io_context::run, io_context));
+		t.detach();
+	}
+	catch (std::exception & e)
+	{
+		std::cerr << "Exception: " << e.what() << "\n";
+	}
+	return true;
+}
+
+void SelectMode::menuBackCallBack(Ref * pSender) {
 	auto nextScene = StartGame::create();
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
-	MenuItem *item = (MenuItem*)pSender;
+	MenuItem* item = (MenuItem*)pSender;
 	log("Touch Helo Menu Item %p", item);
 }
 
@@ -154,75 +255,24 @@ void SelectMode::menuSingleCallBack(cocos2d::Ref * pSender)
 	auto nextScene = SelectHero::create();
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
-	MenuItem *item = (MenuItem*)pSender;
+	MenuItem* item = (MenuItem*)pSender;
 	log("Touch Helo Menu Item %p", item);
 }
 
-void SelectMode::menuNetworkCallBack(cocos2d::Ref * pSender, MenuItemImage *tsingleMenu)
+void SelectMode::menuNetworkCallBack(cocos2d::Ref * pSender)
 {
-	if (_clickTimes) {
-		return;
+	static bool once = true;
+	if (once)
+	{
+		clientInit();
+		once = false;
 	}
-	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
-	auto bgSprite = Sprite::create("pictures/SelectMode/PeopleNumBack.png");
-	bgSprite->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - 200));
-	this->addChild(bgSprite, 2);
 
-	MenuItemImage *menu5v5 = MenuItemImage::create(
-		"pictures/SelectMode/5v5.png",
-		"pictures/SelectMode/5v5.png",
-		CC_CALLBACK_1(SelectMode::menu5v5CallBack, this)
-	);
-
-	float x = 747.0;
-	float y = visibleSize.height / 2 - 200;
-	menu5v5->setPosition(Vec2(x, y));
-
-	MenuItemImage *menu1v1 = MenuItemImage::create(
-		"pictures/SelectMode/1v1.png",
-		"pictures/SelectMode/1v1.png",
-		CC_CALLBACK_1(SelectMode::menu1v1CallBack, this)
-	);
-
-	x = 373.0;
-	y = visibleSize.height / 2 - 200;
-	menu1v1->setPosition(Vec2(x, y));
-
-	auto mu = Menu::create(menu5v5, menu1v1, NULL);
-	mu->setPosition(Vec2::ZERO);
-	this->addChild(mu, 3);
-	//tnetworkMenu->setEnabled(false);
-
-
-	//auto nextScene = SelectHero::create();
-	//Director::getInstance()->replaceScene(
-	//	TransitionSlideInT::create(1.0f / 60, nextScene));
-	//MenuItem *item = (MenuItem*)pSender;
-	//log("Touch Helo Menu Item %p", item);
-
-	_clickTimes++;
-
-}
-
-void SelectMode::menu5v5CallBack(cocos2d::Ref * pSender)
-{
-	auto nextScene = SelectHero::create();
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-	MenuItem *item = (MenuItem*)pSender;
-	log("Touch Helo Menu Item %p", item);
-}
-
-void SelectMode::menu1v1CallBack(cocos2d::Ref * pSender)
-{
-	auto nextScene = SelectHero::create();
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
-	MenuItem *item = (MenuItem*)pSender;
-	log("Touch Helo Menu Item %p", item);
 }
 
 void SelectMode::menuComingCallBack(cocos2d::Ref * pSender)
 {
-}
 
+
+
+}

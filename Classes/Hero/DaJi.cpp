@@ -155,4 +155,3 @@ bool DaJi::attack()
 
 	return true;
 }
-

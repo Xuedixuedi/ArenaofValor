@@ -9,6 +9,7 @@
 #include "Const/Constant.h"
 #include "Const/MapInfo.h"
 #include <string>
+#include "Network/Command.h"
 
 USING_NS_CC;
 
@@ -16,10 +17,11 @@ class Record;
 class HRocker;
 class SoldierPath;
 class ShopLayer;
-
+class chat_client;
 class HelloWorld : public cocos2d::Scene
 {
-
+	CC_SYNTHESIZE(INT32, _gameMode, GameMode);
+	CC_SYNTHESIZE(INT32, _playerNumber, PlayerNumber);
 	CC_SYNTHESIZE(ShopLayer*, _shop, Shop);
 	CC_SYNTHESIZE(Record*, _labelRecord, LabelRecord);
 	CC_SYNTHESIZE(Hero*, _myHero, MyHero);
@@ -30,9 +32,11 @@ class HelloWorld : public cocos2d::Scene
 	CC_SYNTHESIZE(MapInfo, _mapInformation, MapInformation);
 	CC_SYNTHESIZE(Actor*, _blueShuiJin, BlueShuiJin);
 	CC_SYNTHESIZE(Actor*, _redShuiJin, RedShuiJin);
+	CC_SYNTHESIZE(Command, _command, Command);
 
 public:
 	//公开容器
+	class chat_client* _client;
 	Vector<Ref*> _actors;
 	Vector<Actor*> _towers;
 	Vector<Projectile*> _bullets;
@@ -52,7 +56,7 @@ private:
 	//初始化
 	void initMapLayer();
 	void initLabelRecord();
-	void initHero(const std::string& myHeroName, const std::string& aiHeroName);
+	void initHero(INT32 playerNumber, std::vector<HeroMessage> heroMessages);
 	void initHRocker();
 	void initSkillPanel();
 	void initTower();
@@ -85,14 +89,15 @@ private:
 	void updateSkillPanel();
 	bool gameEnd();
 	void changeScene(float delta);
+	void synchronize();
+	void updateOtherHeroes(Command command);
 
 public:
-
-    static cocos2d::Scene* createScene();
-    virtual bool init(const std::string& myHeroName, const std::string& aiHeroName);
+	///TODO
+    virtual bool init(INT32 playerNumber, chat_client* client, INT32 mode, std::vector<HeroMessage> heroMessages);
 	virtual void initSpring();
 	virtual void initShop();
-	static HelloWorld* create(const std::string& myHeroName, const std::string& aiHeroName);
+	static HelloWorld* create(INT32 playerNumber, chat_client* client, INT32 mode, std::vector<HeroMessage> heroMessages);
 };
 
 #endif 

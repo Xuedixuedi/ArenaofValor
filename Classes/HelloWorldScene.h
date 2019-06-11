@@ -27,18 +27,36 @@
 
 #include "cocos2d.h"
 
+<<<<<<< HEAD
+=======
+
+//继承自sence的类 helloworld
+>>>>>>> 94966562e16d9e8e0498a2f5325ea9acf512baa0
 class HelloWorld : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
+<<<<<<< HEAD
+=======
+
+	//声明2item
+	void menuItem1Callback(cocos2d::Ref *pSender);
+	void menuItem2Callback(cocos2d::Ref *pSender);
+>>>>>>> 94966562e16d9e8e0498a2f5325ea9acf512baa0
     
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
     
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 94966562e16d9e8e0498a2f5325ea9acf512baa0
 };
 
 #endif // __HELLOWORLD_SCENE_H__

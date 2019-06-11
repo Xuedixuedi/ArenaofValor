@@ -148,3 +148,14 @@ INT32 ShopLayer::removeEquip(Point mousePosition)
 
 	return -1;
 }
+
+Equipment* ShopLayer::getEquipByEnum(EEQUIPMENT equipName)
+{
+	for (int i = 0; i < NUMBER_OF_EQUIPMENT; ++i)
+	{
+		if (_equipForSell[i]->getEquipName() == equipName)
+		{
+			return _equipForSell[i];
+		}
+	}
+}

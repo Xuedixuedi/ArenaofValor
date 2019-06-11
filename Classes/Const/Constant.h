@@ -194,6 +194,13 @@ struct Damage
 		_actionTime(actionTime) {}
 };
 
+struct HeroMessage
+{
+	int _playerNumber;
+	std::string _heroName;
+	ECamp camp;
+};
+
 namespace MyMath
 {
 	inline float getRad(const Vec2& startPoint, const Vec2& endPoint)

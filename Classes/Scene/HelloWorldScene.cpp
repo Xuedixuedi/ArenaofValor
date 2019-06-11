@@ -15,11 +15,9 @@
 #include "Scene/ShopLayer.h"
 #include "StartGameScene.h"
 #include "Hero/AIHero.h"
-
-Scene* HelloWorld::createScene()
-{
-	return HelloWorld::create("","");
-}
+#include "Network/Message.h"
+#include "Network/Command.h"
+#include "Network/Client.h"
 
 static void problemLoading(const char* filename)
 {
@@ -27,10 +25,10 @@ static void problemLoading(const char* filename)
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-HelloWorld* HelloWorld::create(const std::string& myHeroName, const std::string& aiHeroName)
+HelloWorld* HelloWorld::create(INT32 playerNumber, chat_client* client, INT32 mode, std::vector<HeroMessage> heroMessages)
 {
 	auto helloWorld = new(std::nothrow)HelloWorld;
-	if (helloWorld && helloWorld->init(myHeroName, aiHeroName))
+	if (helloWorld && helloWorld->init(playerNumber, client, mode, heroMessages))
 	{
 		helloWorld->autorelease();
 		return helloWorld;
@@ -39,7 +37,7 @@ HelloWorld* HelloWorld::create(const std::string& myHeroName, const std::string&
 	return nullptr;
 }
 
-bool HelloWorld::init(const std::string& myHeroName, const std::string& aiHeroName)
+bool HelloWorld::init(INT32 playerNumber, chat_client* client, INT32 mode, std::vector<HeroMessage> heroMessages)
 {
 	if (!Scene::init())
 	{
@@ -48,14 +46,16 @@ bool HelloWorld::init(const std::string& myHeroName, const std::string& aiHeroNa
 
 	_visibleSize = Director::getInstance()->getVisibleSize();
 	_origin = Director::getInstance()->getVisibleOrigin();
-	
+	_gameMode = mode;
+	_client = client;
+	_playerNumber = playerNumber;
 //	test();
 
 	initMapLayer();
 
 	initTower();
 	initLabelRecord();
-	initHero(myHeroName, aiHeroName);
+	initHero(playerNumber, heroMessages);
 	initHRocker();
 	initListener();
 	initSkillPanel();
@@ -137,50 +137,77 @@ void HelloWorld::initLabelRecord()
 	addChild(_labelRecord);
 }
 
-void HelloWorld::initHero(const std::string& myHeroName, const std::string& aiHeroName)
+void HelloWorld::initHero(INT32 playerNumber,std::vector<HeroMessage> heroMessages)
 {
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	if (myHeroName == "YaSe")
+	auto myCamp = heroMessages[_playerNumber].camp;
+	for (int i = 0; i < heroMessages.size(); ++i)
 	{
-		_myHero = YaSe::create(this, ECamp::BLUE, myHeroName, EAttackMode::MELEE);
-	}
-	else if (myHeroName == "DaJi")
-	{
-		_myHero = DaJi::create(this, ECamp::BLUE, myHeroName, EAttackMode::REMOTE);
-	}
-	else
-	{
-		_myHero = HouYi::create(this, ECamp::BLUE, myHeroName, EAttackMode::REMOTE);
-	}
-	_myHero->setPosition(Size(1280, 720) - visibleSize / 2);
-	_myHero->setTag(TAG_MYHERO);
-	_myHero->setScale(0.5);
-	_myHero->setRecordComp(_labelRecord);
-	_map->addChild(_myHero);
-	_myHero->setZOrder(1);
-	_myHero->getRecordComp()->setVisible(true);
-	_map->setPosition(visibleSize / 2 - (Size)_myHero->getPosition());
-	_heroes.pushBack(_myHero);
-	_actors.pushBack(_myHero);
+		Hero* hero;
+		if (_gameMode == 0 && i != _playerNumber)
+		{
+			if (heroMessages[i]._heroName == "DaJi")
+			{
+				hero = AIHero::create(this, heroMessages[i].camp, "DaJi", EAttackMode::REMOTE, _aiHeroPathPoints);
+			}
+			else if (heroMessages[i]._heroName == "YaSe")
+			{
+				hero = AIHero::create(this, heroMessages[i].camp, "YaSe", EAttackMode::MELEE, _aiHeroPathPoints);
+			}
+			else
+			{
+				hero = AIHero::create(this, heroMessages[i].camp, "HouYi", EAttackMode::REMOTE, _aiHeroPathPoints);
+			}
 
-	AIHero* aiHero;
-	if (aiHeroName == "YaSe")
-	{
-		aiHero = AIHero::create(this, ECamp::RED, aiHeroName, EAttackMode::MELEE, _aiHeroPathPoints);
-	}
-	else
-	{
-		aiHero = AIHero::create(this, ECamp::RED, aiHeroName, EAttackMode::REMOTE, _aiHeroPathPoints);
-	}
-	aiHero->setPosition(Size(6400, 720) - visibleSize / 2);
-	aiHero->setScale(0.5);
-	_map->addChild(aiHero);
-	aiHero->setZOrder(1);
-	_heroes.pushBack(aiHero);
-	_actors.pushBack(aiHero);
+			if (heroMessages[i].camp == ECamp::BLUE)
+			{
+				hero->setPosition(_visibleSize / 2);
+			}
+			else
+			{
+				hero->setPosition(Size(6400, 720) - _visibleSize / 2);
+			}
+		}
+		else
+		{
+			if (heroMessages[i]._heroName == "DaJi")
+			{
+				hero = DaJi::create(this, heroMessages[i].camp, "DaJi", EAttackMode::REMOTE);
+			}
+			else if (heroMessages[i]._heroName == "YaSe")
+			{
+				hero = YaSe::create(this, heroMessages[i].camp, "YaSe", EAttackMode::MELEE);
+			}
+			else
+			{
+				hero = HouYi::create(this, heroMessages[i].camp, "HouYi", EAttackMode::REMOTE);
+			}
 
-	auto labelDie = Label::create("D I E", "fonts/HELVETICAEXT-NORMAL.TTF", 100);
-	labelDie->setPosition(visibleSize / 2);
+			if (heroMessages[i].camp == ECamp::BLUE)
+			{
+				hero->setPosition(_visibleSize / 2);
+			}
+			else
+			{
+				hero->setPosition(Size(6400, 720) - _visibleSize / 2);
+			}
+		}
+		hero->setScale(0.5);
+		_map->addChild(hero);
+		hero->setZOrder(1);
+		_heroes.pushBack(hero);
+		_actors.pushBack(hero);
+		if (i == playerNumber)
+		{
+			_myHero = hero;
+			_myHero->setTag(TAG_MYHERO);
+			_myHero->getRecordComp()->setVisible(true);
+			_map->setPosition(_visibleSize / 2 - (Size)_myHero->getPosition());
+			_myHero->setRecordComp(_labelRecord);
+		}
+	}
+
+	auto labelDie = Label::create("Reborn in 0 seconds", "fonts/HELVETICAEXT-NORMAL.TTF", 100);
+	labelDie->setPosition(_visibleSize / 2);
 	labelDie->setVisible(false);
 	labelDie->setTag(TAG_DIE);
 	addChild(labelDie);
@@ -262,6 +289,11 @@ void HelloWorld::update(float delta)
 		updateSoldiersState();
 		updateSkillPanel();
 		clearObjects();
+
+		if (_gameMode == 1)
+		{
+			synchronize();
+		}
 	}
 }
 
@@ -285,7 +317,9 @@ void HelloWorld::clearObjects()
 			}
 			else if ((*it) == _myHero)
 			{
-				getChildByTag(TAG_DIE)->setVisible(true);
+				auto labelDie = dynamic_cast<Label*>(getChildByTag(TAG_DIE));
+				labelDie->setVisible(true);
+				labelDie->setString(StringUtils::format("Reborn in %d seconds", static_cast<INT32>(_myHero->getResurgenceTime() - GetCurrentTime() / 1000.f)));
 			}
 		}
 		else
@@ -455,11 +489,19 @@ void HelloWorld::updateHeroPosition()
 	if (_rocker->getIsCanMove() && !_myHero->getAlreadyDead())
 	{
 		_myHero->setStandingAngle(_rocker->getAngle());
+		if (_gameMode == 1)
+		{
+			_command.standingAngle = _rocker->getAngle();
+		}
 		auto positionDelta = MyMath::calculatePositionDelta(_myHero->getStandingAngle(),_myHero->getMoveSpeed());
 		auto newPosition = _myHero->getPosition() + positionDelta;
 		if (_mapInformation.checkCollision(newPosition))
 		{
 			_myHero->heroMove();
+			if (_gameMode == 1)
+			{
+				_command.isHeroMove = true;
+			}
 			if (GetCurrentTime() / 1000.f - _myHero->getLastAttackTime() > _myHero->getMinAttackInterval())
 			{
 				_map->setPosition(_map->getPosition() - positionDelta);
@@ -470,6 +512,10 @@ void HelloWorld::updateHeroPosition()
 	else
 	{
 		_myHero->stopMove();
+		if (_gameMode == 1)
+		{
+			_command.isHeroStopMove = true;
+		}
 	}
 }
 
@@ -533,17 +579,31 @@ void HelloWorld::selectSpriteForTouch(Point touchLocation)
 	auto tmp = sprPlus_1;
 	auto sprPlus_2 = getChildByTag(TAG_SPRPLUS_2);
 	auto sprPlus_3 = getChildByTag(TAG_SPRPLUS_3);
+	auto isSkillLevelUp = false;
+	auto skillLevelUp = -1;
 	if (sprPlus_1->isVisible()&&sprPlus_1->getBoundingBox().containsPoint(touchLocation))
 	{
 		_myHero->skillLevelUp(1);
+		isSkillLevelUp = true;
+		skillLevelUp = 1;
 	}
 	else if (sprPlus_2->isVisible()&&sprPlus_2->getBoundingBox().containsPoint(touchLocation))
 	{
 		_myHero->skillLevelUp(2);
+		isSkillLevelUp = true;
+		skillLevelUp = 2;
 	}
 	else if (sprPlus_3->isVisible()&&sprPlus_3->getBoundingBox().containsPoint(touchLocation))
 	{
 		_myHero->skillLevelUp(3);
+		isSkillLevelUp = true;
+		skillLevelUp = 3;
+	}
+
+	if (_gameMode == 1 && isSkillLevelUp)
+	{
+		_command.isSkillLevelUp = true;
+		_command.skillLevelUp = skillLevelUp;
 	}
 }
 
@@ -562,12 +622,22 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 			{
 				_shop->getEquip(equip);
 				_myHero->getEquip(equip);
+				if (_gameMode == 1)
+				{
+					_command.isGetEquip = true;
+					_command.getEquip = equip->getEquipName();
+				}
 		//		log("%f", _myHero->getMoveSpeed());
 			}
 		}
 		else if ((no = _shop->removeEquip(touch->getLocation())) != -1)
 		{
 			_myHero->sellEquip(no);
+			if (_gameMode == 1)
+			{
+				_command.isSellEquip = true;
+				_command.sellEquip = no;
+			}
 		}
 		else if (_shop->checkForExit(touch->getLocation()))
 		{
@@ -599,6 +669,13 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		{
 			auto point = touch->getLocation();
 			_myHero->castSkill_1(point);
+			if (_gameMode == 1)
+			{
+				_command.isCastSkill = true;
+				_command.castSkill = 1;
+				_command.isSkillParamter = true;
+				_command.skillParamter = point;
+			}
 			keys[EventKeyboard::KeyCode::KEY_1] = false;
 		}
 	}
@@ -609,6 +686,13 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		{
 			auto point = touch->getLocation();
 			_myHero->castSkill_2(point);
+			if (_gameMode == 1)
+			{
+				_command.isCastSkill = true;
+				_command.castSkill = 2;
+				_command.isSkillParamter = true;
+				_command.skillParamter = point;
+			}
 			keys[EventKeyboard::KeyCode::KEY_2] = false;
 		}
 
@@ -620,6 +704,13 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		{
 			auto point = touch->getLocation();
 			_myHero->castSkill_3(point);
+			if (_gameMode == 1)
+			{
+				_command.isCastSkill = true;
+				_command.castSkill = 3;
+				_command.isSkillParamter = true;
+				_command.skillParamter = point;
+			}
 			keys[EventKeyboard::KeyCode::KEY_3] = false;
 		}
 
@@ -630,6 +721,10 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		if (nowTime - _myHero->getLastAttackTime() > _myHero->getMinAttackInterval())
 		{
 			_myHero->attack();
+			if (_gameMode == 1)
+			{
+				_command.isAttack = true;
+			}
 		}
 	}
 	return true;
@@ -643,6 +738,12 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 		if (keyCode == EventKeyboard::KeyCode::KEY_1)
 		{
 			_myHero->castSkill_1();
+			if (_gameMode == 1)
+			{
+				_command.isCastSkill = true;
+				_command.castSkill = 1;
+			}
+
 		}
 		if (keyCode == EventKeyboard::KeyCode::KEY_2)
 		{
@@ -661,14 +762,29 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 		if (keyCode == EventKeyboard::KeyCode::KEY_1)
 		{
 			_myHero->castSkill_1();
+			if (_gameMode == 1)
+			{
+				_command.isCastSkill = true;
+				_command.castSkill = 1;
+			}
 		}
 		if (keyCode == EventKeyboard::KeyCode::KEY_2)
 		{
 			_myHero->castSkill_2();
+			if (_gameMode == 1)
+			{
+				_command.isCastSkill = true;
+				_command.castSkill = 2;
+			}
 		}
 		if (keyCode == EventKeyboard::KeyCode::KEY_3)
 		{
 			_myHero->castSkill_3();
+			if (_gameMode == 1)
+			{
+				_command.isCastSkill = true;
+				_command.castSkill = 3;
+			}
 		}
 	}
 	auto daJi = dynamic_cast<DaJi*>(_myHero);
@@ -682,10 +798,20 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 		if (keyCode == EventKeyboard::KeyCode::KEY_2 && daJi->checkSkillStatus(2))
 		{
 			_myHero->castSkill_2();
+			if (_gameMode == 1)
+			{
+				_command.isCastSkill = true;
+				_command.castSkill = 2;
+			}
 		}
 		if (keyCode == EventKeyboard::KeyCode::KEY_3)
 		{
 			_myHero->castSkill_3();
+			if (_gameMode == 1)
+			{
+				_command.isCastSkill = true;
+				_command.castSkill = 3;
+			}
 		}
 	}
 	keys[keyCode] = true;
@@ -905,4 +1031,128 @@ void HelloWorld::initSkillPanel()
 	sprPlus_3->setVisible(false);
 	addChild(sprPlus_3);
 
+}
+
+void HelloWorld::synchronize()
+{
+	_command.category = 3;
+	_command.player = _playerNumber;
+	_command.heroName = "fuck";
+	std::string str = _command.CreateStrings();
+	_command.reset();
+	log("%s", str.c_str());
+	//
+	chat_message msg;
+	msg.body_length(str.size());
+	memcpy(msg.body(), str.c_str(), msg.body_length());
+	msg.encode_header();
+	_client->write(msg);
+	//读取
+	_client->t_lock.lock();
+	while (_client->read_msg_list_.size())
+	{
+		std::string tmpStr = _client->read_msg_list_.front()->body();
+		tmpStr.resize(_client->read_msg_list_.front()->body_length());
+		Command cmd(tmpStr);
+		if (cmd.category != 3 || cmd.player == _playerNumber)
+		{
+			_client->read_msg_list_.pop_front();
+			continue;
+		}
+		else
+		{
+			//读取之后对cmd的操作（目前为1v1
+			updateOtherHeroes(cmd);
+			//
+			_client->read_msg_list_.pop_front();
+			break;
+		}
+	}
+	_client->t_lock.unlock();
+}
+
+void HelloWorld::updateOtherHeroes(Command command)
+{
+	INT32 playerNumber = command.player;
+	Hero* hero = _heroes.at(playerNumber);
+	if (command.standingAngle >= 0.f)
+	{
+		hero->setStandingAngle(command.standingAngle);
+	}
+	if (command.isHeroMove)
+	{
+		hero->heroMove();
+	}
+	if (command.isHeroStopMove)
+	{
+		hero->stopMove();
+	}
+	if (command.isSkillLevelUp)
+	{
+		hero->skillLevelUp(command.skillLevelUp);
+	}
+	if (command.isGetEquip)
+	{
+		Equipment* equip = _shop->getEquipByEnum(command.getEquip);
+		hero->getEquip(equip);
+	}
+	if (command.isSellEquip)
+	{
+		hero->sellEquip(command.sellEquip);
+	}
+
+	Hero* tmpHero;
+	if (command.heroName == "DaJi")
+	{
+		tmpHero = dynamic_cast<DaJi*>(hero);
+	}
+	else if (command.heroName == "YaSe")
+	{
+		tmpHero = dynamic_cast<YaSe*>(hero);
+	}
+	else
+	{
+		tmpHero = dynamic_cast<HouYi*>(hero);
+	}
+
+	if (tmpHero)
+	{
+		if (command.isCastSkill)
+		{
+			if (command.isSkillParamter)
+			{
+				switch (command.castSkill)
+				{
+				case 1:
+					tmpHero->castSkill_1(command.skillParamter);
+					break;
+				case 2:
+					tmpHero->castSkill_2(command.skillParamter);
+					break;
+				case 3:
+					tmpHero->castSkill_3(command.skillParamter);
+					break;
+				}
+			}
+			else
+			{
+				switch (command.castSkill)
+				{
+				case 1:
+					tmpHero->castSkill_1();
+					break;
+				case 2:
+					tmpHero->castSkill_2();
+					break;
+				case 3:
+					tmpHero->castSkill_3();
+					break;
+				}
+			}
+		}
+		if (command.isAttack)
+		{
+			tmpHero->attack();
+		}
+	}
 }

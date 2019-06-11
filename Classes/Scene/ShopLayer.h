@@ -42,6 +42,8 @@ public:
 
 	INT32 removeEquip(Point mousePosition);
 
+	Equipment* getEquipByEnum(EEQUIPMENT equipName);
+
 	virtual bool init();
 
 	CREATE_FUNC(ShopLayer);

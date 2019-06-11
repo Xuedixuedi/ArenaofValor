@@ -1,13 +1,22 @@
 #include "SelectHeroScene.h"
 #include "SelectModeScene.h"
-#include "SelectEnemyHeroScene.h"
 #include "SimpleAudioEngine.h" 
-
+#include "Const/Constant.h"
+#include "Network/Client.h"
+#include "Network/Command.h"
+#include "HelloWorldScene.h"
 USING_NS_CC;
 
-Scene* SelectHero::createScene()
+Scene* SelectHero::createScene(chat_client* client, int PlayerNumber)
 {
-	return SelectHero::create();
+	auto scene = new(std::nothrow)SelectHero;
+	if (scene && scene->init(client, PlayerNumber))
+	{
+		scene->autorelease();
+		return scene;
+	}
+	CC_SAFE_DELETE(scene);
+	return nullptr;
 }
 
 static void problemLoading(const char* filename)
@@ -16,15 +25,21 @@ static void problemLoading(const char* filename)
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in SelectModeScene.cpp\n");
 }
 
-
-
-bool SelectHero::init()
+bool SelectHero::init(chat_client* client, int PlayerNumber)
 {
 	if (!Scene::init())
 	{
 		return false;
 	}
-
+	//netWork
+	_client = client;
+	_client->read_msg_list_.clear();
+	//TODO: mutex
+	//_client->write_msgs_.clear();
+	_playerNumber = PlayerNumber;
+	_haveSelected_1 = false;
+	_haveSelected_0 = false;
+	_selecterHero = "fuck";
 	//ÉùÒô
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->playEffect("Audio/SelectYourHero.mp3", false);
@@ -133,29 +148,163 @@ bool SelectHero::init()
 		this->addChild(background, 0);
 	}
 
+
+	scheduleUpdate();
 	return true;
 }
 
+void SelectHero::update(float delta)
+{
+	if (_haveSelected_1 || _haveSelected_0)
+	{
+		if (_haveSelected_1 && _haveSelected_0)
+		{
+			unscheduleUpdate();
+			HeroMessage hmsgs;
+			hmsgs.camp = ECamp::BLUE;
+			hmsgs._playerNumber = 0;
+			hmsgs._heroName = _map[0];
+			_heroMessages.push_back(hmsgs);
+			hmsgs.camp = ECamp::RED;
+			hmsgs._playerNumber = 1;
+			hmsgs._heroName = _map[1];
+			_heroMessages.push_back(hmsgs);
+
+			auto nextScene = HelloWorld::create(_playerNumber, _client, 1, _heroMessages);
+			Director::getInstance()->replaceScene(
+				TransitionSlideInT::create(1.0f / 60, nextScene));
+
+
+		}
+		//·¢ËÍ
+		Command tmpCmd;
+		tmpCmd.reset();
+		tmpCmd.category = 2;
+		tmpCmd.player = _playerNumber;
+		tmpCmd.heroName = _selecterHero;
+		//
+		std::string str = tmpCmd.CreateStrings();
+		chat_message msg;
+		log("%s", str.c_str());
+		msg.body_length(str.size());
+		memcpy(msg.body(), str.c_str(), msg.body_length());
+		msg.encode_header();
+		_client->write(msg);
+		//¶ÁÈ¡
+		_client->t_lock.lock();
+		if (_client->read_msg_list_.size())
+		{
+			std::string tmpStr = _client->read_msg_list_.front()->body();
+			tmpStr.resize(_client->read_msg_list_.front()->body_length());
+			Command cmd(tmpStr);
+			if (cmd.category != 2)
+			{
+				_client->read_msg_list_.pop_front();
+				_client->t_lock.unlock();
+				return;
+			}
+			_client->read_msg_list_.pop_front();
+
+			switch (cmd.player)
+			{
+			case 1:
+			{
+				_map[1] = cmd.heroName;
+				_haveSelected_1 = true;
+				break;
+			}
+			case 0:
+			{
+				_map[0] = cmd.heroName;
+				_haveSelected_0 = true;
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		_client->t_lock.unlock();
+	}
+
+}
 
 void SelectHero::menuHouyiCallBack(cocos2d::Ref * pSender)
 {
-	auto nextScene = SelectEnemyHero::create("HouYi");
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
+	selectedHero.push("Houyi");
+	_selecterHero = "HouYi";
+	if (_playerNumber == 1)
+	{
+		if (!_haveSelected_1)
+		{
+			_map[_playerNumber] = "HouYi";
+			_client->read_msg_list_.clear();
+			_client->write_msgs_.clear();
+		}
+		_haveSelected_1 = true;
+	}
+	else if (_playerNumber == 0)
+	{
+		if (!_haveSelected_0)
+		{
+			_map[_playerNumber] = "HouYi";
+			_client->read_msg_list_.clear();
+			_client->write_msgs_.clear();
+		}
+		_haveSelected_0 = true;
+	}
 }
 
 void SelectHero::menuDajiCallBack(cocos2d::Ref * pSender)
 {
-	auto nextScene = SelectEnemyHero::create("DaJi");
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
+	selectedHero.push("Daji");
+	_selecterHero = "DaJi";
+	if (_playerNumber == 1)
+	{
+		if (!_haveSelected_1)
+		{
+			_map[_playerNumber] = "DaJi";
+			_client->read_msg_list_.clear();
+			_client->write_msgs_.clear();
+		}
+		_haveSelected_1 = true;
+	}
+	else if (_playerNumber == 0)
+	{
+		if (!_haveSelected_0)
+		{
+			_map[_playerNumber] = "DaJi";
+			_client->read_msg_list_.clear();
+			_client->write_msgs_.clear();
+		}
+		_haveSelected_0 = true;
+	}
 }
 
 void SelectHero::menuYaseCallBack(cocos2d::Ref * pSender)
 {
-	auto nextScene = SelectEnemyHero::create("YaSe");
-	Director::getInstance()->replaceScene(
-		TransitionSlideInT::create(1.0f / 60, nextScene));
+	//CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
+	selectedHero.push("Yase");
+	_selecterHero = "YaSe";
+	if (_playerNumber == 1)
+	{
+		if (!_haveSelected_1)
+		{
+			_map[_playerNumber] = "YaSe";
+			_client->read_msg_list_.clear();
+			_client->write_msgs_.clear();
+		}
+		_haveSelected_1 = true;
+	}
+	else if (_playerNumber == 0)
+	{
+		if (!_haveSelected_0)
+		{
+			_map[_playerNumber] = "Yase";
+			_client->read_msg_list_.clear();
+			_client->write_msgs_.clear();
+		}
+		_haveSelected_0 = true;
+	}
 }
 
 void SelectHero::menuBackCallBack(cocos2d::Ref * pSender)
@@ -163,5 +312,6 @@ void SelectHero::menuBackCallBack(cocos2d::Ref * pSender)
 	auto nextScene = SelectMode::create();
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
+	MenuItem* item = (MenuItem*)pSender;
+	log("Touch Helo Menu Item %p", item);
 }
-

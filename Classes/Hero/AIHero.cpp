@@ -226,6 +226,10 @@ bool AIHero::attack()
 	else
 	{
 		auto projectile = Projectile::create("pictures/others/RemoteSoldierArrow.png", _attack, SPEED_FLY, this, _attackTarget);
+		if (std::string(_heroName.getCString()) == "DaJi")
+		{
+			projectile->setTexture("pictures/hero/DaJi/Normal.png");
+		}
 		projectile->setScale(1.5f);
 		_combatScene->_readyToLaunch.insert(nowTime + _minAttackInterval / 10 * 3, projectile);
 	}
