@@ -207,7 +207,11 @@ void HelloWorld::initHero(INT32 playerNumber,std::vector<HeroMessage> heroMessag
 	}
 
 	auto labelDie = Label::create("Reborn in 0 seconds", "fonts/HELVETICAEXT-NORMAL.TTF", 100);
+<<<<<<< HEAD
 	labelDie->setPosition(_visibleSize / 2);
+=======
+	labelDie->setPosition(visibleSize / 2);
+>>>>>>> be5a403484c859dd963eeabb6a4cd558b1dd24ac
 	labelDie->setVisible(false);
 	labelDie->setTag(TAG_DIE);
 	addChild(labelDie);
@@ -319,7 +323,11 @@ void HelloWorld::clearObjects()
 			{
 				auto labelDie = dynamic_cast<Label*>(getChildByTag(TAG_DIE));
 				labelDie->setVisible(true);
+<<<<<<< HEAD
 				labelDie->setString(StringUtils::format("Reborn in %d seconds", static_cast<INT32>(_myHero->getResurgenceTime() - GetCurrentTime() / 1000.f)));
+=======
+				labelDie->setString(StringUtils::format("%d", static_cast<INT32>(_myHero->getResurgenceTime() - GetCurrentTime() / 1000.f)));
+>>>>>>> be5a403484c859dd963eeabb6a4cd558b1dd24ac
 			}
 		}
 		else

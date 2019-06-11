@@ -77,7 +77,7 @@ void Actor::takeDamage(EDamageType damageType, INT32 damage, Actor* instigator)
 		actualDamage = static_cast<INT32>((1.0 - 1.0 * _magicDefense / (_magicDefense + 602.f)) * damage);
 	}
 
-//	log("actual damage: %d", actualDamage);
+	//	log("actual damage: %d", actualDamage);
 	_healthComp->changeStateBy(-1 * actualDamage);
 
 	_lastAttackFrom = instigator;
@@ -107,6 +107,17 @@ void Actor::initHealthComp()
 	_healthComp = StateComponent::create(EStateType::HEALTH, TOWER_HP, 0);
 	auto position = getPosition();
 	auto size = getBoundingBox().size;
+
+	//不同阵营塔血条颜色不同
+	if (_camp == ECamp::BLUE)
+	{
+		_healthComp->setColor(Color3B(0, 0, 255));
+	}
+	else
+	{
+		_healthComp->setColor(Color3B(255, 0, 0));
+	}
+
 	_healthComp->setPosition(Vec2(position.x + size.width / 2, position.y + size.height));
 	addChild(_healthComp);
 }
@@ -148,7 +159,7 @@ bool Actor::attack()
 	{
 		_lastAttackTime = nowTime;
 
-		auto projectile = Projectile::create("pictures/others/bullet.png",  _attack, SPEED_FLY, this, _attackTarget);
+		auto projectile = Projectile::create("pictures/others/bullet.png", _attack, SPEED_FLY, this, _attackTarget);
 		projectile->setPosition(getPosition());
 		projectile->setScale(2);
 		_combatScene->getMap()->addChild(projectile);
