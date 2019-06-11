@@ -12,6 +12,7 @@ class Equipment :public Buff
 {
 	CC_SYNTHESIZE(INT32, _goldToBuy, GoldToBuy);
 	CC_SYNTHESIZE(INT32, _goldForSell, GoldForSell);
+	CC_SYNTHESIZE(EEQUIPMENT, _equipName, EquipName);
 	
 public:
 

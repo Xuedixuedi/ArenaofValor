@@ -149,6 +149,11 @@ bool Hero::initRecordComp()
 	return true;
 }
 
+Equipment* Hero::getEquipByNumber(INT32 equipNumber)
+{
+	return _equips[equipNumber];
+}
+
 void Hero::getEquip(Equipment* equip)
 {
 	takeBuff(equip);
@@ -372,6 +377,14 @@ void Hero::castSkill_2()
 {
 }
 
+void Hero::castSkill_3()
+{
+}
+
+void Hero::castSkill_3(Point mousePosition)
+{
+}
+
 void Hero::castSkill_2(Point mousePosition)
 {
 }
@@ -411,13 +424,6 @@ bool Hero::checkSkillStatus(INT32 skillNumber)
 	return true;
 }
 
-void Hero::castSkill_3()
-{
-}
-
-void Hero::castSkill_3(Point mousePosition)
-{
-}
 
 void Hero::reborn()
 {

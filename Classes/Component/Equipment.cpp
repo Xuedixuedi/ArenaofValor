@@ -14,6 +14,7 @@ Equipment* Equipment::create(EEQUIPMENT equip)
 
 bool Equipment::init(EEQUIPMENT equip)
 {
+	_equipName = equip;
 	ValueVector equipData = FileUtils::getInstance()->getValueVectorFromFile("Data/EquipData.plist").at(static_cast<INT32>(equip)).asValueVector();
 	if (!Buff::init(equipData))
 	{
