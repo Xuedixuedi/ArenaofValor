@@ -31,10 +31,8 @@ void MovingActor::die()
 void MovingActor::removeBuff(Buff* buff)
 {
 	Actor::removeBuff(buff);
-	//log("moveSpeed: %f", _moveSpeed);
-	//log("%f", buff->getMoveSpeed());
+
 	_moveSpeed -= buff->getMoveSpeed();
-	//log("moveSpeed: %f", _moveSpeed);
 }
 
 bool MovingActor::attack()
@@ -50,6 +48,6 @@ void MovingActor::takeBuff(Buff* buff)
 	if (buff->getBuffType() == EBuffType::VERTIGO)
 	{
 		_vertigoLastTo = std::max(_vertigoLastTo, buff->getEndTime());
-		//log("%f", _vertigoLastTo);
+		log("%f", _vertigoLastTo);
 	}
 }

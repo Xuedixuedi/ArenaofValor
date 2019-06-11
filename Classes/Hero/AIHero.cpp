@@ -173,10 +173,10 @@ void AIHero::startAnimation()
 		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveDown", _heroName.getCString()));
 		break;
 	case EDirection::DOWNLEFT:
-		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveDownLeft", _heroName.getCString()));
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveDownLeft",_heroName.getCString()));
 		break;
 	case EDirection::DOWNRIGHT:
-		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveDownRight", _heroName.getCString()));
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveDownRight",_heroName.getCString()));
 		break;
 	case EDirection::LEFT:
 		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveLeft", _heroName.getCString()));
@@ -188,14 +188,14 @@ void AIHero::startAnimation()
 		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveUp", _heroName.getCString()));
 		break;
 	case EDirection::UPLEFT:
-		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveUpLeft", _heroName.getCString()));
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveUpLeft",_heroName.getCString()));
 		break;
 	case EDirection::UPRIGHT:
-		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveUpRight", _heroName.getCString()));
+		animation = AnimationCache::getInstance()->getAnimation(StringUtils::format("%sMoveUpRight",_heroName.getCString()));
 		break;
 	}
 
-	animation->setDelayPerUnit(_minAttackInterval / 5);
+	animation->setDelayPerUnit(_minAttackInterval/5);
 	animation->setLoops(-1);
 
 	auto animate = Animate::create(animation);
@@ -226,20 +226,11 @@ bool AIHero::attack()
 	else
 	{
 		auto projectile = Projectile::create("pictures/others/RemoteSoldierArrow.png", _attack, SPEED_FLY, this, _attackTarget);
-<<<<<<< HEAD
 		if (std::string(_heroName.getCString()) == "DaJi")
 		{
 			projectile->setTexture("pictures/hero/DaJi/Normal.png");
 		}
-=======
-
->>>>>>> be5a403484c859dd963eeabb6a4cd558b1dd24ac
 		projectile->setScale(1.5f);
-		if (std::string(_heroName.getCString()) == "DaJi")
-		{
-			projectile->setTexture("pictures/hero/DaJi/Normal.png");
-			projectile->setScale(0.2);
-		}
 		_combatScene->_readyToLaunch.insert(nowTime + _minAttackInterval / 10 * 3, projectile);
 	}
 	_lastAttackTime = nowTime;
