@@ -158,6 +158,7 @@ void Hero::getEquip(Equipment* equip)
 		if (_equips[i] == nullptr)
 		{
 			_equips[i] = equip;
+			break;
 		}
 	}
 	_recordComp->addMoney(-1 * equip->getGoldToBuy());
@@ -632,7 +633,7 @@ void Hero::updateAttackTarget()
 			{
 				if (_camp != (*it)->getCamp() && !(*it)->getAlreadyDead())
 				{
-			//		log("soldierPosition: %f, %f    heroPosition: %f, %f", (*it)->getPositionX(), (*it)->getPositionY(), getPositionX(), getPositionY());
+					("soldierPosition: %f, %f    heroPosition: %f, %f", (*it)->getPositionX(), (*it)->getPositionY(), getPositionX(), getPositionY());
 					if ((*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
 					{
 						minHealth = (*it)->getHealthComp()->getCurrentState();

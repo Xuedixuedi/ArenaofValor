@@ -179,7 +179,7 @@ void HelloWorld::initHero(const std::string& myHeroName, const std::string& aiHe
 	_heroes.pushBack(aiHero);
 	_actors.pushBack(aiHero);
 
-	auto labelDie = Label::create("D I E", "fonts/HELVETICAEXT-NORMAL.TTF", 100);
+	auto labelDie = Label::create("Reborn in 0 seconds", "fonts/HELVETICAEXT-NORMAL.TTF", 100);
 	labelDie->setPosition(visibleSize / 2);
 	labelDie->setVisible(false);
 	labelDie->setTag(TAG_DIE);
@@ -285,7 +285,9 @@ void HelloWorld::clearObjects()
 			}
 			else if ((*it) == _myHero)
 			{
-				getChildByTag(TAG_DIE)->setVisible(true);
+				auto labelDie = dynamic_cast<Label*>(getChildByTag(TAG_DIE));
+				labelDie->setVisible(true);
+				labelDie->setString(StringUtils::format("%d", static_cast<INT32>(_myHero->getResurgenceTime() - GetCurrentTime() / 1000.f)));
 			}
 		}
 		else
