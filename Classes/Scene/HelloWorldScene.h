@@ -10,7 +10,7 @@
 #include "Const/MapInfo.h"
 #include <string>
 #include "Network/Command.h"
-
+#include <map>
 USING_NS_CC;
 
 class Record;
@@ -69,6 +69,12 @@ private:
 	void updateDamages();
 	void updateSoldiersState();
 	void clearObjects();
+	void updateMap();
+	//netWork
+	int _frames;
+	bool _gameBegin;
+	std::map<int, bool> _isReady;
+	void checkMap();
 	//¼àÌý
 	//¼àÌýÆ÷
 	EventListenerTouchOneByOne* listenerTouch;
@@ -91,6 +97,7 @@ private:
 	void changeScene(float delta);
 	void synchronize();
 	void updateOtherHeroes(Command command);
+	Vec2 getPositionInMap(const Vec2& mousePosition);
 
 public:
 	///TODO

@@ -16,8 +16,6 @@ bool Record::init()
 
 	initLabel();
 
-	schedule(schedule_selector(Record::updateMoney), 2.f, -1, 1.f);
-
 	return true;
 }
 
@@ -100,4 +98,9 @@ void Record::addMoney(INT32 delta)
 	_money += delta;
 
 	_labelMoney->setString(StringUtils::format("%4d", _money));
+}
+
+void Record::beginUpdate()
+{
+	schedule(schedule_selector(Record::updateMoney), 2.f, -1, 1.f);
 }

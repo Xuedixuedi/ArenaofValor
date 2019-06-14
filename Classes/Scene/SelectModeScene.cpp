@@ -227,6 +227,9 @@ bool SelectMode::clientInit()
 		tcp::resolver* resolver = new tcp::resolver(*io_context);
 		std::string ip = "47.101.214.65";
 		std::string port = "32345";
+		//To test
+		//ip = "192.168.31.90";
+		//
 		tcp::resolver::results_type* endpoints = new tcp::resolver::results_type();
 		*endpoints = resolver->resolve(ip, port);
 		auto c = chat_client::Create(*io_context, *endpoints);

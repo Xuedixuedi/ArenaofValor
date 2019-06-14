@@ -42,6 +42,8 @@ public:
 
 	void addMoney(INT32 delta);
 
+	void beginUpdate();
+
 	CREATE_FUNC(Record);
 };
 

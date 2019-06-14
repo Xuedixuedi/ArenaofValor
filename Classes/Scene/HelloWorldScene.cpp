@@ -43,7 +43,19 @@ bool HelloWorld::init(INT32 playerNumber, chat_client* client, INT32 mode, std::
 	{
 		return false;
 	}
-
+	if (mode == 0)
+	{
+		_gameBegin = true;
+	}
+	else
+	{
+		_gameBegin = false;
+	}
+	for (int i = 0; i < heroMessages.size(); ++i)
+	{
+		_isReady[i] = false;
+	}
+	_frames = 0;
 	_visibleSize = Director::getInstance()->getVisibleSize();
 	_origin = Director::getInstance()->getVisibleOrigin();
 	_gameMode = mode;
@@ -62,16 +74,7 @@ bool HelloWorld::init(INT32 playerNumber, chat_client* client, INT32 mode, std::
 	initSpring();
 	initShop();
 
-	schedule(schedule_selector(HelloWorld::generateSoldiers), 10.f, -1, 0.f);
 	scheduleUpdate();
-	
-	//For test
-	_myHero->setSkillPoint(2);
-	//_myHero->skillLevelUp(1);
-	//_myHero->skillLevelUp(2);
-	//_myHero->skillLevelUp(3);
-	_myHero->setCalmTime_1(3);
-	//
 
 	return true;
 }
@@ -118,9 +121,9 @@ void HelloWorld::initMapLayer()
 	wallLayer->setZOrder(0);
 
 	_mapInformation = MapInfo(_map);
-	_blueSoldierPathPoints = SoldierPath::create("Data/BluePathPoints.txt", _mapInformation);
-	_redSoldierPathPoints = SoldierPath::create("Data/RedPathPoints.txt", _mapInformation);
-	_aiHeroPathPoints = SoldierPath::create("Data/AIHeroPathPoints.txt", _mapInformation);
+	_blueSoldierPathPoints = SoldierPath::create("data/BluePathPoints.txt", _mapInformation);
+	_redSoldierPathPoints = SoldierPath::create("data/RedPathPoints.txt", _mapInformation);
+	_aiHeroPathPoints = SoldierPath::create("data/AIHeroPathPoints.txt", _mapInformation);
 	_actors.pushBack(_blueSoldierPathPoints);
 	_actors.pushBack(_redSoldierPathPoints);
 	_actors.pushBack(_aiHeroPathPoints);
@@ -282,17 +285,36 @@ void HelloWorld::update(float delta)
 {
 	if (!gameEnd())
 	{
-		TowerAttack();
-		updateHeroPosition();
-		updateBullets();
-		updateDamages();
-		updateSoldiersState();
-		updateSkillPanel();
-		clearObjects();
-
-		if (_gameMode == 1)
+		if (_gameBegin)
 		{
-			synchronize();
+			TowerAttack();
+			updateHeroPosition();
+			updateBullets();
+			updateDamages();
+			//TODO test
+			if (_gameMode == 0)
+			{
+				updateSoldiersState();
+			}
+			
+			updateSkillPanel();
+			clearObjects();
+			if (_gameMode == 1)
+			{
+				synchronize();
+			}
+		}
+		else if (_gameMode == 1)
+		{
+			updateMap();
+			checkMap();
+			if (_gameBegin)
+			{
+				for (auto& i : _heroes)
+				{
+					i->getRecordComp()->beginUpdate();
+				}
+			}
 		}
 	}
 }
@@ -359,6 +381,58 @@ void HelloWorld::clearObjects()
 			++it;
 		}
 	}
+}
+
+void HelloWorld::updateMap()
+{
+	_isReady[_playerNumber] = true;
+	//
+	_command.category = 3;
+	_command.player = _playerNumber;
+	_command.heroName = std::string(_heroes.at(_playerNumber)->getHeroName().getCString());
+	_command.frames = _frames;
+	std::string str = _command.CreateStrings();
+	_command.reset();
+	chat_message msg;
+	msg.body_length(str.size());
+	memcpy(msg.body(), str.c_str(), msg.body_length());
+	msg.encode_header();
+	_client->write(msg);
+	//读取
+	_client->t_lock.lock();
+	while (_client->read_msg_list_.size())
+	{
+		std::string tmpStr = _client->read_msg_list_.front()->body();
+		tmpStr.resize(_client->read_msg_list_.front()->body_length());
+		Command cmd(tmpStr);
+		if (cmd.category != 3 || cmd.player == _playerNumber)
+		{
+			_client->read_msg_list_.pop_front();
+			continue;
+		}
+		else
+		{
+			//读取之后对cmd的操作（目前为1v1
+			_isReady[cmd.player] = true;
+			//
+			_client->read_msg_list_.pop_front();
+			break;
+		}
+	}
+	_client->t_lock.unlock();
+}
+
+void HelloWorld::checkMap()
+{
+	for (auto iter = _isReady.begin(); iter != _isReady.end(); ++iter)
+	{
+		if ((*iter).second == false)
+		{
+			_gameBegin = false;
+			return;
+		}
+	}
+	_gameBegin = true;
 }
 
 void HelloWorld::TowerAttack()
@@ -486,32 +560,33 @@ void HelloWorld::updateSoldiersState()
 
 void HelloWorld::updateHeroPosition()
 {
+	auto nowTime = GetCurrentTime() / 1000.f;
 	if (_rocker->getIsCanMove() && !_myHero->getAlreadyDead())
 	{
-		_myHero->setStandingAngle(_rocker->getAngle());
+		//_myHero->setStandingAngle(_rocker->getAngle());
 		if (_gameMode == 1)
 		{
 			_command.standingAngle = _rocker->getAngle();
 		}
 		auto positionDelta = MyMath::calculatePositionDelta(_myHero->getStandingAngle(),_myHero->getMoveSpeed());
-		auto newPosition = _myHero->getPosition() + positionDelta;
+		auto newPosition = _myHero->getPosition() + 5 * positionDelta;
 		if (_mapInformation.checkCollision(newPosition))
 		{
-			_myHero->heroMove();
+			//_myHero->heroMove();
 			if (_gameMode == 1)
 			{
 				_command.isHeroMove = true;
 			}
-			if (GetCurrentTime() / 1000.f - _myHero->getLastAttackTime() > _myHero->getMinAttackInterval())
-			{
-				_map->setPosition(_map->getPosition() - positionDelta);
-				_sprBG->setPosition(_sprBG->getPosition() - positionDelta);
-			}
+			//if (nowTime - _myHero->getLastAttackTime() > _myHero->getMinAttackInterval() && _myHero->getVertigoLastTo() < nowTime)
+			//{
+			//	_map->setPosition(_map->getPosition() - positionDelta);
+			//	_sprBG->setPosition(_sprBG->getPosition() - positionDelta);
+			//}
 		}
 	}
 	else
 	{
-		_myHero->stopMove();
+		//_myHero->stopMove();
 		if (_gameMode == 1)
 		{
 			_command.isHeroStopMove = true;
@@ -583,19 +658,19 @@ void HelloWorld::selectSpriteForTouch(Point touchLocation)
 	auto skillLevelUp = -1;
 	if (sprPlus_1->isVisible()&&sprPlus_1->getBoundingBox().containsPoint(touchLocation))
 	{
-		_myHero->skillLevelUp(1);
+		//_myHero->skillLevelUp(1);
 		isSkillLevelUp = true;
 		skillLevelUp = 1;
 	}
 	else if (sprPlus_2->isVisible()&&sprPlus_2->getBoundingBox().containsPoint(touchLocation))
 	{
-		_myHero->skillLevelUp(2);
+		//_myHero->skillLevelUp(2);
 		isSkillLevelUp = true;
 		skillLevelUp = 2;
 	}
 	else if (sprPlus_3->isVisible()&&sprPlus_3->getBoundingBox().containsPoint(touchLocation))
 	{
-		_myHero->skillLevelUp(3);
+		//_myHero->skillLevelUp(3);
 		isSkillLevelUp = true;
 		skillLevelUp = 3;
 	}
@@ -621,7 +696,7 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 			if (getLabelRecord()->getMoney() >= equip->getGoldToBuy())
 			{
 				_shop->getEquip(equip);
-				_myHero->getEquip(equip);
+				//_myHero->getEquip(equip);
 				if (_gameMode == 1)
 				{
 					_command.isGetEquip = true;
@@ -632,7 +707,7 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		}
 		else if ((no = _shop->removeEquip(touch->getLocation())) != -1)
 		{
-			_myHero->sellEquip(no);
+			//_myHero->sellEquip(no);
 			if (_gameMode == 1)
 			{
 				_command.isSellEquip = true;
@@ -667,8 +742,8 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		auto daJi = dynamic_cast<DaJi*>(_myHero);
 		if (daJi)
 		{
-			auto point = touch->getLocation();
-			_myHero->castSkill_1(point);
+			auto point = getPositionInMap(touch->getLocation());
+			//_myHero->castSkill_1(point);
 			if (_gameMode == 1)
 			{
 				_command.isCastSkill = true;
@@ -684,8 +759,8 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		auto houYi = dynamic_cast<HouYi*>(_myHero);
 		if (houYi)
 		{
-			auto point = touch->getLocation();
-			_myHero->castSkill_2(point);
+			auto point = getPositionInMap(touch->getLocation());
+			//_myHero->castSkill_2(point);
 			if (_gameMode == 1)
 			{
 				_command.isCastSkill = true;
@@ -702,8 +777,8 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		auto houYi = dynamic_cast<HouYi*>(_myHero);
 		if (houYi)
 		{
-			auto point = touch->getLocation();
-			_myHero->castSkill_3(point);
+			auto point = getPositionInMap(touch->getLocation());
+			//_myHero->castSkill_3(point);
 			if (_gameMode == 1)
 			{
 				_command.isCastSkill = true;
@@ -720,7 +795,7 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 		//不在攻击间隔内
 		if (nowTime - _myHero->getLastAttackTime() > _myHero->getMinAttackInterval())
 		{
-			_myHero->attack();
+			//_myHero->attack();
 			if (_gameMode == 1)
 			{
 				_command.isAttack = true;
@@ -735,9 +810,9 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 	auto houYi = dynamic_cast<HouYi*>(_myHero);
 	if (houYi)
 	{
-		if (keyCode == EventKeyboard::KeyCode::KEY_1)
+		if (keyCode == EventKeyboard::KeyCode::KEY_1 && houYi->checkSkillStatus(1))
 		{
-			_myHero->castSkill_1();
+			//_myHero->castSkill_1();
 			if (_gameMode == 1)
 			{
 				_command.isCastSkill = true;
@@ -745,12 +820,12 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 			}
 
 		}
-		if (keyCode == EventKeyboard::KeyCode::KEY_2)
+		if (keyCode == EventKeyboard::KeyCode::KEY_2 && houYi->checkSkillStatus(2))
 		{
 			_isMouseSprite = true;
 			_mouseSprite->setVisible(true);
 		}
-		if (keyCode == EventKeyboard::KeyCode::KEY_3)
+		if (keyCode == EventKeyboard::KeyCode::KEY_3 && houYi->checkSkillStatus(3))
 		{
 			_isMouseSprite = true;
 			_mouseSprite->setVisible(true);
@@ -759,27 +834,27 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 	auto yaSe = dynamic_cast<YaSe*>(_myHero);
 	if (yaSe)
 	{
-		if (keyCode == EventKeyboard::KeyCode::KEY_1)
+		if (keyCode == EventKeyboard::KeyCode::KEY_1 && yaSe->checkSkillStatus(1))
 		{
-			_myHero->castSkill_1();
+			//_myHero->castSkill_1();
 			if (_gameMode == 1)
 			{
 				_command.isCastSkill = true;
 				_command.castSkill = 1;
 			}
 		}
-		if (keyCode == EventKeyboard::KeyCode::KEY_2)
+		if (keyCode == EventKeyboard::KeyCode::KEY_2 && yaSe->checkSkillStatus(2))
 		{
-			_myHero->castSkill_2();
+			//_myHero->castSkill_2();
 			if (_gameMode == 1)
 			{
 				_command.isCastSkill = true;
 				_command.castSkill = 2;
 			}
 		}
-		if (keyCode == EventKeyboard::KeyCode::KEY_3)
+		if (keyCode == EventKeyboard::KeyCode::KEY_3 && yaSe->checkSkillStatus(3))
 		{
-			_myHero->castSkill_3();
+			//_myHero->castSkill_3();
 			if (_gameMode == 1)
 			{
 				_command.isCastSkill = true;
@@ -790,23 +865,23 @@ bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 	auto daJi = dynamic_cast<DaJi*>(_myHero);
 	if (daJi)
 	{
-		if (keyCode == EventKeyboard::KeyCode::KEY_1)
+		if (keyCode == EventKeyboard::KeyCode::KEY_1 && daJi->checkSkillStatus(1))
 		{
 			_isMouseSprite = true;
 			_mouseSprite->setVisible(true);
 		}
 		if (keyCode == EventKeyboard::KeyCode::KEY_2 && daJi->checkSkillStatus(2))
 		{
-			_myHero->castSkill_2();
+			//_myHero->castSkill_2();
 			if (_gameMode == 1)
 			{
 				_command.isCastSkill = true;
 				_command.castSkill = 2;
 			}
 		}
-		if (keyCode == EventKeyboard::KeyCode::KEY_3)
+		if (keyCode == EventKeyboard::KeyCode::KEY_3 && daJi->checkSkillStatus(3))
 		{
-			_myHero->castSkill_3();
+			//_myHero->castSkill_3();
 			if (_gameMode == 1)
 			{
 				_command.isCastSkill = true;
@@ -1035,37 +1110,92 @@ void HelloWorld::initSkillPanel()
 
 void HelloWorld::synchronize()
 {
+	_frames++;
 	_command.category = 3;
 	_command.player = _playerNumber;
-	_command.heroName = "fuck";
+	_command.heroName = std::string(_heroes.at(_playerNumber)->getHeroName().getCString());
+	_command.frames = _frames;
 	std::string str = _command.CreateStrings();
 	_command.reset();
-	log("%s", str.c_str());
+	log("SEND%s", str.c_str());
 	//
 	chat_message msg;
 	msg.body_length(str.size());
 	memcpy(msg.body(), str.c_str(), msg.body_length());
 	msg.encode_header();
 	_client->write(msg);
+	//TODO test
+	static int cnt1 = 0;
+	cnt1++;
 	//读取
 	_client->t_lock.lock();
+	log("SIZE___%d", _client->read_msg_list_.size());
 	while (_client->read_msg_list_.size())
 	{
+		static int numPackage = 0;
 		std::string tmpStr = _client->read_msg_list_.front()->body();
 		tmpStr.resize(_client->read_msg_list_.front()->body_length());
+		log("ACCEPT|||%s", tmpStr.c_str());
 		Command cmd(tmpStr);
-		if (cmd.category != 3 || cmd.player == _playerNumber)
+		
+		if (cmd.category != 3)
 		{
 			_client->read_msg_list_.pop_front();
 			continue;
 		}
 		else
 		{
-			//读取之后对cmd的操作（目前为1v1
-			updateOtherHeroes(cmd);
+			if (cmd.player == 0)
+			{
+				if (cmd.frames % 900 == 300)
+				{
+					generateSoldiers(0.f);
+					//schedule(schedule_selector(HelloWorld::generateSoldiers), 10.f, -1, 0.f);
+				}
+				updateSoldiersState();
+			}
+			//TODO test
+			//static int cnt2 = 0;
+			//log("(%d,%d)", cnt1, cnt2);
+			//cnt2++;
 			//
+
+			updateOtherHeroes(cmd);
 			_client->read_msg_list_.pop_front();
-			break;
+		}
+
+
+		////last
+		//if (cmd.category != 3 || cmd.player == _playerNumber)
+		//{
+		//	_client->read_msg_list_.pop_front();
+		//	continue;
+		//}
+		//else
+		//{
+		//	//TODO test
+		//	if (cmd.castSkill == 3)
+		//	{
+		//		log("here");
+		//	}
+		//	//读取之后对cmd的操作（目前为1v1
+		//	updateOtherHeroes(cmd);
+		//	static int cnt2 = 0;
+		//	cnt2++;
+		//	log("(%d,%d)", cnt1, cnt2);
+		//	//
+		//	_client->read_msg_list_.pop_front();
+		//	break;
+		//}
+		////
+
+		numPackage++;
+		//大于两次不再读取
+		if (numPackage >= 2)
+		{
+			
+			numPackage = 0;
+			//break;
 		}
 	}
 	_client->t_lock.unlock();
@@ -1073,6 +1203,7 @@ void HelloWorld::synchronize()
 
 void HelloWorld::updateOtherHeroes(Command command)
 {
+	auto nowTime = GetCurrentTime() / 1000.f;
 	INT32 playerNumber = command.player;
 	Hero* hero = _heroes.at(playerNumber);
 	if (command.standingAngle >= 0.f)
@@ -1081,8 +1212,17 @@ void HelloWorld::updateOtherHeroes(Command command)
 	}
 	if (command.isHeroMove)
 	{
+		auto positionDelta = MyMath::calculatePositionDelta(hero->getStandingAngle(), hero->getMoveSpeed());
+		auto newPosition = hero->getPosition() + 5 * positionDelta;
 		hero->heroMove();
+		if (command.player == _playerNumber && nowTime - hero->getLastAttackTime() > hero->getMinAttackInterval() && hero->getVertigoLastTo() < nowTime)
+		{
+			_map->setPosition(_map->getPosition() - positionDelta);
+			_sprBG->setPosition(_sprBG->getPosition() - positionDelta);
+		}
+
 	}
+
 	if (command.isHeroStopMove)
 	{
 		hero->stopMove();
@@ -1155,4 +1295,9 @@ void HelloWorld::updateOtherHeroes(Command command)
 			tmpHero->attack();
 		}
 	}
+}
+
+Vec2 HelloWorld::getPositionInMap(const Vec2& mousePosition)
+{
+	return mousePosition - _map->getPosition();
 }

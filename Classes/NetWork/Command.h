@@ -15,8 +15,8 @@ class Equipment;
 class Command
 {
 public:
-	Command(int numRows = 12);
-	Command(std::string str, int numRos = 12);
+	Command(int numRows = 13);
+	Command(std::string str, int numRos = 13);
 	std::string CreateStrings();
 	//
 	int category;
@@ -38,6 +38,7 @@ public:
 	bool isSkillParamter;
 	cocos2d::Point skillParamter;
 	bool isAttack;
+	int frames;
 	std::string heroName;
 	//用于传输的字符串数组
 	int numRows;

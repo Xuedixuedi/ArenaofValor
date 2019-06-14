@@ -40,15 +40,18 @@ bool SoldierPath::init(const std::string& filename, MapInfo map)
 
 
 	INT32 state;
-	_pathGraph.resize(_pointsCount);
-	for (int i = 0; i < _pointsCount; ++i)
+	if (_pointsCount >= 0)
 	{
-		for (int j = 0; j < _pointsCount; ++j)
+		_pathGraph = std::vector<std::vector<INT32>>(_pointsCount, std::vector<INT32>(0));
+		for (int i = 0; i < _pointsCount; ++i)
 		{
-			OpenFile >> state;
-			if (state == 1)
+			for (int j = 0; j < _pointsCount; ++j)
 			{
-				_pathGraph[i].push_back(j);
+				OpenFile >> state;
+				if (state == 1)
+				{
+					_pathGraph[i].push_back(j);
+				}
 			}
 		}
 	}

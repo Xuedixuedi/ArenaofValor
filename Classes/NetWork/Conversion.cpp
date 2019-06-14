@@ -57,7 +57,7 @@ bool Conversion::strToInt(std::string str, int & a)
 
 bool Conversion::strToPoint(std::string str, cocos2d::Point& pos)
 {
-	if (str == "")
+	if (str == "0,0")
 		return false;
 	std::vector<std::string> result;
 	Conversion::split(str, ',', result);
@@ -108,6 +108,11 @@ bool Conversion::strToEquip(std::string str, EEQUIPMENT& equip)
 	{
 		equip = EEQUIPMENT::SHUIJIN;
 	}
+	else if (str == "NOTHING")
+	{
+		equip = EEQUIPMENT::NOTHING;
+		return false;
+	}
 	return true;
 }
 
@@ -142,6 +147,9 @@ std::string Conversion::equipToStr(EEQUIPMENT equip)
 		break;
 	case SHUIJIN:
 		str = "SHUIJIN";
+		break;
+	case NOTHING:
+		str = "NOTHING";
 		break;
 	default:
 		break;

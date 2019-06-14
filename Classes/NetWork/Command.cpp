@@ -32,14 +32,12 @@ std::string Command::CreateStrings()
 	package[5] = Conversion::intToStr(skillLevelUp);
 	package[6] = Conversion::equipToStr(getEquip);
 	package[7] = Conversion::intToStr(sellEquip);
-	//package[6] = Conversion::floatToStr(standingAngle);
-	//package[7] = Conversion::floatToStr(standingAngle);
-	//package[6] = getEquip;
-	//package[7] = sellEquip;
 	package[8] = Conversion::intToStr(castSkill);
 	package[9] = Conversion::pointToStr(skillParamter);
 	package[10] = Conversion::boolToStr(isAttack);
 	package[11] = heroName;
+
+	package[12] = Conversion::intToStr(frames);
 	std::string result;
 	for (int i = 0; i < numRows; ++i)
 	{
@@ -67,6 +65,7 @@ void Command::createCommand()
 	isSkillParamter = Conversion::strToPoint(package[9], skillParamter);
 	isAttack = Conversion::strToBool(package[10]);
 	heroName = package[11];
+	Conversion::strToInt(package[12], frames);
 
 }
 
@@ -79,7 +78,7 @@ void Command::reset()
 	isSkillLevelUp = false;
 	skillLevelUp = -1;
 	isGetEquip = false;
-	getEquip = EEQUIPMENT::BISHOU;
+	getEquip = EEQUIPMENT::NOTHING;
 	isSellEquip = false;
 	sellEquip = -1;
 	isCastSkill = false;
@@ -88,4 +87,5 @@ void Command::reset()
 	skillParamter = Point::ZERO;
 	isAttack = false;
 	heroName = "fuck";
+	frames = -1;
 }

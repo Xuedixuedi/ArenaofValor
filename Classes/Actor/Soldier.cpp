@@ -372,16 +372,6 @@ void Soldier::startAnimation()
 
 bool Soldier::updateInstigator()
 {
-	auto& heroes = _combatScene->_heroes;
-	for (auto& i : heroes)
-	{
-		if (i->getCamp() != _camp && !i->getAlreadyDead() && getPosition().distance(i->getPosition()) <= VISION_RADIUS)
-		{
-			_instigator = i;
-			return true;
-		}
-	}
-
 	auto& soldiers = _combatScene->_soldiers;
 	for (auto& i : soldiers)
 	{
@@ -396,6 +386,16 @@ bool Soldier::updateInstigator()
 	for (auto& i : towers)
 	{
 		if (i->getCamp() != _camp && !i->getAlreadyDead() && getPosition().distance(i->getPosition()) <= VISION_RADIUS)
+		{
+			_instigator = i;
+			return true;
+		}
+	}
+
+	auto& heroes = _combatScene->_heroes;
+	for (auto& i : heroes)
+	{
+		if (i->getCamp() != _camp && !i->getAlreadyDead() && getPosition().distance(i->getPosition()) <= VISION_RADIUS/3)
 		{
 			_instigator = i;
 			return true;

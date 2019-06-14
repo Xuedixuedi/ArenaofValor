@@ -6,13 +6,14 @@
 
 #define FRAMES_PER_SECOND             30
 
+
 #define ORIGIN_RADIUS				  700
 #define ORIGIN_INTERVAL				  0.2
 #define PRESS						  1
 #define RELEASE						  2
 #define MIN_ATTACK_INTERVAL			  1.0
 
-#define VISION_RADIUS				  550
+#define VISION_RADIUS				  500
 
 #define TOWER_MIN_ATTACK_INTERVAL	  2
 #define TOWER_HP					  8000
@@ -157,7 +158,8 @@ enum EEQUIPMENT
 	HONGBAOSHI,
 	PIFENG,
 	BUJIA,
-	SHUIJIN
+	SHUIJIN,
+	NOTHING
 };
 
 typedef std::vector<std::vector<bool>> DyaDicVector;

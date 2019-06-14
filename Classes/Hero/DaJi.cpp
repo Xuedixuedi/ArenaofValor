@@ -64,7 +64,7 @@ void DaJi::updateSprSkill_1_Position(float delta)
 	}
 }
 
-void DaJi::castSkill_1(Point mousePosition)
+void DaJi::castSkill_1(Point position)
 {
 	log("HPRecover : %d", _healthComp->getRecoverRate());
 	//技能蓝耗
@@ -73,7 +73,7 @@ void DaJi::castSkill_1(Point mousePosition)
 	auto nowTime = GetCurrentTime() / 1000.f;
 	_lastSkillTime_1 = nowTime;
 	//初始化技能精灵
-	_shockWaveAngle = MyMath::getRad(getPosition(), mousePosition - _combatScene->getMap()->getPosition());
+	_shockWaveAngle = MyMath::getRad(getPosition(), position);
 	_skillPosition = getPosition();
 	auto sprSkill_1 = Sprite::create("pictures/hero/DaJi/skill1.png");
 	sprSkill_1->setPosition(getPosition());
