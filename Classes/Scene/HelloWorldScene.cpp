@@ -53,6 +53,8 @@ bool HelloWorld::init(const std::string& myHeroName, const std::string& aiHeroNa
 
 	initMapLayer();
 
+
+	initMusic();
 	initTower();
 	initLabelRecord();
 	initHero(myHeroName, aiHeroName);
@@ -77,6 +79,11 @@ bool HelloWorld::init(const std::string& myHeroName, const std::string& aiHeroNa
 	return true;
 }
 
+void HelloWorld::initMusic()
+{
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/Welcome.wav", false, 1, 0, 1.2);
+
+}
 void HelloWorld::initSpring()
 {
 	auto size = _map->getBoundingBox().size;
@@ -856,6 +863,8 @@ bool HelloWorld::gameEnd()
 {
 	if (_blueShuiJin->getAlreadyDead())
 	{
+		CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/Defeat.wav", false, 1, 0, 1.5);
+
 		unscheduleUpdate();
 		_eventDispatcher->removeAllEventListeners();
 		auto sprDefeated = Sprite::create("pictures/others/defeate.png");
@@ -866,6 +875,8 @@ bool HelloWorld::gameEnd()
 	}
 	else if (_redShuiJin->getAlreadyDead())
 	{
+
+		CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/Victory.wav", false, 1, 0, 1.5);
 		unscheduleUpdate();
 		_eventDispatcher->removeAllEventListeners();
 		auto sprVictory = Sprite::create("pictures/others/victory.png");

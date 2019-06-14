@@ -58,6 +58,7 @@ private:
 	void initTower();
 	void initListener();
 	void initSurrenderMenu();
+	void initMusic();
 	//Ö¡¸üÐÂ
 	virtual void update(float delta);
 	void TowerAttack();

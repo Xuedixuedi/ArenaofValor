@@ -1,4 +1,5 @@
 #include "Record.h"
+#include "SimpleAudioEngine.h"
 
 bool Record::init()
 {
@@ -91,6 +92,7 @@ void Record::initLabel()
 
 void Record::updateKill()
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/GodLike.wav", false,1,0,1.2);
 	++_kill1;
 	++_death2;
 
@@ -100,6 +102,7 @@ void Record::updateKill()
 
 void Record::updateAssist()
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/Unstoppable.wav", false,1,0,1.2);
 	++_assist1;
 	++_death2;
 
@@ -109,6 +112,7 @@ void Record::updateAssist()
 
 void Record::updateDeath()
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/YouHaveBeenSlained.wav", false,1,0,1.2);
 	++_death1;
 	++_kill2;
 

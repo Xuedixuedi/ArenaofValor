@@ -25,9 +25,6 @@ bool SelectHero::init()
 		return false;
 	}
 
-	//ÉùÒô
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	audio->playEffect("Audio/SelectYourHero.mp3", false);
 
 
 
@@ -139,6 +136,7 @@ bool SelectHero::init()
 
 void SelectHero::menuHouyiCallBack(cocos2d::Ref * pSender)
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/HouYi.wav", false,1,0,1.2);
 	auto nextScene = SelectEnemyHero::create("HouYi");
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
@@ -146,6 +144,7 @@ void SelectHero::menuHouyiCallBack(cocos2d::Ref * pSender)
 
 void SelectHero::menuDajiCallBack(cocos2d::Ref * pSender)
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/DaJi.wav", false,1,0,1.2);
 	auto nextScene = SelectEnemyHero::create("DaJi");
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
@@ -153,6 +152,7 @@ void SelectHero::menuDajiCallBack(cocos2d::Ref * pSender)
 
 void SelectHero::menuYaseCallBack(cocos2d::Ref * pSender)
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/YaSe.wav", false,1,0,1.2);
 	auto nextScene = SelectEnemyHero::create("YaSe");
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));

@@ -26,10 +26,10 @@ bool SelectMode::init()
 	}
 
 	//声音
-	//auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	//if (!audio->isBackgroundMusicPlaying()) {
-	//	audio->playBackgroundMusic("Audio/StartGame.mp3", true);
-	//}
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	if (!audio->isBackgroundMusicPlaying()) {
+		audio->playBackgroundMusic("Audio/StartGame.mp3", true);
+	}
 
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();//得到屏幕大小
@@ -151,6 +151,8 @@ void SelectMode::menuBackCallBack(Ref *pSender) {
 
 void SelectMode::menuSingleCallBack(cocos2d::Ref * pSender)
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("Audio/SelectMyHero.wav", false,1,0,1.2);
+
 	auto nextScene = SelectHero::create();
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
