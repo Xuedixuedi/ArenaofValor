@@ -117,16 +117,6 @@ void Soldier::initHealthComp()
 	auto size = getBoundingBox().size;
 	size.height *= 1.5;
 
-	//不同阵营小兵血条颜色不同
-	if (_camp == ECamp::BLUE)
-	{
-		_healthComp->setColor(Color3B(0, 0, 255));
-	}
-	else
-	{
-		_healthComp->setColor(Color3B(255, 0, 0));
-	}
-
 	_healthComp->setScaleX(0.15);
 	_healthComp->setScaleY(0.4);
 	_healthComp->setAnchorPoint(Vec2::ANCHOR_MIDDLE);

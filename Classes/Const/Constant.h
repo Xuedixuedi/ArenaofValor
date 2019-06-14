@@ -203,6 +203,9 @@ struct HeroMessage
 	int _playerNumber;
 	std::string _heroName;
 	ECamp camp;
+
+	HeroMessage(int playerNumber = 0, std::string heroName = "", ECamp camp = BLUE):
+		_playerNumber(playerNumber), _heroName(heroName), camp(camp) {}
 };
 
 namespace MyMath

@@ -143,7 +143,7 @@ bool Hero::initExpComp()
 bool Hero::initRecordComp()
 {
 	_recordComp = Record::create();
-	_combatScene->getMap()->addChild(_recordComp);
+	_combatScene->addChild(_recordComp);
 	_recordComp->setVisible(false);
 
 	return true;

@@ -212,7 +212,6 @@ void SelectMode::update(float delta)
 			sameTime++;
 		}
 		_client->t_lock.unlock();
-
 	}
 }
 
@@ -245,21 +244,20 @@ bool SelectMode::clientInit()
 	return true;
 }
 
-void SelectMode::menuBackCallBack(Ref * pSender) {
+void SelectMode::menuBackCallBack(Ref * pSender) 
+{
+	unscheduleUpdate();
 	auto nextScene = StartGame::create();
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
-	MenuItem* item = (MenuItem*)pSender;
-	log("Touch Helo Menu Item %p", item);
 }
 
 void SelectMode::menuSingleCallBack(cocos2d::Ref * pSender)
 {
-	auto nextScene = SelectHero::create();
+	unscheduleUpdate();
+	auto nextScene = SelectHero::createScene(nullptr, 0);
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
-	MenuItem* item = (MenuItem*)pSender;
-	log("Touch Helo Menu Item %p", item);
 }
 
 void SelectMode::menuNetworkCallBack(cocos2d::Ref * pSender)
@@ -270,12 +268,9 @@ void SelectMode::menuNetworkCallBack(cocos2d::Ref * pSender)
 		clientInit();
 		once = false;
 	}
-
 }
 
 void SelectMode::menuComingCallBack(cocos2d::Ref * pSender)
 {
-
-
 
 }

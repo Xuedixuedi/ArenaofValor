@@ -18,7 +18,7 @@ public:
 
 	static cocos2d::Scene* createScene(chat_client* client, int PlayerNumber);
 
-	virtual bool init(chat_client* client, int PlayerNumber);
+	virtual bool init(chat_client* client, int playerNumber);
 	//netWork
 	chat_client* _client;
 	int _playerNumber;
