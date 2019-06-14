@@ -38,6 +38,11 @@ std::string Command::CreateStrings()
 	package[11] = heroName;
 
 	package[12] = Conversion::intToStr(frames);
+	package[13] = chatMsg;
+	if (chatMsg != "*")
+	{
+		_isChatMsg = true;
+	}
 	std::string result;
 	for (int i = 0; i < numRows; ++i)
 	{
@@ -66,7 +71,11 @@ void Command::createCommand()
 	isAttack = Conversion::strToBool(package[10]);
 	heroName = package[11];
 	Conversion::strToInt(package[12], frames);
-
+	chatMsg = package[13];
+	if (package[13] == "*")
+		_isChatMsg = false;
+	else
+		_isChatMsg = true;
 }
 
 void Command::reset()
@@ -88,4 +97,6 @@ void Command::reset()
 	isAttack = false;
 	heroName = "fuck";
 	frames = -1;
+	chatMsg = "*";
+	_isChatMsg = false;
 }

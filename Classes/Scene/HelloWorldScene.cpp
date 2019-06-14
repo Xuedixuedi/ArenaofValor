@@ -18,6 +18,7 @@
 #include "Network/Message.h"
 #include "Network/Command.h"
 #include "Network/Client.h"
+#include "Component/Chatbox.h"
 
 static void problemLoading(const char* filename)
 {
@@ -55,6 +56,8 @@ bool HelloWorld::init(INT32 playerNumber, chat_client* client, INT32 mode, std::
 	{
 		_isReady[i] = false;
 	}
+
+	_isChatboxOpen = false;
 	_frames = 0;
 	_visibleSize = Director::getInstance()->getVisibleSize();
 	_origin = Director::getInstance()->getVisibleOrigin();
@@ -73,6 +76,7 @@ bool HelloWorld::init(INT32 playerNumber, chat_client* client, INT32 mode, std::
 	initSkillPanel();
 	initSpring();
 	initShop();
+	initChatbox();
 
 	scheduleUpdate();
 
@@ -279,6 +283,21 @@ void HelloWorld::initListener()
 	listenerMouse->onMouseMove = CC_CALLBACK_1(HelloWorld::onMouseMove, this);
 	_eventDispatcher->addEventListenerWithFixedPriority(listenerMouse, 2);
 	listenerTouch->setSwallowTouches(false);
+}
+
+void HelloWorld::initChatbox()
+{
+	_chatboxSwitch = Sprite::create("pictures/others/Chatbox.png");
+	_chatboxSwitch->setPosition(Vec2(1239, 380));
+	addChild(_chatboxSwitch);
+	_chatboxSwitch->setZOrder(10);
+
+	_chatbox = Chatbox::create();
+	_chatbox->setPosition(Vec2(1034, 486));
+	addChild(_chatbox);
+	_chatbox->setZOrder(10);
+	_chatbox->setVisible(false);
+	_chatbox->setDefaultHeroName(std::string(_myHero->getHeroName().getCString()));
 }
 
 void HelloWorld::update(float delta)
@@ -561,7 +580,7 @@ void HelloWorld::updateSoldiersState()
 void HelloWorld::updateHeroPosition()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
-	if (_rocker->getIsCanMove() && !_myHero->getAlreadyDead())
+	if (!_isChatboxOpen && _rocker->getIsCanMove() && !_myHero->getAlreadyDead())
 	{
 		//_myHero->setStandingAngle(_rocker->getAngle());
 		if (_gameMode == 1)
@@ -687,6 +706,20 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 	//log("touch(%f,%f)", touch->getLocation().x, touch->getLocation().y);
 	
 	//启动装备面板
+	auto touchLocation = touch->getLocation();
+	if (touchLocation.distance(_chatboxSwitch->getPosition()) < _chatbox->getContentSize().height / 2)
+	{
+		if (_isChatboxOpen)
+		{
+			_isChatboxOpen = false;
+			_chatbox->setVisible(false);
+			return false;
+		}
+		_isChatboxOpen = true;
+		_chatbox->setVisible(true);
+		return false;
+	}
+
 	if (_shop->isVisible())
 	{
 		Equipment* equip;
@@ -727,7 +760,6 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 	}
 
 	//交互技能面板
-	Point touchLocation = Vec2(touch->getLocation().x, touch->getLocation().y);
 	this->selectSpriteForTouch(touchLocation);
 
 	//释放攻击/技能
@@ -807,6 +839,24 @@ bool HelloWorld::onTouchBegan(Touch * touch, Event * event)
 
 bool HelloWorld::onPressKey(EventKeyboard::KeyCode keyCode, Event * event)
 {
+	if (_isChatboxOpen)
+	{
+		if (keyCode == EventKeyboard::KeyCode::KEY_ENTER)
+		{
+			if (_gameMode == 1)
+			{
+				_command.chatMsg = _chatbox->getMessage();
+				_command._isChatMsg = true;
+			}
+			_chatbox->pushMessage();
+		}
+		else
+		{
+			_chatbox->updateMessage(Chatbox::switchKeycodeToChar(keyCode));
+		}
+		return true;
+	}
+
 	auto houYi = dynamic_cast<HouYi*>(_myHero);
 	if (houYi)
 	{
@@ -1132,12 +1182,16 @@ void HelloWorld::synchronize()
 	log("SIZE___%d", _client->read_msg_list_.size());
 	while (_client->read_msg_list_.size())
 	{
+
 		static int numPackage = 0;
 		std::string tmpStr = _client->read_msg_list_.front()->body();
 		tmpStr.resize(_client->read_msg_list_.front()->body_length());
 		log("ACCEPT|||%s", tmpStr.c_str());
 		Command cmd(tmpStr);
-		
+		if (cmd._isChatMsg)
+		{
+			auto t = cmd.chatMsg;
+		}
 		if (cmd.category != 3)
 		{
 			_client->read_msg_list_.pop_front();
@@ -1156,7 +1210,7 @@ void HelloWorld::synchronize()
 			}
 			//TODO test
 			//static int cnt2 = 0;
-			//log("(%d,%d)", cnt1, cnt2);
+			//log("(%d,%d)", cnt1, cnt2);z	
 			//cnt2++;
 			//
 
@@ -1294,6 +1348,11 @@ void HelloWorld::updateOtherHeroes(Command command)
 		{
 			tmpHero->attack();
 		}
+	}
+
+	if (_playerNumber != command.player && command._isChatMsg)
+	{
+		_chatbox->pushMessage(command.chatMsg);
 	}
 }
 

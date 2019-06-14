@@ -15,8 +15,8 @@ class Equipment;
 class Command
 {
 public:
-	Command(int numRows = 13);
-	Command(std::string str, int numRos = 13);
+	Command(int numRows = 14);
+	Command(std::string str, int numRos = 14);
 	std::string CreateStrings();
 	//
 	int category;
@@ -40,6 +40,8 @@ public:
 	bool isAttack;
 	int frames;
 	std::string heroName;
+	std::string chatMsg;
+	bool _isChatMsg;
 	//用于传输的字符串数组
 	int numRows;
 	std::vector <std::string> package;

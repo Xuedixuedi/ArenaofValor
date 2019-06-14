@@ -104,6 +104,8 @@
 #define RED_SHUIJIN_POSITION	Vec2(5776, 688)
 #define BLUE_SHUIJIN_POSITION   Vec2(624,688)
 
+#define CHATBOX_SIZE            4
+
 
 USING_NS_CC;
 

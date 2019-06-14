@@ -18,6 +18,8 @@ class HRocker;
 class SoldierPath;
 class ShopLayer;
 class chat_client;
+class Chatbox;
+
 class HelloWorld : public cocos2d::Scene
 {
 	CC_SYNTHESIZE(INT32, _gameMode, GameMode);
@@ -47,6 +49,9 @@ public:
 
 private:
 
+	Sprite* _chatboxSwitch;
+	Chatbox* _chatbox;
+	bool _isChatboxOpen;
 	Sprite* _sprBG;
 	SoldierPath* _blueSoldierPathPoints;
 	SoldierPath* _redSoldierPathPoints;
@@ -61,6 +66,7 @@ private:
 	void initSkillPanel();
 	void initTower();
 	void initListener();
+	void initChatbox();
 	//Ö¡¸üÐÂ
 	virtual void update(float delta);
 	void TowerAttack();
