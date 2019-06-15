@@ -10,7 +10,7 @@
 #include "Const/MapInfo.h"
 #include <string>
 #include "Network/Command.h"
-
+#include <map>
 USING_NS_CC;
 
 class Record;
@@ -18,6 +18,9 @@ class HRocker;
 class SoldierPath;
 class ShopLayer;
 class chat_client;
+class Chatbox;
+class PropertyPanel;
+
 class HelloWorld : public cocos2d::Scene
 {
 	CC_SYNTHESIZE(INT32, _gameMode, GameMode);
@@ -33,6 +36,7 @@ class HelloWorld : public cocos2d::Scene
 	CC_SYNTHESIZE(Actor*, _blueShuiJin, BlueShuiJin);
 	CC_SYNTHESIZE(Actor*, _redShuiJin, RedShuiJin);
 	CC_SYNTHESIZE(Command, _command, Command);
+	CC_SYNTHESIZE(PropertyPanel*, _propertyPanel, PropertyPanel);
 
 public:
 	//¹«¿ªÈÝÆ÷
@@ -47,6 +51,10 @@ public:
 
 private:
 
+	Sprite* _propertyPanelSwitch;
+	Sprite* _chatboxSwitch;
+	Chatbox* _chatbox;
+	bool _isChatboxOpen;
 	Sprite* _sprBG;
 	SoldierPath* _blueSoldierPathPoints;
 	SoldierPath* _redSoldierPathPoints;
@@ -61,6 +69,8 @@ private:
 	void initSkillPanel();
 	void initTower();
 	void initListener();
+	void initChatbox();
+	void initPropertyPanel();
 	//Ö¡¸üÐÂ
 	virtual void update(float delta);
 	void TowerAttack();
@@ -69,6 +79,12 @@ private:
 	void updateDamages();
 	void updateSoldiersState();
 	void clearObjects();
+	void updateMap();
+	//netWork
+	int _frames;
+	bool _gameBegin;
+	std::map<int, bool> _isReady;
+	void checkMap();
 	//¼àÌý
 	//¼àÌýÆ÷
 	EventListenerTouchOneByOne* listenerTouch;
@@ -91,6 +107,7 @@ private:
 	void changeScene(float delta);
 	void synchronize();
 	void updateOtherHeroes(Command command);
+	Vec2 getPositionInMap(const Vec2& mousePosition);
 
 public:
 	///TODO

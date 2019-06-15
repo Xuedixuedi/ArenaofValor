@@ -22,9 +22,9 @@ public:
 
 	virtual void castSkill_1();
 
-	virtual void castSkill_2(Point mousePosition);
+	virtual void castSkill_2(Point position);
 
-	virtual void castSkill_3(Point mousePosition);
+	virtual void castSkill_3(Point position);
 
 	virtual void updateSprSkillPosition(float delta);
 

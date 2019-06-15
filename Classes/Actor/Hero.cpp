@@ -39,11 +39,11 @@ bool Hero::init(HelloWorld* combatScene, ECamp camp, std::string heroName, EAtta
 
 bool Hero::initHeroData(HelloWorld* combatScene, std::string heroName, ECamp camp, EAttackMode attackMode)
 {
-	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("Data\\HeroDataAtEachLevel.plist");
+	ValueMap value = FileUtils::getInstance()->getValueMapFromFile("data\\HeroDataAtEachLevel.plist");
 	_heroDataAtEachLevel = value.at(heroName).asValueMap();
-	_heroData= (FileUtils::getInstance()->getValueMapFromFile("Data\\HeroData.plist"))[heroName].asValueMap();
-	_commonData = FileUtils::getInstance()->getValueMapFromFile("Data\\CommonData.plist");
-	_skillData = (FileUtils::getInstance()->getValueMapFromFile("Data\\SkillData.plist"))[heroName].asValueMap();
+	_heroData= (FileUtils::getInstance()->getValueMapFromFile("data\\HeroData.plist"))[heroName].asValueMap();
+	_commonData = FileUtils::getInstance()->getValueMapFromFile("data\\CommonData.plist");
+	_skillData = (FileUtils::getInstance()->getValueMapFromFile("data\\SkillData.plist"))[heroName].asValueMap();
 
 	_combatScene = combatScene;
 	setTexture(StringUtils::format("pictures\\hero\\%s\\%sright1.png", heroName.c_str(),heroName.c_str()));
@@ -81,7 +81,7 @@ bool Hero::initHeroData(HelloWorld* combatScene, std::string heroName, ECamp cam
 	_skillLevel_1 = _skillLevel_2 = _skillLevel_3 = 0;
 	_lastSkillTime_1 = _lastSkillTime_2 = _lastSkillTime_3 = 0.f;
 
-	_skillPoint = 1;
+	_skillPoint = 10;
 
 	for (int i = 0; i < NUMBER_OF_EQUIPGRID; ++i)
 	{
@@ -143,7 +143,7 @@ bool Hero::initExpComp()
 bool Hero::initRecordComp()
 {
 	_recordComp = Record::create();
-	_combatScene->getMap()->addChild(_recordComp);
+	_combatScene->addChild(_recordComp);
 	_recordComp->setVisible(false);
 
 	return true;
@@ -225,7 +225,7 @@ void Hero::die()
 	auto money = getRecordComp()->getMoney();
 	getRecordComp()->setMoney(money * 2 / 3);
 
-	auto expForKill = (FileUtils::getInstance()->getValueMapFromFile("Data\\CommonData.plist"))["ExpNeeded"].asValueVector()[getExpComp()->getLevel()].asInt();
+	auto expForKill = (FileUtils::getInstance()->getValueMapFromFile("data\\CommonData.plist"))["ExpNeeded"].asValueVector()[getExpComp()->getLevel()].asInt();
 	auto goldForKill = money / 3 + getExpComp()->getLevel() * 80;
 
 	auto lastAttackHero = dynamic_cast<Hero*>(_lastAttackFrom);//最后一次攻击的那个
@@ -346,19 +346,28 @@ void Hero::skillLevelUp(INT32 skillNumber)
 	switch (skillNumber)
 	{
 	case 1:
-		++_skillLevel_1;
-		_calmTime_1 = _skillData["CD"].asValueVector()[1].asValueVector()[_skillLevel_1].asFloat();
-		_magicConsume_1 = _skillData["MPConsume"].asValueVector()[1].asValueVector()[_skillLevel_1].asFloat();
+		if (_skillLevel_1 < 3)
+		{
+			++_skillLevel_1;
+			_calmTime_1 = _skillData["CD"].asValueVector()[1].asValueVector()[_skillLevel_1].asFloat();
+			_magicConsume_1 = _skillData["MPConsume"].asValueVector()[1].asValueVector()[_skillLevel_1].asFloat();
+		}
 		break;
 	case 2:
-		++_skillLevel_2;
-		_calmTime_2 = _skillData["CD"].asValueVector()[2].asValueVector()[_skillLevel_2].asFloat();
-		_magicConsume_2 = _skillData["MPConsume"].asValueVector()[2].asValueVector()[_skillLevel_2].asFloat();
+		if (_skillLevel_2 < 3)
+		{
+			++_skillLevel_2;
+			_calmTime_2 = _skillData["CD"].asValueVector()[2].asValueVector()[_skillLevel_2].asFloat();
+			_magicConsume_2 = _skillData["MPConsume"].asValueVector()[2].asValueVector()[_skillLevel_2].asFloat();
+		}
 		break;
 	case 3:
-		++_skillLevel_3;
-		_calmTime_3 = _skillData["CD"].asValueVector()[3].asValueVector()[_skillLevel_3].asFloat();
-		_magicConsume_3 = _skillData["MPConsume"].asValueVector()[3].asValueVector()[_skillLevel_3].asFloat();
+		if (_skillLevel_3 < 3)
+		{
+			++_skillLevel_3;
+			_calmTime_3 = _skillData["CD"].asValueVector()[3].asValueVector()[_skillLevel_3].asFloat();
+			_magicConsume_3 = _skillData["MPConsume"].asValueVector()[3].asValueVector()[_skillLevel_3].asFloat();
+		}
 		break;
 	default:
 		break;
@@ -436,7 +445,7 @@ void Hero::reborn()
 void Hero::heroMove()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;
-	if (nowTime - _lastAttackTime < _minAttackInterval)
+	if (nowTime - _lastAttackTime <= _minAttackInterval)
 	{
 		return;
 	}

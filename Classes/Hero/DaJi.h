@@ -21,7 +21,7 @@ private:
 
 public:
 
-	virtual void castSkill_1(Point mousePosition);
+	virtual void castSkill_1(Point position);
 
 	virtual void castSkill_2();
 

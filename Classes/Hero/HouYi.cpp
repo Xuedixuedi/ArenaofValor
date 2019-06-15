@@ -49,7 +49,7 @@ void HouYi::castSkill_1()
 	attack();
 }
 
-void HouYi::castSkill_2(Point mousePosition)
+void HouYi::castSkill_2(Point position)
 {
 	//
 	auto nowTime = GetCurrentTime() / 1000.f;
@@ -60,17 +60,16 @@ void HouYi::castSkill_2(Point mousePosition)
 		float skillRadius = 500.f;
 		float effectRadius = 150.f;
 
-		auto positionInMap = mousePosition - _combatScene->getMap()->getPosition();
-		auto effectPosition = positionInMap;
+		auto effectPosition = position;
 		auto myPosition = getPosition();
 
-		if (positionInMap.distance(myPosition) >= skillRadius)
+		if (position.distance(myPosition) >= skillRadius)
 		{
-			auto delta = positionInMap - myPosition;
+			auto delta = position - myPosition;
 			effectPosition = myPosition + skillRadius / delta.length() * delta;
 		}
 		//×ªÉí
-		_standingAngle = MyMath::getRad(getPosition(), mousePosition);
+		_standingAngle = MyMath::getRad(getPosition(), position);
 		updateDirection();
 		//
 		auto skillAnimation = AnimationCache::getInstance()->getAnimation("HouYiSkill2");
@@ -130,13 +129,12 @@ void HouYi::castSkill_2(Point mousePosition)
 
 }
 
-void HouYi::castSkill_3(Point mousePosition)
+void HouYi::castSkill_3(Point position)
 {
 	_magicComp->changeStateBy(-1 * _magicConsume_3);
 	auto nowTime = GetCurrentTime() / 1000.f;
-	auto actualPosition = mousePosition - _combatScene->getMap()->getPosition();
 	_lastSkillTime_3 = nowTime;
-	_birdAngle = MyMath::getRad(getPosition(), actualPosition);
+	_birdAngle = MyMath::getRad(getPosition(), position);
 	_skillPosition = getPosition();
 
 	auto sprSkill = Sprite::create("pictures/hero/HouYi/HouYiSkill3Logo.png");

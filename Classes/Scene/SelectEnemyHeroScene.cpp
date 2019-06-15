@@ -2,6 +2,9 @@
 #include "SelectEnemyHeroScene.h"
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h" 
+#include "Const/Constant.h"
+#include <string>
+#include <vector>
 
 USING_NS_CC;
 
@@ -65,8 +68,6 @@ bool SelectEnemyHero::init(const std::string& selectedHeroName)
 		float y = visibleSize.height - 30;
 		backMenu->setPosition(Vec2(x, y));
 	}
-
-
 
 
 	//Èý¸öÓ¢ÐÛµÄÑ¡Ôñ
@@ -147,32 +148,43 @@ bool SelectEnemyHero::init(const std::string& selectedHeroName)
 	return true;
 }
 
-
 void SelectEnemyHero::menuHouyiCallBack(cocos2d::Ref * pSender)
 {
-	//CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
+	CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
 
-	//auto nextScene = HelloWorld::create(_selectedHeroName, "HouYi");
-	//Director::getInstance()->replaceScene(
-	//	TransitionSlideInT::create(1.0f / 60, nextScene));
+	std::vector<HeroMessage> heroMessages;
+	heroMessages.emplace_back(0, _selectedHeroName, ECamp::BLUE);
+	heroMessages.emplace_back(1, "HouYi", ECamp::RED);
+	
+	auto nextScene = HelloWorld::create(0, nullptr, 0, heroMessages);
+	Director::getInstance()->replaceScene(
+		TransitionSlideInT::create(1.0f / 60, nextScene));
 }
 
 void SelectEnemyHero::menuDajiCallBack(cocos2d::Ref * pSender)
 {
-	//CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
+	CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
 
-	//auto nextScene = HelloWorld::create(_selectedHeroName, "DaJi");
-	//Director::getInstance()->replaceScene(
-	//	TransitionSlideInT::create(1.0f / 60, nextScene));
+	std::vector<HeroMessage> heroMessages;
+	heroMessages.emplace_back(0, _selectedHeroName, ECamp::BLUE);
+	heroMessages.emplace_back(1, "DaJi", ECamp::RED);
+
+	auto nextScene = HelloWorld::create(0, nullptr, 0, heroMessages);
+	Director::getInstance()->replaceScene(
+		TransitionSlideInT::create(1.0f / 60, nextScene));
 }
 
 void SelectEnemyHero::menuYaseCallBack(cocos2d::Ref * pSender)
 {
-	//CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
+	CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic(); //Í£Ö¹²¥·Å±³¾°ÒôÀÖ¡£
 
-	//auto nextScene = HelloWorld::create(_selectedHeroName, "YaSe");
-	//Director::getInstance()->replaceScene(
-	//	TransitionSlideInT::create(1.0f / 60, nextScene));
+	std::vector<HeroMessage> heroMessages;
+	heroMessages.emplace_back(0, _selectedHeroName, ECamp::BLUE);
+	heroMessages.emplace_back(1, "YaSe", ECamp::RED);
+
+	auto nextScene = HelloWorld::create(0, nullptr, 0, heroMessages);
+	Director::getInstance()->replaceScene(
+		TransitionSlideInT::create(1.0f / 60, nextScene));
 }
 
 void SelectEnemyHero::menuBackCallBack(cocos2d::Ref * pSender)

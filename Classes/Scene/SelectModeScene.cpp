@@ -212,7 +212,6 @@ void SelectMode::update(float delta)
 			sameTime++;
 		}
 		_client->t_lock.unlock();
-
 	}
 }
 
@@ -227,6 +226,9 @@ bool SelectMode::clientInit()
 		tcp::resolver* resolver = new tcp::resolver(*io_context);
 		std::string ip = "47.101.214.65";
 		std::string port = "32345";
+		//To test
+		//ip = "192.168.31.90";
+		//
 		tcp::resolver::results_type* endpoints = new tcp::resolver::results_type();
 		*endpoints = resolver->resolve(ip, port);
 		auto c = chat_client::Create(*io_context, *endpoints);
@@ -242,21 +244,20 @@ bool SelectMode::clientInit()
 	return true;
 }
 
-void SelectMode::menuBackCallBack(Ref * pSender) {
+void SelectMode::menuBackCallBack(Ref * pSender) 
+{
+	unscheduleUpdate();
 	auto nextScene = StartGame::create();
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
-	MenuItem* item = (MenuItem*)pSender;
-	log("Touch Helo Menu Item %p", item);
 }
 
 void SelectMode::menuSingleCallBack(cocos2d::Ref * pSender)
 {
-	auto nextScene = SelectHero::create();
+	unscheduleUpdate();
+	auto nextScene = SelectHero::createScene(nullptr, 0);
 	Director::getInstance()->replaceScene(
 		TransitionSlideInT::create(1.0f / 60, nextScene));
-	MenuItem* item = (MenuItem*)pSender;
-	log("Touch Helo Menu Item %p", item);
 }
 
 void SelectMode::menuNetworkCallBack(cocos2d::Ref * pSender)
@@ -267,12 +268,9 @@ void SelectMode::menuNetworkCallBack(cocos2d::Ref * pSender)
 		clientInit();
 		once = false;
 	}
-
 }
 
 void SelectMode::menuComingCallBack(cocos2d::Ref * pSender)
 {
-
-
 
 }

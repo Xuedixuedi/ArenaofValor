@@ -167,11 +167,14 @@ void YaSe::castSkill_1()
 	auto buff = Buff::create(EBuffType::NORMAL, 3.f, 0, 0, 0, 0, 0, 0, 0, _moveSpeed * 0.3, 0);
 	takeBuff(buff);
 
+	_lastSkillTime_1 = nowTime;
 	_isEnhanced = true;
 }
 
 void YaSe::castSkill_2()
 {
+	auto nowTime = GetCurrentTime() / 1000.f;
+
 	auto action = Sequence::create
 	(
 		Show::create(),
@@ -180,7 +183,7 @@ void YaSe::castSkill_2()
 		NULL
 	);
 	_sprSkill->runAction(action);
-
+	_lastSkillTime_1 = nowTime;
 	schedule(schedule_selector(YaSe::applySkillDamage), 1.f, 5, 0.f);
 }
 
