@@ -82,7 +82,7 @@ bool Hero::initHeroData(HelloWorld* combatScene, std::string heroName, ECamp cam
 	_skillLevel_1 = _skillLevel_2 = _skillLevel_3 = 0;
 	_lastSkillTime_1 = _lastSkillTime_2 = _lastSkillTime_3 = 0.f;
 
-	_skillPoint = 10;
+	_skillPoint = 1;
 
 	for (int i = 0; i < NUMBER_OF_EQUIPGRID; ++i)
 	{

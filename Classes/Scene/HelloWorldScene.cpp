@@ -1309,9 +1309,18 @@ bool HelloWorld::gameEnd()
 	{
 		unscheduleUpdate();
 		_eventDispatcher->removeAllEventListeners();
-		auto sprDefeated = Sprite::create("pictures/others/defeate.png");
-		sprDefeated->setPosition(_visibleSize / 2);
-		addChild(sprDefeated);
+		if (_myHero->getCamp() == BLUE)
+		{
+			auto sprDefeated = Sprite::create("pictures/others/defeate.png");
+			sprDefeated->setPosition(_visibleSize / 2);
+			addChild(sprDefeated);
+		}
+		else
+		{
+			auto sprVictory = Sprite::create("pictures/others/victory.png");
+			sprVictory->setPosition(_visibleSize / 2);
+			addChild(sprVictory);
+		}
 		scheduleOnce(schedule_selector(HelloWorld::changeScene), 5.f);
 		return true;
 	}
@@ -1319,9 +1328,18 @@ bool HelloWorld::gameEnd()
 	{
 		unscheduleUpdate();
 		_eventDispatcher->removeAllEventListeners();
-		auto sprVictory = Sprite::create("pictures/others/victory.png");
-		sprVictory->setPosition(_visibleSize / 2);
-		addChild(sprVictory);
+		if (_myHero->getCamp() == RED)
+		{
+			auto sprVictory = Sprite::create("pictures/others/victory.png");
+			sprVictory->setPosition(_visibleSize / 2);
+			addChild(sprVictory);
+		}
+		else
+		{
+			auto sprDefeated = Sprite::create("pictures/others/defeate.png");
+			sprDefeated->setPosition(_visibleSize / 2);
+			addChild(sprDefeated);
+		}
 		scheduleOnce(schedule_selector(HelloWorld::changeScene), 5.f);
 		return true;
 	}

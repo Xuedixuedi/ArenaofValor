@@ -2,6 +2,7 @@
 #include "Component/StateComponent.h"
 #include "Component/Buff.h"
 #include "Scene/HelloWorldScene.h"
+#include "Actor/Creep.h"
 
 YaSe* YaSe::create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode)
 {
@@ -75,6 +76,7 @@ bool YaSe::attack()
 	Vector<Hero*>& allHeroes = _combatScene->_heroes;
 	Vector<Soldier*>& allSoldiers = _combatScene->_soldiers;
 	Vector<Actor*>& allTowers = _combatScene->_towers;
+	Vector<Creep*>& allCreeps = _combatScene->_creeps;
 	for (auto it = allHeroes.begin(); it != allHeroes.end(); ++it)
 	{
 		if ((*it)->getCamp() != _camp && !(*it)->getAlreadyDead() && getPosition().distance((*it)->getPosition()) < _attackRadius)
@@ -129,25 +131,24 @@ bool YaSe::attack()
 			}
 		}
 	}
-	for (auto& i : _combatScene->_towers)
+	for (auto it = allCreeps.begin(); it != allCreeps.end(); ++it)
 	{
-		if (i->getCamp() != _camp && getPosition().distance(i->getPosition()) < _attackRadius + 100.f)
+		if (getPosition().distance((*it)->getPosition()) < _attackRadius)
 		{
-			auto angle = MyMath::getRad(getPosition(), i->getPosition());
+			auto angle = MyMath::getRad(getPosition(), (*it)->getPosition());
 			if (fabs(angle - _standingAngle) < 4 * MIN_DEGREE_IN_RAD)
 			{
-				if (i == _attackTarget)
+				if ((*it) == _attackTarget)
 				{
-					_combatScene->_damages.push_back(Damage(damage, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+					_combatScene->_damages.push_back(Damage(damage, this, *it, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
 				}
 				else
 				{
-					_combatScene->_damages.push_back(Damage(damage * 0.5, this, i, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
+					_combatScene->_damages.push_back(Damage(damage * 0.5, this, *it, EDamageType::PHYSICS_DAMAGE, nowTime + _minAttackInterval / 2));
 				}
 			}
 		}
 	}
-
 	return true;
 }
 
@@ -185,6 +186,8 @@ void YaSe::castSkill_2()
 	_sprSkill->runAction(action);
 	_lastSkillTime_1 = nowTime;
 	schedule(schedule_selector(YaSe::applySkillDamage), 1.f, 5, 0.f);
+
+	_lastSkillTime_2 = nowTime;
 }
 
 void YaSe::applySkillDamage(float delta)
