@@ -219,6 +219,13 @@ void YaSe::applySkillDamage(float delta)
 			i->takeDamage(EDamageType::MAGIC_DAMAGE, damage, this);
 		}
 	}
+	for (auto& i : _combatScene->_creeps)
+	{
+		if (!i->getAlreadyDead() && getPosition().distance(i->getPosition()) <= 100)
+		{
+			i->takeDamage(EDamageType::MAGIC_DAMAGE, damage, this);
+		}
+	}
 }
 
 void YaSe::sendBuff(float delta)

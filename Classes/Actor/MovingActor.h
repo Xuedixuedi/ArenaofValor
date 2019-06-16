@@ -27,6 +27,12 @@ protected:
 
 	virtual void removeBuff(Buff* buff);
 
+	virtual void updateDirection();
+
+	virtual void startAnimation();
+
+	virtual void moveTo(const Vec2& targetPosition);
+
 public:
 
 	virtual bool attack();

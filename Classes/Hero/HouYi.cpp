@@ -124,6 +124,17 @@ void HouYi::castSkill_2(Point position)
 				(*it)->takeBuff(buff);
 			}
 		}
+
+		for (auto& i : _combatScene->_creeps)
+		{
+			if (!i->getAlreadyDead() && i->getPosition().distance(effectPosition) <= effectRadius)
+			{
+				auto damage = Damage(150 + 100 * _skillLevel_2, this, i, EDamageType::MAGIC_DAMAGE, GetCurrentTime() / 1000 + 0.5);
+				_combatScene->_damages.push_back(damage);
+
+				i->takeBuff(buff);
+			}
+		}
 		_lastSkillTime_2 = nowTime;
 	}
 
@@ -234,8 +245,10 @@ bool HouYi::attack()
 	//考虑多重箭的buff效果
 	if (_multipleLastTo >= nowTime)
 	{
-		Actor* attackTarget2 = NULL;
-		Actor* attackTarget3 = NULL;
+		Actor* attackTarget2 = nullptr;
+		Actor* attackTarget3 = nullptr;
+		
+		Vector<Creep*> allCreeps = _combatScene->_creeps;
 		Vector<Hero*>& allHeroes = _combatScene->_heroes;
 		Vector<Soldier*>& allSoldiers = _combatScene->_soldiers;
 		Vector<Actor*>& allTowers = _combatScene->_towers;
@@ -269,6 +282,17 @@ bool HouYi::attack()
 				}
 			}
 		}
+		if (!attackTarget2)
+		{
+			for (auto it = allCreeps.begin(); it != allCreeps.end(); ++it)
+			{
+				if (!(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= _attackRadius && (*it) != _attackTarget)
+				{
+					attackTarget2 = *it;
+					break;
+				}
+			}
+		}
 		//
 		for (auto it = allHeroes.begin(); it != allHeroes.end(); ++it)
 		{
@@ -294,6 +318,17 @@ bool HouYi::attack()
 			for (auto it = allTowers.begin(); it != allTowers.end(); ++it)
 			{
 				if (_camp != (*it)->getCamp() && (*it) != _attackTarget && (*it) != attackTarget2 && !(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= this->getAttackRadius())
+				{
+					attackTarget3 = *it;
+					break;
+				}
+			}
+		}
+		if (!attackTarget3)
+		{
+			for (auto it = allCreeps.begin(); it != allCreeps.end(); ++it)
+			{
+				if (!(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= _attackRadius && (*it) != _attackTarget && (*it) != attackTarget2)
 				{
 					attackTarget3 = *it;
 					break;

@@ -10,6 +10,7 @@
 #include "Const/MapInfo.h"
 #include <string>
 #include "Network/Command.h"
+#include "Actor/Creep.h"
 #include <map>
 USING_NS_CC;
 
@@ -41,6 +42,7 @@ class HelloWorld : public cocos2d::Scene
 public:
 	//公开容器
 	class chat_client* _client;
+	Vector<Creep*> _creeps;
 	Vector<Ref*> _actors;
 	Vector<Actor*> _towers;
 	Vector<Projectile*> _bullets;
@@ -60,6 +62,7 @@ private:
 	SoldierPath* _redSoldierPathPoints;
 	SoldierPath* _aiHeroPathPoints;
 	void generateSoldiers(float delta);
+	void generateCreeps(float delta);
 	void selectSpriteForTouch(Point touchLocation);
 	//初始化
 	void initMapLayer();

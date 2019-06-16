@@ -34,6 +34,8 @@ void LoadingScene::onEnterTransitionDidFinish()
 
 void LoadingScene::LoadingAnimation()
 {
+	changeScene();
+
 	String heroName = "HouYi";
 
 	auto animation_00 = Animation::create();
@@ -667,8 +669,100 @@ void LoadingScene::LoadingAnimation()
 	}
 	animation_82->addSpriteFrameWithFile(StringUtils::format("pictures\\soldier\\%s\\%sRight1.png", soldierType.getCString(), soldierType.getCString()));
 	AnimationCache::getInstance()->addAnimation(animation_82, StringUtils::format("%sAttackRight", soldierType.getCString()));
-	log("agdfshadrh");
-	changeScene();
+	
+
+
+	String creepName = "lion";
+	
+	auto animation_83 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_83->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sUp%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_83, StringUtils::format("%sUp", creepName.getCString()));
+
+	auto animation_84 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_84->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sDown%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_84, StringUtils::format("%sDown", creepName.getCString()));
+
+	auto animation_85 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_85->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sLeft%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_85, StringUtils::format("%sLeft", creepName.getCString()));
+
+	auto animation_86 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_86->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sRight%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_86, StringUtils::format("%sRight", creepName.getCString()));
+
+
+	creepName = "tiger";
+
+	auto animation_87 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_87->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sUp%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_87, StringUtils::format("%sUp", creepName.getCString()));
+
+	auto animation_88 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_88->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sDown%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_88, StringUtils::format("%sDown", creepName.getCString()));
+
+	auto animation_89 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_89->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sLeft%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_89, StringUtils::format("%sLeft", creepName.getCString()));
+
+	auto animation_90 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_90->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sRight%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_90, StringUtils::format("%sRight", creepName.getCString()));
+
+
+	creepName = "pig";
+
+	auto animation_91 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_91->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sUp%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_91, StringUtils::format("%sUp", creepName.getCString()));
+
+	auto animation_92 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_92->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sDown%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_92, StringUtils::format("%sDown", creepName.getCString()));
+
+	auto animation_93 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_93->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sLeft%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_93, StringUtils::format("%sLeft", creepName.getCString()));
+
+	auto animation_94 = Animation::create();
+	for (int i = 1; i <= 4; ++i)
+	{
+		animation_94->addSpriteFrameWithFile(StringUtils::format("pictures/creeps/%s/%sRight%d.png", creepName.getCString(), creepName.getCString(), i));
+	}
+	AnimationCache::getInstance()->addAnimation(animation_94, StringUtils::format("%sRight", creepName.getCString()));
 }
 
 void LoadingScene::changeScene()
@@ -676,4 +770,7 @@ void LoadingScene::changeScene()
 	auto call_function = CallFunc::create
 	([] {Director::getInstance()->replaceScene(StartGame::createScene());});
 	this->runAction(call_function);
+
+//	Director::getInstance()->replaceScene(StartGame::createScene());
+
 }

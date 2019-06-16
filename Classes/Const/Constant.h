@@ -103,6 +103,9 @@
 #define BLUE_TOWER_POSITION		Vec2(1936, 688)
 #define RED_SHUIJIN_POSITION	Vec2(5776, 688)
 #define BLUE_SHUIJIN_POSITION   Vec2(624,688)
+#define LION_BIRTHPLACE         Vec2(500, 1350)
+#define PIG_BIRTHPLACE          Vec2(3200, 1350)
+#define TIGER_BIRTHPLACE        Vec2(5900, 1350)
 
 #define CHATBOX_SIZE            4
 
@@ -190,7 +193,7 @@ struct Damage
 	EDamageType _damageType;
 	float _actionTime;
 
-	Damage(INT32 damage = 0, Actor* instigator = nullptr, Actor* target = nullptr, EDamageType damageType = EDamageType::PHYSICS_DAMAGE, float actionTime = 0.f) :
+	Damage(INT32 damage = 0, Actor* instigator = nullptr, Actor* target = nullptr, EDamageType damageType = EDamageType::PHYSICS_DAMAGE, float actionTime = 0.f) noexcept:
 		_damage(damage),
 		_instiogator(instigator),
 		_target(target),
@@ -204,7 +207,7 @@ struct HeroMessage
 	std::string _heroName;
 	ECamp camp;
 
-	HeroMessage(int playerNumber = 0, std::string heroName = "", ECamp camp = BLUE):
+	HeroMessage(int playerNumber = 0, std::string heroName = "", ECamp camp = BLUE) noexcept:
 		_playerNumber(playerNumber), _heroName(heroName), camp(camp) {}
 };
 

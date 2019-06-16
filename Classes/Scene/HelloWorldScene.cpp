@@ -20,6 +20,7 @@
 #include "Network/Client.h"
 #include "Component/Chatbox.h"
 #include "Component/PropertyPanel.h"
+#include <cmath>
 
 static void problemLoading(const char* filename)
 {
@@ -89,6 +90,7 @@ bool HelloWorld::init(INT32 playerNumber, chat_client* client, INT32 mode, std::
 			i->getRecordComp()->beginUpdate();
 		}
 		schedule(schedule_selector(HelloWorld::generateSoldiers), 30.f, -1, 0.f);
+		schedule(schedule_selector(HelloWorld::generateCreeps), 60.f, -1, 0.f);
 	}
 
 	return true;
@@ -444,6 +446,21 @@ void HelloWorld::clearObjects()
 		}
 	}
 
+	for (auto it = _creeps.begin(); it != _creeps.end();)
+	{
+		if ((*it)->getAlreadyDead())
+		{
+			_map->removeChild(*it);
+			(*it)->getHealthComp()->unscheduleAllSelectors();
+			it = _creeps.erase(it);
+		}
+		else
+		{
+			(*it)->clearBuff();
+			++it;
+		}
+	}
+
 	for (auto it = _towers.begin(); it != _towers.end();)
 	{
 		if ((*it)->getAlreadyDead())
@@ -634,6 +651,14 @@ void HelloWorld::updateSoldiersState()
 			aiHero->updateState();
 		}
 	}
+
+	for (auto& i : _creeps)
+	{
+		if (!i->getAlreadyDead())
+		{
+			i->updateState();
+		}
+	}
 }
 
 void HelloWorld::updateHeroPosition()
@@ -755,6 +780,50 @@ void HelloWorld::generateSoldiers(float delta)
 	if (_myHero->getCamp() != ECamp::RED)
 	{
 		soldier_8->getHealthComp()->setColor(Color3B::RED);
+	}
+}
+
+void HelloWorld::generateCreeps(float delta)
+{
+	float dist1 = 6000.f;
+	float dist2 = 6000.f;
+	float dist3 = 6000.f;
+	for (auto& i : _creeps)
+	{
+		if (!i->getAlreadyDead())
+		{
+			dist1 = std::min(dist1, i->getPosition().distance(TIGER_BIRTHPLACE));
+			dist2 = std::min(dist2, i->getPosition().distance(LION_BIRTHPLACE));
+			dist3 = std::min(dist3, i->getPosition().distance(PIG_BIRTHPLACE));
+		}
+	}
+
+	if (dist1 > VISION_RADIUS)
+	{
+		auto tiger = Creep::create(this, "tiger");
+		tiger->setPosition(TIGER_BIRTHPLACE);
+		tiger->setScale(2);
+		_map->addChild(tiger);
+		_creeps.pushBack(tiger);
+		_actors.pushBack(tiger);
+	}
+	if (dist2 > VISION_RADIUS)
+	{
+		auto lion = Creep::create(this, "lion");
+		lion->setPosition(LION_BIRTHPLACE);
+		lion->setScale(2);
+		_map->addChild(lion);
+		_creeps.pushBack(lion);
+		_actors.pushBack(lion);
+	}
+	if (dist3 > VISION_RADIUS)
+	{
+		auto pig = Creep::create(this, "pig");
+		pig->setPosition(PIG_BIRTHPLACE);
+		pig->setScale(2);
+		_map->addChild(pig);
+		_creeps.pushBack(pig);
+		_actors.pushBack(pig);
 	}
 }
 
@@ -1349,10 +1418,14 @@ void HelloWorld::synchronize()
 		{
 			if (cmd.player == 0)
 			{
-				if (cmd.frames % 900 == 300)
+				if (cmd.frames % 900 == 899)
 				{
 					generateSoldiers(0.f);
 					//schedule(schedule_selector(HelloWorld::generateSoldiers), 10.f, -1, 0.f);
+				}
+				if (cmd.frames % 1800 == 1799)
+				{
+					generateCreeps(0.f);
 				}
 				updateSoldiersState();
 			}

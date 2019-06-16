@@ -62,6 +62,15 @@ void DaJi::updateSprSkill_1_Position(float delta)
 			(*it)->takeDamage(EDamageType::MAGIC_DAMAGE, damage, this);
 		}
 	}
+	for (auto& i : _combatScene->_creeps)
+	{
+		if (!i->getAlreadyDead() && i->getPosition().distance(sprSkill->getPosition()) < contactLimit && _skillDamageActors.find(i) == _skillDamageActors.end())
+		{
+			_skillDamageActors.insert(i);
+			i->takeBuff(passiveBuff);
+			i->takeDamage(EDamageType::MAGIC_DAMAGE, damage, this);
+		}
+	}
 }
 
 void DaJi::castSkill_1(Point position)
@@ -127,6 +136,7 @@ void DaJi::castSkill_3()
 		}
 	}
 }
+
 bool DaJi::attack()
 {
 	auto nowTime = GetCurrentTime() / 1000.f;

@@ -29,8 +29,6 @@ private:
 
 	void initHealthComp();
 
-	void updateDirection();
-
 	void startAnimation();
 
 	virtual void die();
@@ -38,8 +36,6 @@ private:
 public:
 
 	void attack(Actor* attackTarget);
-
-	void moveTo(const Vec2& targetPosition);
 
 	bool updateInstigator();
 

@@ -7,6 +7,7 @@
 #include "Scene/HelloWorldScene.h"
 #include <set>
 #include "Actor/Actor.h"
+#include "Actor/Creep.h"
 
 
 Hero* Hero::create(HelloWorld* combatScene, ECamp camp, std::string heroName, EAttackMode attackMode)
@@ -628,6 +629,7 @@ void Hero::updateAttackTarget()
 	INT32 minHealth = 10000000;
 	Actor* tmpTarget = NULL;
 
+	Vector<Creep*>& allCreeps = _combatScene->_creeps;
 	Vector<Hero*>& allHeroes = _combatScene->_heroes;
 	Vector<Soldier*>& allSoldiers = _combatScene->_soldiers;
 	Vector<Actor*>& allTowers = _combatScene->_towers;
@@ -662,6 +664,18 @@ void Hero::updateAttackTarget()
 		for (auto it = allTowers.begin(); it != allTowers.end(); ++it)
 		{
 			if ((*it)->getHealthComp()->getCurrentState() < minHealth && _camp != (*it)->getCamp() && !(*it)->getAlreadyDead() && (*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
+			{
+				minHealth = (*it)->getHealthComp()->getCurrentState();
+				tmpTarget = *it;
+			}
+		}
+	}
+
+	if (!tmpTarget)
+	{
+		for (auto it = allCreeps.begin(); it != allCreeps.end(); ++it)
+		{
+			if (!(*it)->getAlreadyDead() && (*it)->getHealthComp()->getCurrentState() < minHealth && (*it)->getPosition().distance(this->getPosition()) <= _attackRadius)
 			{
 				minHealth = (*it)->getHealthComp()->getCurrentState();
 				tmpTarget = *it;
