@@ -1,170 +1,162 @@
+# Arena of Valor项目说明文档
 
+> 同济大学软件学院2019年面向对象程序设计课程大项目
 
-1. 
+## 项目信息
 
-   # Arena of Valor项目说明文档
+- 项目选题：**王者荣耀（2D）**
 
-   > 同济大学软件学院2019年面向对象程序设计课程大项目
+- 项目成员：
 
-   ## 项目信息
+  - 1752459 曾泽
+  - 1751926 王泽钜
+  - 1752985 刘雪迪
+  - 1750655 李嘉杰
 
-   - 项目选题：**王者荣耀（2D）**
+- 项目Github地址：<https://github.com/Xuedixuedi/ArenaofValor>
 
-   - 项目成员：
+- 项目进度时间线：
 
-     - 1752459 曾泽
-     - 1751926 王泽钜
-     - 1752985 刘雪迪
-     - 1750655 李嘉杰
+  ![Gant](http://r.photo.store.qq.com/psb?/V1021wgV0HsjE6/sDZZ2M6dQymreB66Kl4kBmIZm1AZ0Ktp3BeMQrU*B0o!/r/dMMAAAAAAAAA)
 
-   - 项目Github地址：<https://github.com/Xuedixuedi/ArenaofValor>
+  ![未命名文件.png](https://i.loli.net/2019/07/01/5d19d162d561167050.png)
 
-   - 项目进度时间线：
+## 项目开发文档
 
-     ![Gant](http://r.photo.store.qq.com/psb?/V1021wgV0HsjE6/sDZZ2M6dQymreB66Kl4kBmIZm1AZ0Ktp3BeMQrU*B0o!/r/dMMAAAAAAAAA)
+- 选用引擎：**Cocos2d-x 3.17.2**
 
-     ![未命名文件.png](https://i.loli.net/2019/07/01/5d19d162d561167050.png)
+- 辅助软件：Tiled Map Editor 1.1.5、Adobe Photoshop CC 2019
 
-   ## 项目开发文档
+- 支持平台：Windows
 
-   - 选用引擎：**Cocos2d-x 3.17.2**
+- 小组分工：
 
-   - 辅助软件：Tiled Map Editor 1.1.5、Adobe Photoshop CC 2019
+  |  姓名  |                           分工                           | 贡献比例 |
+  | :----: | :------------------------------------------------------: | :------: |
+  |  曾泽  | 英雄、野怪、技能飞行物、小兵及英雄AI、装备系统、战绩系统 |   100%   |
+  | 王泽钜 |  遥杆、英雄、英雄技能、游戏场景逻辑、鼠标键盘交互、网络  |   100%   |
+  | 刘雪迪 |           开始界面交互、素材及数据文件、地图、           |   100%   |
+  | 李嘉杰 |                 小兵寻路算法、跨平台研究                 |   100%   |
 
-   - 支持平台：Windows
+- 类的设计及继承关系：
 
-   - 小组分工：
+  ![img](http://m.qpic.cn/psb?/V1021wgV0HsjE6/Xju3IHhg632Jyq2TVhj*4TImCSqedtAP1krWUyBfc9E!/b/dLYAAAAAAAAA&bo=.wWAAlMGpQIDCaI!&rf=viewer_4)
 
-     |  姓名  |                           分工                           | 贡献比例 |
-     | :----: | :------------------------------------------------------: | :------: |
-     |  曾泽  | 英雄、野怪、技能飞行物、小兵及英雄AI、装备系统、战绩系统 |   100%   |
-     | 王泽钜 |  遥杆、英雄、英雄技能、游戏场景逻辑、鼠标键盘交互、网络  |   100%   |
-   | 刘雪迪 |           开始界面交互、素材及数据文件、地图、           |   100%   |
-     | 李嘉杰 |                 小兵寻路算法、跨平台研究                 |   100%   |
+- 评分项完成度
 
-   - 类的设计及继承关系：
+  - 基础功能
+    - [x] 支持联网
+    - [x] 1v1地图
+    - [x] 妲己、亚瑟、后羿三种英雄类型
+    - [x] 支持近程、远程小兵
+    - [x] 支持以补兵、推塔、击败英雄、时间方式获得金钱
+    - [x] 支持经验、等级系统
+    - [x] 支持装备系统及装备查看
+    - [x] 支持战绩及英雄当前属性查看
+    - [x] 支持小兵、防御塔AI
+    - [x] 支持电脑AI
+    - [x] 支持拖拽轮盘及WASD操作英雄
+  - 进阶功能
+    - [x] 支持聊天
+    - [x] 支持多人对决
+    - [x] 支持三种野怪
+    - [x] 三种英雄各支持三个主动技能及一个被动技能
+    - [x] 支持技能等级成长系统
+    - [x] 支持泉水
+    - [x] 支持生命值及法力值等级成长系统
+  - C++新特性
+    - [x] 类型推断
+    - [x] 基于范围的for循环
+    - [x] 智能指针
+    - [x] Lambda表达式
+  - 其他亮点
+    - [x] 游戏还原度高
+      - 英雄形象、属性、技能、装备属性等与王者荣耀游戏还原度高（详情见游戏文档）
+      - 普通攻击及技能伤害生效时间为投掷物到达被攻击对象时而非技能释放时
+      - 使用王者荣耀原声音效，提升游戏体验
+    - [x] 细节丰富，画面精致
+      - 英雄及小兵普通攻击及释放技能时均有动画效果
+      - 玩家在普通攻击及释放技能同时无法移动
+      - 玩家及小兵普通攻击的投掷物始终指向目标
+      - 释放技能鼠标出现辅助瞄准点，技能释放的方位由英雄->鼠标瞄准点向量方向决定
+      - 英雄及小兵普通攻击及释放技能时保证英雄及小兵始终朝向攻击目标
+      - 优化我方小兵击杀对方英雄记录为我方英雄助攻
+    - [x] PLIST文件的使用
+      - 利用PLIST文件存储英雄默认属性、英雄成长属性和技能成长属性。利用cocos2d-x读取PLIST文件的功能，将数据写入PLIST文件而非代码中，增强了数据的可读性和可修改性
+    - [x] 小兵及英雄AI路径的标注工具
+      - 用Python开发了小兵寻路工具，从Tiled工具生成的tmx文件提取特定图层，进行路径标记，以此代替寻路算法。![1560536076668](<http://r.photo.store.qq.com/psb?/V1021wgV0HsjE6/PQpxt15nfy3Nw1btEJQIznnkvK1eoikU5H0VTgukzDQ!/r/dMUAAAAAAAAA>)
 
-     ![img](http://m.qpic.cn/psb?/V1021wgV0HsjE6/Xju3IHhg632Jyq2TVhj*4TImCSqedtAP1krWUyBfc9E!/b/dLYAAAAAAAAA&bo=.wWAAlMGpQIDCaI!&rf=viewer_4)
+- 代码亮点
 
-   - 评分项完成度
+  1. Const.h头文件的使用
 
-     - 基础功能
-       - [x] 支持联网
-       - [x] 1v1地图
-       - [x] 妲己、亚瑟、后羿三种英雄类型
-       - [x] 支持近程、远程小兵
-       - [x] 支持以补兵、推塔、击败英雄、时间方式获得金钱
-       - [x] 支持经验、等级系统
-       - [x] 支持装备系统及装备查看
-       - [x] 支持战绩及英雄当前属性查看
-       - [x] 支持小兵、防御塔AI
-       - [x] 支持电脑AI
-       - [x] 支持拖拽轮盘及WASD操作英雄
-     - 进阶功能
-       - [x] 支持聊天
-       - [x] 支持多人对决
-       - [x] 支持三种野怪
-       - [x] 三种英雄各支持三个主动技能及一个被动技能
-       - [x] 支持技能等级成长系统
-       - [x] 支持泉水
-       - [x] 支持生命值及法力值等级成长系统
-     - C++新特性
-       - [x] 类型推断
-       - [x] 基于范围的for循环
-       - [x] 智能指针
-       - [x] Lambda表达式
-     - 其他亮点
-       - [x] 游戏还原度高
-         - 英雄形象、属性、技能、装备属性等与王者荣耀游戏还原度高（详情见游戏文档）
-         - 普通攻击及技能伤害生效时间为投掷物到达被攻击对象时而非技能释放时
-         - 使用王者荣耀原声音效，提升游戏体验
-       - [x] 细节丰富，画面精致
-         - 英雄及小兵普通攻击及释放技能时均有动画效果
-         - 玩家在普通攻击及释放技能同时无法移动
-         - 玩家及小兵普通攻击的投掷物始终指向目标
-         - 释放技能鼠标出现辅助瞄准点，技能释放的方位由英雄->鼠标瞄准点向量方向决定
-         - 英雄及小兵普通攻击及释放技能时保证英雄及小兵始终朝向攻击目标
-         - 优化我方小兵击杀对方英雄记录为我方英雄助攻
-       - [x] PLIST文件的使用
-       
-         + 利用PLIST文件存储英雄默认属性、英雄成长属性和技能成长属性。利用cocos2d-x读取PLIST文件的功能，将数据写入PLIST文件而非代码中，增强了数据的可读性和可修改性
-       - [x] 小兵及英雄AI路径的标注工具
-         + 用Python开发了小兵寻路工具，从Tiled工具生成的tmx文件提取特定图层，进行路径标记，以此代替寻路算法。![1560536076668](<http://r.photo.store.qq.com/psb?/V1021wgV0HsjE6/PQpxt15nfy3Nw1btEJQIznnkvK1eoikU5H0VTgukzDQ!/r/dMUAAAAAAAAA>)
+     将游戏里关于英雄、小兵、防御塔等常量属性放在`Const.h`头文件中
 
-   - 代码亮点
+  ```c++
+    #define TOWER_MIN_ATTACK_INTERVAL	  2
+    #define TOWER_HP					      8000
+    #define TOWER_ATTACK_RADIUS            500
+    #define TOWER_ARMOR				      300
+    #define TOWER_MAGIC_DEFNESE            100
+    #define TOWER_ATTACK				      470
+  ```
 
-     1. Const.h头文件的使用
+  2. LoadingScene 类的使用
 
-        将游戏里关于英雄、小兵、防御塔等常量属性放在`Const.h`头文件中
+     将游戏中需要播放的动画在打开游戏时预加载，减少游戏时的卡顿。
 
-       ```c++
-       #define TOWER_MIN_ATTACK_INTERVAL	  2
-       #define TOWER_HP					      8000
-       #define TOWER_ATTACK_RADIUS            500
-       #define TOWER_ARMOR				      300
-       #define TOWER_MAGIC_DEFNESE            100
-       #define TOWER_ATTACK				      470
-       ```
+  ```c++
+   auto animation_02 = Animation::create();
+   	for (int i = 1; i < 4; ++i)
+   	{
+   		animation_02->addSpriteFrameWithFileName
+               (StringUtils::format("pictures\\hero\\%s\\%supRight%d.png", 
+                                    heroName.getCString(), 
+                                    heroName.getCString(), i));
+   	}
+   	AnimationCache::getInstance()->addAnimation(animation_02, 
+                        StringUtils::format("%sMoveUpRight", heroName.getCString()));
+  ```
 
-     2. LoadingScene 类的使用
+  3. AI路径的标注工具
 
-         将游戏中需要播放的动画在打开游戏时预加载，减少游戏时的卡顿。
+  ```python
+       if mode == 0 and event == cv2.EVENT_LBUTTONDOWN:
+           if (img[y][x].tolist()== COLOR_AVAI):
+               print("Point左键点击", img[y][x].tolist())
+               if pnts.count([x//MULTIPLE,y//MULTIPLE]) == 0:
+                   pnts.append([x//MULTIPLE,y//MULTIPLE])
+                   print(pnts)
+                   #print(Graph[:len(pnts)][:len(pnts)])
+                   cv2.rectangle(img, (x//MULTIPLE*MULTIPLE, y//MULTIPLE*MULTIPLE), (x//MULTIPLE*MULTIPLE+MULTIPLE, y//MULTIPLE*MULTIPLE+MULTIPLE), COLOR_POINT, -1)
+                   SaveHis()
+  ```
 
-      ```c++
-      auto animation_02 = Animation::create();
-      	for (int i = 1; i < 4; ++i)
-      	{
-      		animation_02->addSpriteFrameWithFileName
-                  (StringUtils::format("pictures\\hero\\%s\\%supRight%d.png", 
-                                       heroName.getCString(), 
-                                       heroName.getCString(), i));
-      	}
-      	AnimationCache::getInstance()->addAnimation(animation_02, 
-                           StringUtils::format("%sMoveUpRight", heroName.getCString()));
-      ```
+  4. 多线程的使用
 
-     3. AI路径的标注工具
+  ```c++
+   		boost::thread t(boost::bind(&boost::asio::io_context::run, io_context));
+   		t.detach();
+  ```
 
-      ```python
-          if mode == 0 and event == cv2.EVENT_LBUTTONDOWN:
-              if (img[y][x].tolist()== COLOR_AVAI):
-                  print("Point左键点击", img[y][x].tolist())
-                  if pnts.count([x//MULTIPLE,y//MULTIPLE]) == 0:
-                      pnts.append([x//MULTIPLE,y//MULTIPLE])
-                      print(pnts)
-                      #print(Graph[:len(pnts)][:len(pnts)])
-                      cv2.rectangle(img, (x//MULTIPLE*MULTIPLE, y//MULTIPLE*MULTIPLE), (x//MULTIPLE*MULTIPLE+MULTIPLE, y//MULTIPLE*MULTIPLE+MULTIPLE), COLOR_POINT, -1)
-                      SaveHis()
-      ```
+  5. PLIST文件的使用
 
-     4. 多线程的使用
+  ```xml
+           <key>HouYi</key>
+           <dict>
+               <key>HPRecoverRate</key>
+               <integer>9</integer>
+               <key>MPRecoverRate</key>
+               <integer>4</integer>
+               <key>MovingSpeed</key>
+               <integer>360</integer>
+           </dict>
+  ```
 
-      ```c++
-      		boost::thread t(boost::bind(&boost::asio::io_context::run, io_context));
-      		t.detach();
-      ```
-
-     5. PLIST文件的使用
-
-      ```xml
-              <key>HouYi</key>
-              <dict>
-                  <key>HPRecoverRate</key>
-                  <integer>9</integer>
-                  <key>MPRecoverRate</key>
-                  <integer>4</integer>
-                  <key>MovingSpeed</key>
-                  <integer>360</integer>
-              </dict>
-      ```
-
-   + 踩坑记录
-
-     1. 打包发布**Release版本**时需要将原存放在**Resource**文件夹中存放plist文件和txt文件的**data**文件夹移动到**Resource**文件夹之外，否则运行游戏时会因为` abort()`函数的调用中断。
-
-     2. 同一小组不同成员开发时应保证Visual Studio的版本相同。VS2019创建的项目转移到只有VS2017的电脑上会因平台工具集差异导致编译错误。
-     3. 播放背景音乐所需要用的`SimpleAudioEngine`中调节音量大小的函数` setBackgroundMusicVolume`是空函数，若要调节背景音乐的大小需要自行补全代码。
-
+- 踩坑记录
+  1. 打包发布**Release版本**时需要将原存放在**Resource**文件夹中存放plist文件和txt文件的**data**文件夹移动到**Resource**文件夹之外，否则运行游戏时会因为` abort()`函数的调用中断。
+  2. 同一小组不同成员开发时应保证Visual Studio的版本相同。VS2019创建的项目转移到只有VS2017的电脑上会因平台工具集差异导致编译错误。
+  3. 播放背景音乐所需要用的`SimpleAudioEngine`中调节音量大小的函数` setBackgroundMusicVolume`是空函数，若要调节背景音乐的大小需要自行补全代码。
 
 ## Arena of Valor 游戏文档
 
@@ -184,7 +176,7 @@
 
 玩家单击联机模式按钮后，待匹配到另一名玩家同样单击联机模式后同时跳转至选择英雄界面，待双方同时选择完英雄后进入游戏场景。按照先选好英雄的一方为蓝方，后选好英雄的一方为红方原则进行1V1对战。先摧毁对方水晶的玩家获胜。
 
-   ### 基本操作
+### 基本操作
 
 |              操作              |                            效果                            |
 | :----------------------------: | :--------------------------------------------------------: |
@@ -201,7 +193,7 @@
 
 ### 英雄属性
 
-   - 默认属性
+- 默认属性
 
 | 英雄名 | 定位&攻击类型 | 回血速率 | 回蓝速率 | 移动速率 |
 | :----: | :-----------: | :------: | :------: | :------: |
@@ -209,7 +201,7 @@
 |  妲己  |   法师&远程   |    10    |    5     |   360    |
 |  后羿  |   射手&远程   |    10    |    5     |   360    |
 
-   - 成长属性
+- 成长属性
 
 | 英雄名 |    生命值     |    法力值    |  法术防御   |    护甲    |   物理攻击   |
 | :----: | :-----------: | :----------: | :---------: | :--------: | :----------: |
@@ -219,15 +211,15 @@
 
 ### 画面概览
 
-+ 开局界面
+- 开局界面
 
   ![0615开局](https://i.loli.net/2019/07/01/5d19cbb49b12931083.gif)
 
-+ 英雄移动
+- 英雄移动
 
   ![dajimove](https://i.loli.net/2019/07/01/5d19d0d8ccca173453.gif) ![HOUYIMOVE](http://m.qpic.cn/psb?/V1021wgV0HsjE6/QSBtTdFJ183gID0ym8w73cFL8XyPZJccL5KEyrVU8c8!/b/dDYBAAAAAAAA&bo=1gDUANYA1AACOR0!&rf=viewer_4) ![YASEMOVE](https://i.loli.net/2019/07/01/5d19d1263cf3c68391.gif) 
 
-+ 英雄释放技能
+- 英雄释放技能
 
   ![DAJIATTACK_2_](https://i.loli.net/2019/07/01/5d19d0df8b40c88810.gif) ![HOUYIATTACK_2_](http://m.qpic.cn/psb?/V1021wgV0HsjE6/TB3BjXGX5oaadAXhIF6JaSDK*dZYsL6Rku81mgQ8bBg!/b/dMAAAAAAAAAA&bo=9AOSAfQDkgECmb0!&rf=viewer_4)
 
@@ -238,3 +230,6 @@
 1. 感谢原上海市第一貂蝉（现因学业繁忙弃游）对游戏demo的用户体验提出建设性改进建议。
 2. 感谢不定期出现在国康路全家。国康路coco的助教探班。
 3. 感谢不厌其烦读完文档的您对本项目的资瓷。
+
+> 联系我们：liuxuedi1999@126.com
+
