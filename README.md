@@ -233,3 +233,6 @@
 
 > 联系我们：liuxuedi1999@126.com
 
+因为东西太大github放不下……完整游戏请移步：
+链接：https://pan.baidu.com/s/1GVMBeLdyPoxQcJqIjOoOSQ 
+提取码：8g0f 
